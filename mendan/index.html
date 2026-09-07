@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>RVSS 面談のお申し込み</title>
+<link rel="stylesheet" href="../assets/common.css">
+</head>
+<body>
+<div class="wrap">
+
+  <div id="loading" class="loading">読み込んでいます…</div>
+  <div id="boot-status" class="status" hidden></div>
+
+  <div id="form-area" hidden>
+    <h1>面談のお申し込み</h1>
+    <p class="lead">RVSSの面談にお申し込みいただきありがとうございます。5つだけ教えてください。</p>
+
+    <div class="field">
+      <label for="name">お名前<span class="req">必須</span></label>
+      <input type="text" id="name" autocomplete="name" placeholder="山田 太郎">
+    </div>
+
+    <div class="field">
+      <label for="email">メールアドレス<span class="req">必須</span></label>
+      <input type="email" id="email" autocomplete="email" inputmode="email" placeholder="example@gmail.com">
+      <p class="note">選考のご連絡に使います。普段お使いのものをお願いします。</p>
+    </div>
+
+    <div class="field">
+      <label for="planDate">ご希望の日程<span class="req">必須</span></label>
+      <select id="planDate"><option value="">読み込んでいます…</option></select>
+    </div>
+
+    <div class="field">
+      <label for="source">どこでRVSSを知りましたか<span class="req">必須</span></label>
+      <select id="source">
+        <option value="">選んでください</option>
+        <option>知人からの紹介</option>
+        <option>RVSSイベント</option>
+        <option>SNS(RVSS公式)</option>
+        <option>REALVALUE本編(インフォマ)</option>
+        <option>ビラ</option>
+        <option>その他</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="saturday">土曜定例（毎週 9:25〜11:00）に原則毎週参加できますか<span class="req">必須</span></label>
+      <select id="saturday">
+        <option value="">選んでください</option>
+        <option value="はい">はい（条件次第の方もこちらを選択してください）</option>
+        <option value="いいえ">いいえ</option>
+      </select>
+      <p class="note">条件によっては配慮が可能です。面談で相談させていただきます。</p>
+    </div>
+
+    <button id="submit" type="button">この内容で申し込む</button>
+    <div id="status" class="status" hidden></div>
+  </div>
+
+  <div id="done" class="done" hidden>
+    <h2>お申し込みを受け付けました</h2>
+    <p>担当者からLINEでご連絡します。</p>
+    <!-- ★e8af2061 案2｜押すとLステップ側で「採用フロー中」タグが付き、広報のシナリオ配信から外れる。
+         Lステップはユーザーの反応にしかタグを付けられないので、本人に1回押してもらうしかない。
+         LSTEP_TAG_URL が空のときはボタンごと出さない（押せないボタンを見せない）。 -->
+    <div id="confirm-wrap" hidden style="margin-top:26px">
+      <button id="confirm-link" type="button">予約内容を確認する</button>
+    </div>
+  </div>
+
+</div>
+
+<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+<script src="../config.js"></script>
+<script src="../assets/liff-common.js"></script>
+<script>
+(function () {
+  'use strict';
+  var profile = null, src = 'unknown', sending = false;
+
+  RVSS.boot({
+    liffKey: 'mendan',
+    onReady: function (p, s) {
+      profile = p; src = s;
+      RVSS.show('form-area');
+      // 日程は「予定」タブの種別＝面談 を読む
+      RVSS.fillDates(document.getElementById('planDate'), '面談')
+        .then(function (n) {
+          var sel = document.getElementById('planDate');
+          var alt = document.createElement('option');
+          alt.value = 'この中に合う日がない（LINEで調整します）';
+          alt.textContent = 'この中に合う日がない（LINEで調整します）';
+          sel.appendChild(alt);
+          if (!n) {
+            // 枠が1つも無い日でも申し込めるようにする。
+            // ★ここで止めると、枠を足し忘れた週の申込がまるごと消える。
+            sel.value = alt.value;
+            RVSS.setStatus('いまお選びいただける枠がないため、LINEで直接調整させてください。', '');
+          }
+        })
+        .catch(function () {
+          var sel = document.getElementById('planDate');
+          while (sel.firstChild) sel.removeChild(sel.firstChild);
+          var alt = document.createElement('option');
+          alt.value = 'この中に合う日がない（LINEで調整します）';
+          alt.textContent = 'LINEで調整します';
+          sel.appendChild(alt);
+          RVSS.setStatus('日程の読み込みに失敗しました。このまま送信いただければLINEで調整します。', '');
+        });
+    }
+  });
+
+  document.getElementById('submit').addEventListener('click', function () {
+    if (sending) return;
+    var name = document.getElementById('name').value.trim();
+    var email = document.getElementById('email').value.trim();
+    var planDate = document.getElementById('planDate').value;
+    var source = document.getElementById('source').value;
+    var saturday = document.getElementById('saturday').value;
+
+    if (!name) { return RVSS.setStatus('お名前を入力してください。', 'err'); }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { return RVSS.setStatus('メールアドレスの形式をご確認ください。', 'err'); }
+    if (!planDate) { return RVSS.setStatus('ご希望の日程を選んでください。', 'err'); }
+    if (!source) { return RVSS.setStatus('どこでRVSSを知ったかを選んでください。', 'err'); }
+    if (!saturday) { return RVSS.setStatus('土曜定例の参加可否を選んでください。', 'err'); }
+
+    sending = true;
+    var btn = document.getElementById('submit');
+    btn.disabled = true; btn.textContent = '送信しています…';
+    RVSS.setStatus('送信しています…', '');
+
+    RVSS.postToGas({
+      kind: 'mendan',
+      name: name,
+      email: email,
+      planDate: planDate,
+      source: source,
+      saturday: saturday,
+      src: src,
+      lineUserId: (profile && profile.userId) || '',
+      lineDisplayName: (profile && profile.displayName) || ''
+    }).then(function () {
+      RVSS.hide('form-area');
+      RVSS.show('done');
+      if (window.RVSS_CONFIG.LSTEP_TAG_URL) RVSS.show('confirm-wrap');
+    }).catch(function () {
+      sending = false;
+      btn.disabled = false; btn.textContent = 'もう一度送る';
+      RVSS.setStatus('送信を確認できませんでした。もう一度お試しください。それでも進まない場合はLINEでお知らせください。', 'err');
+    });
+  });
+
+  document.getElementById('confirm-link').addEventListener('click', function () {
+    var url = window.RVSS_CONFIG.LSTEP_TAG_URL;
+    if (!url) return;
+    // LINE内ブラウザで開く。外部ブラウザへ飛ばすとLステップ側で同一ユーザーとして紐づかない。
+    if (typeof liff !== 'undefined' && liff.openWindow) {
+      liff.openWindow({ url: url, external: false });
+    } else {
+      location.href = url;
+    }
+  });
+})();
+</script>
+</body>
+</html>

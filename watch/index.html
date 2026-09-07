@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>RVSS 説明動画</title>
+<link rel="stylesheet" href="../assets/common.css">
+</head>
+<body>
+<div class="wrap">
+
+  <div id="loading" class="loading">読み込んでいます…</div>
+  <div id="boot-status" class="status" hidden></div>
+
+  <!-- 動画IDが未設定のとき -->
+  <div id="notready" class="done" hidden>
+    <h2>ただいま準備中です</h2>
+    <p>動画の公開までもう少しお待ちください。<br>準備ができ次第、LINEでお知らせします。</p>
+  </div>
+
+  <!-- 視聴期限切れ -->
+  <div id="expired" hidden>
+    <h1>視聴期限が過ぎました</h1>
+    <p class="lead">下のボタンを押すと、もう一度48時間だけご覧いただけます。</p>
+    <button id="reissue" type="button">もう一度見る</button>
+  </div>
+
+  <!-- 本編 -->
+  <div id="watch-area" hidden>
+    <h1>RVSSってどんな団体？</h1>
+    <p class="lead">最後までご覧いただくと、面談のお申し込みに進めます。</p>
+
+    <div class="countdown" id="countdown">
+      <span class="label">視聴期限まで</span>
+      <span class="value" id="cd-value">--:--:--</span>
+    </div>
+
+    <div class="player"><div id="player"></div></div>
+
+    <div class="bar"><i id="bar-fill"></i></div>
+    <p class="note" id="progress-text">再生すると、ここに進み具合が出ます。</p>
+
+    <div id="cta" hidden style="margin-top:24px">
+      <button id="go-mendan" type="button">面談を申し込む</button>
+      <p class="note">ご視聴ありがとうございました。次は面談でお話ししましょう。</p>
+    </div>
+
+    <div id="status" class="status" hidden></div>
+  </div>
+
+</div>
+
+<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+<script src="../config.js"></script>
+<script src="../assets/liff-common.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  var CFG = window.RVSS_CONFIG;
+  var profile = null, src = 'unknown';
+  var player = null, duration = 0, maxPct = 0, ticker = null;
+  var sentMarks = {};          // 25/50/75/100 の節目を1回ずつだけ送る
+  var LS_KEY = 'rvss_watch_started_at';
+
+  /* ---------- 視聴期限（クライアント側で持つ） ----------
+     ★厳格なゲートではない。決定10（2026-08-25）＝期限切れ後は自己再発行を1タップ。
+       狙いは「早く見てもらう」ことなので、端末をまたいだ厳密な管理は要らない。
+       サーバー（採用管理シート）には開始・進捗・完了・再発行を記録する。 */
+  function startedAt() {
+    try { return Number(localStorage.getItem(LS_KEY)) || 0; } catch (e) { return 0; }
+  }
+  function setStartedAt(t) {
+    try { localStorage.setItem(LS_KEY, String(t)); } catch (e) { /* プライベートモード等 */ }
+  }
+  function deadline() {
+    return startedAt() + (CFG.WATCH_DEADLINE_HOURS || 48) * 3600 * 1000;
+  }
+  function isExpired() {
+    var s = startedAt();
+    return s > 0 && Date.now() > deadline();
+  }
+  function renderCountdown() {
+    var left = deadline() - Date.now();
+    var el = document.getElementById('cd-value');
+    var box = document.getElementById('countdown');
+    if (left <= 0) { el.textContent = '00:00:00'; box.classList.add('expired'); return; }
+    var h = Math.floor(left / 3600000);
+    var m = Math.floor((left % 3600000) / 60000);
+    var s = Math.floor((left % 60000) / 1000);
+    el.textContent = String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+  }
+
+  /* ---------- 記録を GAS へ送る ---------- */
+  function report(event, pct) {
+    return RVSS.postToGas({
+      kind: 'watch',
+      event: event,                       // start | progress | done | reissue
+      pct: pct == null ? '' : String(pct),
+      src: src,
+      lineUserId: (profile && profile.userId) || '',
+      lineDisplayName: (profile && profile.displayName) || '',
+      email: ''                           // 視聴時点ではメールを持たない。userID で名寄せする
+    }).catch(function () { /* 記録が落ちても視聴は止めない */ });
+  }
+
+  /* ---------- YouTube ---------- */
+  function loadYouTube() {
+    return new Promise(function (resolve) {
+      if (window.YT && window.YT.Player) return resolve();
+      window.onYouTubeIframeAPIReady = resolve;
+      var s = document.createElement('script');
+      s.src = 'https://www.youtube.com/iframe_api';
+      document.head.appendChild(s);
+    });
+  }
+
+  function onProgressTick() {
+    if (!player || !duration) return;
+    var t = 0;
+    try { t = player.getCurrentTime() || 0; } catch (e) { return; }
+    var pct = Math.min(100, Math.round((t / duration) * 100));
+    if (pct > maxPct) maxPct = pct;
+
+    document.getElementById('bar-fill').style.width = maxPct + '%';
+    document.getElementById('progress-text').textContent =
+      maxPct >= 100 ? '最後までご覧いただきました。' : '進み具合 ' + maxPct + '%';
+
+    [25, 50, 75].forEach(function (mark) {
+      if (maxPct >= mark && !sentMarks[mark]) { sentMarks[mark] = true; report('progress', mark); }
+    });
+    if (maxPct >= 95 && !sentMarks[100]) {
+      sentMarks[100] = true;
+      report('done', 100);
+      RVSS.show('cta');
+    }
+  }
+
+  function buildPlayer() {
+    player = new YT.Player('player', {
+      videoId: CFG.YOUTUBE_ID,
+      playerVars: { playsinline: 1, rel: 0, modestbranding: 1 },
+      events: {
+        onReady: function () {
+          try { duration = player.getDuration() || 0; } catch (e) { duration = 0; }
+        },
+        onStateChange: function (ev) {
+          if (!duration) { try { duration = player.getDuration() || 0; } catch (e) {} }
+          if (ev.data === YT.PlayerState.PLAYING) {
+            if (!ticker) ticker = setInterval(onProgressTick, 3000);
+          } else {
+            if (ticker) { clearInterval(ticker); ticker = null; }
+            onProgressTick();
+          }
+          if (ev.data === YT.PlayerState.ENDED) {
+            maxPct = 100; onProgressTick();
+          }
+        }
+      }
+    });
+  }
+
+  /* ---------- 離脱時に途中の進捗を1回だけ送る ---------- */
+  function flushOnLeave() {
+    if (maxPct > 0 && maxPct < 95 && !sentMarks.leave) {
+      sentMarks.leave = true;
+      report('progress', maxPct);
+    }
+  }
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState === 'hidden') flushOnLeave();
+  });
+  window.addEventListener('pagehide', flushOnLeave);
+
+  /* ---------- 起動 ---------- */
+  RVSS.boot({
+    liffKey: 'watch',
+    onReady: function (p, s) {
+      profile = p; src = s;
+
+      if (!CFG.YOUTUBE_ID) { RVSS.show('notready'); return; }
+
+      if (isExpired()) { RVSS.show('expired'); return; }
+
+      if (!startedAt()) {
+        setStartedAt(Date.now());
+        report('start', 0);
+      }
+
+      RVSS.show('watch-area');
+      renderCountdown();
+      setInterval(renderCountdown, 1000);
+
+      loadYouTube().then(buildPlayer);
+    }
+  });
+
+  document.getElementById('reissue').addEventListener('click', function () {
+    setStartedAt(Date.now());
+    report('reissue', 0);
+    location.reload();
+  });
+
+  document.getElementById('go-mendan').addEventListener('click', function () {
+    var id = (CFG.LIFF_IDS || {}).mendan;
+    if (!id) { RVSS.setStatus('面談の申し込み口がまだ準備中です。LINEでご連絡ください。', 'err'); return; }
+    // 流入元を引き継ぐ（どの経路の人が面談まで来たかを最後まで追う）
+    location.href = 'https://liff.line.me/' + id + '?src=' + encodeURIComponent(src);
+  });
+})();
+</script>
+</body>
+</html>

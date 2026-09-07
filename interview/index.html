@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>RVSS 採用面接の日程調整</title>
+<link rel="stylesheet" href="../assets/common.css">
+</head>
+<body>
+<div class="wrap">
+
+  <div id="loading" class="loading">読み込んでいます…</div>
+  <div id="boot-status" class="status" hidden></div>
+
+  <div id="form-area" hidden>
+    <h1>採用面接の日程調整</h1>
+    <p class="lead">面接の日程をお選びください。3つだけ教えていただければ完了です。</p>
+
+    <div class="field">
+      <label for="name">氏名（ふりがな）<span class="req">必須</span></label>
+      <input type="text" id="name" autocomplete="name" placeholder="やまだ たろう">
+    </div>
+
+    <div class="field">
+      <label for="email">連絡先メールアドレス<span class="req">必須</span></label>
+      <input type="email" id="email" autocomplete="email" inputmode="email" placeholder="example@gmail.com">
+    </div>
+
+    <div class="field">
+      <label for="planDate">面接のご希望日程<span class="req">必須</span></label>
+      <select id="planDate"><option value="">読み込んでいます…</option></select>
+      <p class="note">面接は22:00〜23:00の枠です。オンライン（Zoom）で行います。</p>
+    </div>
+
+    <button id="submit" type="button">この日程で予約する</button>
+    <div id="status" class="status" hidden></div>
+  </div>
+
+  <div id="done" class="done" hidden>
+    <h2>面接のご予約を受け付けました</h2>
+    <p>当日のZoomリンクは、前日までにLINEでお送りします。<br>このページは閉じていただいて大丈夫です。</p>
+  </div>
+
+</div>
+
+<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+<script src="../config.js"></script>
+<script src="../assets/liff-common.js"></script>
+<script>
+(function () {
+  'use strict';
+  var profile = null, src = 'unknown', sending = false;
+
+  RVSS.boot({
+    liffKey: 'interview',
+    onReady: function (p, s) {
+      profile = p; src = s;
+      RVSS.show('form-area');
+      // 日程は「予定」タブの種別＝面接 を読む
+      RVSS.fillDates(document.getElementById('planDate'), '面接')
+        .then(function (n) {
+          if (!n) {
+            RVSS.setStatus('いま予約できる枠がありません。お手数ですがLINEでご連絡ください。', 'err');
+            document.getElementById('submit').disabled = true;
+          }
+        })
+        .catch(function () {
+          RVSS.setStatus('日程の読み込みに失敗しました。開き直すか、LINEでご連絡ください。', 'err');
+          document.getElementById('submit').disabled = true;
+        });
+    }
+  });
+
+  document.getElementById('submit').addEventListener('click', function () {
+    if (sending) return;
+    var name = document.getElementById('name').value.trim();
+    var email = document.getElementById('email').value.trim();
+    var planDate = document.getElementById('planDate').value;
+
+    if (!name) { return RVSS.setStatus('氏名（ふりがな）を入力してください。', 'err'); }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { return RVSS.setStatus('メールアドレスの形式をご確認ください。', 'err'); }
+    if (!planDate) { return RVSS.setStatus('ご希望の日程を選んでください。', 'err'); }
+
+    sending = true;
+    var btn = document.getElementById('submit');
+    btn.disabled = true; btn.textContent = '送信しています…';
+    RVSS.setStatus('送信しています…', '');
+
+    RVSS.postToGas({
+      kind: 'interview',
+      name: name,
+      email: email,
+      interviewDate: planDate,
+      planDate: planDate,
+      src: src,
+      lineUserId: (profile && profile.userId) || '',
+      lineDisplayName: (profile && profile.displayName) || ''
+    }).then(function () {
+      RVSS.hide('form-area');
+      RVSS.show('done');
+    }).catch(function () {
+      sending = false;
+      btn.disabled = false; btn.textContent = 'もう一度送る';
+      RVSS.setStatus('送信を確認できませんでした。もう一度お試しください。それでも進まない場合はLINEでお知らせください。', 'err');
+    });
+  });
+})();
+</script>
+</body>
+</html>

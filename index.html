@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RVSS 採用 LIFF｜設置確認</title>
+<link rel="stylesheet" href="assets/common.css">
+</head>
+<body>
+<div class="wrap">
+  <h1>RVSS 採用 LIFF</h1>
+  <p class="lead">このページが見えていれば GitHub Pages への設置は成功しています。候補者には配りません。</p>
+
+  <div class="field">
+    <label>設定の状態</label>
+    <div id="cfg" class="status"></div>
+  </div>
+
+  <div class="field">
+    <label>日程エンドポイントの疎通</label>
+    <div id="ping" class="status">確認していません</div>
+    <button id="do-ping" type="button" style="margin-top:10px">GASの日程を取ってみる</button>
+  </div>
+
+  <div class="field">
+    <label>各ページ</label>
+    <p class="note">
+      <a href="interview/">① 面接予約</a>　/
+      <a href="mendan/">② 面談予約</a>　/
+      <a href="watch/">③ 視聴</a><br>
+      ※ LINEアプリの外で開くと「読み込みに失敗しました」と出ます。これは正常です（LIFFはLINE内でだけ動きます）。
+    </p>
+  </div>
+</div>
+
+<script src="config.js"></script>
+<script src="assets/liff-common.js"></script>
+<script>
+(function () {
+  var CFG = window.RVSS_CONFIG;
+  var rows = [
+    ['GAS_ENDPOINT', CFG.GAS_ENDPOINT ? '設定済み' : '★未設定'],
+    ['LIFF_ID（面接予約）', CFG.LIFF_IDS.interview || '★未設定'],
+    ['LIFF_ID（面談予約）', CFG.LIFF_IDS.mendan || '★未設定'],
+    ['LIFF_ID（視聴）', CFG.LIFF_IDS.watch || '★未設定'],
+    ['YOUTUBE_ID', CFG.YOUTUBE_ID || '★未設定（視聴ページは「準備中」を出します）'],
+    ['LIFF_TOKEN', CFG.LIFF_TOKEN ? '設定済み' : '空（合言葉なし運用）']
+  ];
+  var box = document.getElementById('cfg');
+  rows.forEach(function (r) {
+    var d = document.createElement('div');
+    d.textContent = r[0] + '： ' + r[1];
+    box.appendChild(d);
+  });
+
+  document.getElementById('do-ping').addEventListener('click', function () {
+    var el = document.getElementById('ping');
+    el.textContent = '問い合わせています…';
+    el.className = 'status';
+    // liff-common の fetchSchedule と同じ JSONP を使う
+    RVSS.fillDates(document.createElement('select'), '')
+      .then(function (n) {
+        el.textContent = '疎通OK。合説の候補日を ' + n + ' 件返しました。';
+        el.className = 'status ok';
+      })
+      .catch(function (e) {
+        el.textContent = '疎通NG（' + (e && e.message ? e.message : 'unknown') + '）。GAS_ENDPOINT とデプロイのアクセス権を確認してください。';
+        el.className = 'status err';
+      });
+  });
+})();
+</script>
+</body>
+</html>

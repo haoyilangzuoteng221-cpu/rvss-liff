@@ -1,0 +1,152 @@
+:root {
+  --fg: #1c1c1e;
+  --fg-sub: #6b6b70;
+  --bg: #ffffff;
+  --line: #e3e3e6;
+  --accent: #06c755;      /* LINE グリーン */
+  --accent-press: #05a648;
+  --err: #c0362c;
+  --ok: #1a7f37;
+  --radius: 12px;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 20px 18px 48px;
+  font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", sans-serif;
+  font-size: 16px;              /* ★16px 未満にしない。iOS が入力時に画面を拡大する */
+  line-height: 1.7;
+  color: var(--fg);
+  background: var(--bg);
+  -webkit-text-size-adjust: 100%;
+}
+
+.wrap { max-width: 520px; margin: 0 auto; }
+
+h1 {
+  font-size: 20px;
+  line-height: 1.5;
+  margin: 0 0 6px;
+}
+
+.lead {
+  margin: 0 0 22px;
+  color: var(--fg-sub);
+  font-size: 14px;
+}
+
+.field { margin-bottom: 18px; }
+
+label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+label .req {
+  color: var(--err);
+  font-weight: 400;
+  margin-left: 4px;
+  font-size: 12px;
+}
+
+input[type="text"],
+input[type="email"],
+select,
+textarea {
+  width: 100%;
+  padding: 12px 13px;
+  font-size: 16px;
+  font-family: inherit;
+  color: var(--fg);
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  appearance: none;
+}
+
+select {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8'><path d='M1 1l5 5 5-5' fill='none' stroke='%236b6b70' stroke-width='1.6'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 36px;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(6, 199, 85, .15);
+}
+
+textarea { min-height: 96px; resize: vertical; }
+
+button {
+  width: 100%;
+  padding: 15px;
+  font-size: 16px;
+  font-weight: 700;
+  font-family: inherit;
+  color: #fff;
+  background: var(--accent);
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+button:active { background: var(--accent-press); }
+button[disabled] { background: #b9bcc0; cursor: default; }
+
+.status {
+  margin: 16px 0 0;
+  padding: 12px 14px;
+  border-radius: var(--radius);
+  font-size: 14px;
+  background: #f2f3f5;
+}
+.status.err { background: #fdecea; color: var(--err); }
+.status.ok  { background: #e8f5ec; color: var(--ok); }
+
+.done { text-align: center; padding: 40px 0; }
+.done h2 { font-size: 19px; margin: 0 0 10px; }
+.done p { color: var(--fg-sub); font-size: 14px; margin: 0; }
+
+.loading { text-align: center; color: var(--fg-sub); padding: 48px 0; font-size: 14px; }
+
+.note {
+  font-size: 12.5px;
+  color: var(--fg-sub);
+  margin-top: 6px;
+  line-height: 1.6;
+}
+
+/* 視聴ページ */
+.player {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #000;
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+.player iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+
+.countdown {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  margin-bottom: 18px;
+}
+.countdown .label { font-size: 13px; color: var(--fg-sub); }
+.countdown .value { font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.countdown.expired .value { color: var(--err); }
+
+.bar { height: 6px; background: #edeef0; border-radius: 999px; overflow: hidden; margin-bottom: 6px; }
+.bar > i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .3s; }
+
+[hidden] { display: none !important; }
