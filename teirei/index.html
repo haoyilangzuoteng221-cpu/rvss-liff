@@ -14,7 +14,7 @@
 
   <div id="form-area" hidden>
     <h1>土曜定例の体験参加</h1>
-    <p class="lead">公式LINEにご登録いただいている方へのご案内です。実際の定例に参加して、RVSSの活動をそのまま見ていただけます。4つだけ教えてください。</p>
+    <p class="lead">公式LINEにご登録いただいている方へのご案内です。実際の定例に参加して、RVSSの活動をそのまま見ていただけます。</p>
 
     <div class="field">
       <label for="name">お名前<span class="req">必須</span></label>
@@ -50,6 +50,16 @@
       </select>
     </div>
 
+    <!-- ★2026-09-09 追加。オコエさん承認済み（LINEグループ 11:24「いいよ」）。
+         「見込みの人が顔出しするなら、既存メンバーの顔出しできない人は本当に無くしたい」（オコエさん 11:29）
+         なので、来る側にも先に約束してもらう。必須チェック。 -->
+    <label class="agree" for="faceOn">
+      <input type="checkbox" id="faceOn">
+      <span>土曜定例への体験参加は、<b>カメラON・顔出しが必須</b>であることを確認しました<span class="req">必須</span></span>
+    </label>
+
+    <p class="note" style="margin:-8px 0 18px">当日は<b>9:10</b>にご入室ください。定例の流れと最低限の規律について、担当からご説明します。</p>
+
     <button id="submit" type="button">この内容で申し込む</button>
     <div id="status" class="status" hidden></div>
   </div>
@@ -57,6 +67,12 @@
   <div id="done" class="done" hidden>
     <h2>お申し込みを受け付けました</h2>
     <p>当日の詳細は、LINEでご連絡します。</p>
+
+    <!-- ★config が空ならボタンごと出さない（空リンクを見せない）。 -->
+    <div id="done-links" class="done-links" hidden>
+      <a id="zoom-link" href="#" target="_blank" rel="noopener" hidden>当日のZoomに入る<small>開始15分前（9:10）にご入室ください</small></a>
+      <a id="cal-link" href="#" target="_blank" rel="noopener" hidden>カレンダーに追加する<small>Googleカレンダーが開きます</small></a>
+    </div>
     <!-- ★mendan と同じ仕掛け。押すとLステップ側で「採用フロー中」タグが付き、広報のシナリオ配信から外れる。
          2026-09-08 の広報戦略定例で「申込が来た人全員にタグを付ける（広報のリマインドと重ならないように）」と決まっている。
          LSTEP_TAG_URL が空のときはボタンごと出さない。 -->
@@ -98,6 +114,11 @@
     }
   });
 
+  // チェックが入ったら枠を緑にする（押せたことが分かるように）
+  document.getElementById('faceOn').addEventListener('change', function () {
+    this.closest('.agree').classList.toggle('on', this.checked);
+  });
+
   document.getElementById('submit').addEventListener('click', function () {
     if (sending) return;
     var name = document.getElementById('name').value.trim();
@@ -105,12 +126,14 @@
     var email = document.getElementById('email').value.trim();
     var planDate = document.getElementById('planDate').value;
     var source = document.getElementById('source').value;
+    var faceOn = document.getElementById('faceOn').checked;
 
     if (!name) { return RVSS.setStatus('お名前を入力してください。', 'err'); }
     if (!school) { return RVSS.setStatus('大学・学年を入力してください。', 'err'); }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { return RVSS.setStatus('メールアドレスの形式をご確認ください。', 'err'); }
     if (!planDate) { return RVSS.setStatus('参加ご希望日を選んでください。', 'err'); }
     if (!source) { return RVSS.setStatus('どこでRVSSを知ったかを選んでください。', 'err'); }
+    if (!faceOn) { return RVSS.setStatus('カメラON・顔出し必須の確認にチェックをお願いします。', 'err'); }
 
     sending = true;
     var btn = document.getElementById('submit');
@@ -124,6 +147,7 @@
       email: email,
       planDate: planDate,
       source: source,
+      faceOn: faceOn ? 'はい' : '',
       src: src,
       lineUserId: (profile && profile.userId) || '',
       lineDisplayName: (profile && profile.displayName) || ''
@@ -131,12 +155,25 @@
       RVSS.hide('form-area');
       RVSS.show('done');
       if (window.RVSS_CONFIG.LSTEP_TAG_URL) RVSS.show('confirm-wrap');
+      showDoneLinks();
     }).catch(function () {
       sending = false;
       btn.disabled = false; btn.textContent = 'もう一度送る';
       RVSS.setStatus('送信を確認できませんでした。もう一度お試しください。それでも進まない場合はLINEでお知らせください。', 'err');
     });
   });
+
+  // Zoom・カレンダーは config に入っているものだけ出す。
+  function showDoneLinks() {
+    var any = false;
+    [['TEIREI_ZOOM_URL', 'zoom-link'], ['TEIREI_CALENDAR_URL', 'cal-link']].forEach(function (pair) {
+      var url = window.RVSS_CONFIG[pair[0]];
+      if (!url) return;
+      var a = document.getElementById(pair[1]);
+      a.href = url; a.hidden = false; any = true;
+    });
+    if (any) RVSS.show('done-links');
+  }
 
   document.getElementById('confirm-link').addEventListener('click', function () {
     var url = window.RVSS_CONFIG.LSTEP_TAG_URL;

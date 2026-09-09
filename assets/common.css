@@ -149,4 +149,36 @@ button[disabled] { background: #b9bcc0; cursor: default; }
 .bar { height: 6px; background: #edeef0; border-radius: 999px; overflow: hidden; margin-bottom: 6px; }
 .bar > i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .3s; }
 
+/* 同意チェック（土曜定例の顔出し必須など） */
+.agree {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  margin-bottom: 18px;
+  cursor: pointer;
+}
+.agree input[type="checkbox"] {
+  width: 20px; height: 20px; margin: 1px 0 0;
+  flex: 0 0 auto; accent-color: var(--accent);
+}
+.agree span { font-size: 14px; line-height: 1.6; }
+.agree.on { border-color: var(--accent); background: #f2fbf5; }
+
+/* 完了画面に出すリンク（Zoom・カレンダー） */
+.done-links { margin-top: 24px; text-align: left; }
+.done-links a {
+  display: block;
+  padding: 13px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  margin-bottom: 10px;
+  color: var(--fg);
+  text-decoration: none;
+  font-size: 14.5px;
+}
+.done-links a small { display: block; color: var(--fg-sub); font-size: 12.5px; margin-top: 3px; }
+
 [hidden] { display: none !important; }
