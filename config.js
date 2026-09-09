@@ -15,9 +15,10 @@ window.RVSS_CONFIG = {
   //   エンドポイントURL＝ https://<ユーザー名>.github.io/rvss-liff/<パス>/
   //   Scope＝profile（openid は不要）／ボット連携＝On（friend_required）
   LIFF_IDS: {
-    interview: '',  // ①面接予約   → /interview/
-    mendan: '',     // ②面談予約   → /mendan/
-    watch: ''       // ③視聴の器   → /watch/
+    interview: '',  // ①面接予約     → /interview/
+    mendan: '',     // ②面談予約     → /mendan/
+    watch: '',      // ③視聴の器     → /watch/
+    teirei: ''      // ④土曜定例の体験参加 → /teirei/（2026-09-08 追加）
   },
 
   // 視聴LIFFに出す動画。YouTube の限定公開ID を入れる（撮影待ち）。

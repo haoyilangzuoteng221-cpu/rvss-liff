@@ -13,6 +13,7 @@ liff/
   interview/index.html   ① 面接予約
   mendan/index.html      ② 面談予約（Bファネルが全員通る唯一の地点）
   watch/index.html       ③ オンデマンド視聴の器
+  teirei/index.html      ④ 土曜定例の体験参加（2026-09-08 追加）
 ```
 
 ---
@@ -36,7 +37,7 @@ git push -u origin main
 Settings → Pages → Source = `main` / root → 保存。
 数分後に `https://haoyilangzuoteng221-cpu.github.io/rvss-liff/` が開く。
 
-### 1-2. LINE Developers で LIFF アプリを3本作る
+### 1-2. LINE Developers で LIFF アプリを4本作る
 
 チャネル **2010676990**（採用の既存チャネル）の LIFF タブから「追加」。
 
@@ -45,8 +46,11 @@ Settings → Pages → Source = `main` / root → 保存。
 | ① | RVSS 面接予約 | `https://<ユーザー名>.github.io/rvss-liff/interview/` | Full |
 | ② | RVSS 面談予約 | `https://<ユーザー名>.github.io/rvss-liff/mendan/` | Full |
 | ③ | RVSS 説明動画 | `https://<ユーザー名>.github.io/rvss-liff/watch/` | Full |
+| **④** | **RVSS 土曜定例の体験参加** | `https://<ユーザー名>.github.io/rvss-liff/teirei/` | Full |
 
-**3本とも共通の設定**
+★**④は 2026-09-08 追加**（`759fb2f8`）。**9/19・9/26 の体験参加をここで受ける。**一斉配信のリンク先になるので、**9/13前後の配信までに発行が要る。**
+
+**4本とも共通の設定**
 - Scope＝**`profile` だけ**（`openid` は要らない。要らない権限を取ると同意画面が長くなる）
 - **ボット連携（friend_required）＝On**
   ∵ Off だと友だちにならずに見て消える人が出て、追いLINE（`e8af2061`）が打てない
