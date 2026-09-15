@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>10/17(土)『REAL ROOKIES』参加申込</title>
+<link rel="stylesheet" href="../assets/common.css">
+</head>
+<body>
+<div class="wrap">
+
+  <div id="loading" class="loading">読み込んでいます…</div>
+  <div id="boot-status" class="status" hidden></div>
+
+  <div id="form-area" hidden>
+
+    <!-- ★リーフレットをそのまま冒頭に置く。何のイベントかを文字で読ませる前に見せる。
+         画像＝assets/rookies-hero.jpg（企画から受領した告知画像を 1200px へ縮小したもの）。 -->
+    <div class="hero">
+      <img src="../assets/rookies-hero.jpg"
+           alt="REAL ROOKIES 集まれ、学生。熱狂の1日で、最高の仲間と企もう。10.17 SAT 10:00-18:00"
+           width="1200" height="675">
+    </div>
+
+    <h1>10/17(土)開催『REAL ROOKIES』参加申込フォーム</h1>
+    <p class="lead">10/17(土)開催の『REAL ROOKIES』への参加申込フォームです。</p>
+
+    <div class="info">
+      <dl>
+        <dt>開催日時</dt>
+        <dd>2026年10/17(土) 10:00〜18:00<br>（＋公式アフター懇親会）</dd>
+        <dt>開催場所</dt>
+        <dd>関東：都内 特設会場<br>関西：京都市内／大阪市内 共創施設</dd>
+      </dl>
+      <p class="info-note">※開催場所の詳細は、確定次第みなさまへ個別にご案内いたします。</p>
+    </div>
+
+    <div class="field">
+      <label for="name">お名前（フルネーム）<span class="req">必須</span></label>
+      <input type="text" id="name" autocomplete="name" placeholder="山田 太郎">
+    </div>
+
+    <div class="field">
+      <label for="school">所属大学<span class="req">必須</span></label>
+      <input type="text" id="school" placeholder="東京理科大学">
+    </div>
+
+    <div class="field">
+      <label for="grade">学年<span class="req">必須</span></label>
+      <select id="grade">
+        <option value="">選んでください</option>
+        <option>学部1年</option>
+        <option>学部2年</option>
+        <option>学部3年</option>
+        <option>学部4年</option>
+        <option>その他</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="phone">電話番号（ハイフンなし）<span class="req">必須</span></label>
+      <input type="tel" id="phone" autocomplete="tel" inputmode="numeric" placeholder="09012345678">
+      <p class="note">当日のご連絡・緊急時のみに使います。</p>
+    </div>
+
+    <div class="field">
+      <label for="area">参加予定エリア<span class="req">必須</span></label>
+      <select id="area">
+        <option value="">選んでください</option>
+        <option>関東</option>
+        <option>関西</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="source">このイベントを知った経路を教えてください<span class="req">必須</span></label>
+      <select id="source">
+        <option value="">選んでください</option>
+        <option>DM／個人LINE</option>
+        <option>Instagramストーリー</option>
+        <option>友人紹介（リファラル）</option>
+        <option>公式LINE</option>
+        <option>その他</option>
+      </select>
+    </div>
+
+    <!-- ★分岐＝「DM／個人LINE」「友人紹介（リファラル）」のときだけ出す。
+         誰がその1人を連れてきたかが分かる唯一の項目なので、出したときは必須にする。 -->
+    <div class="field branch" id="referrer-field" hidden>
+      <label for="referrer">個別連絡をもらったRVSSメンバー、または紹介してくれた友人の名前を教えてください<span class="req">必須</span></label>
+      <input type="text" id="referrer" placeholder="山田 花子">
+    </div>
+
+    <div class="field">
+      <label for="after">イベント終了後の公式懇親会への参加希望<span class="req">必須</span></label>
+      <select id="after">
+        <option value="">選んでください</option>
+        <option>参加する</option>
+        <option>不参加</option>
+        <option>未定</option>
+      </select>
+    </div>
+
+    <button id="submit" type="button">この内容で申し込む</button>
+    <div id="status" class="status" hidden></div>
+  </div>
+
+  <div id="done" class="done" hidden>
+    <h2>ご回答ありがとうございます！</h2>
+    <p>当日お会いできることを楽しみにしています！</p>
+
+    <div class="done-links">
+      <a id="line-link" href="#" target="_blank" rel="noopener" hidden>RVSS公式LINE<small>当日のご案内はこちらから届きます</small></a>
+      <a id="ig-link" href="#" target="_blank" rel="noopener" hidden>運営責任者（平井）Instagram<small>緊急のご連絡はこちらのDMへ</small></a>
+    </div>
+    <p class="note" style="text-align:left">当日迷った場合や、急な体調不良・遅刻等の緊急のご連絡は、上記InstagramのDMまでお願いいたします。</p>
+  </div>
+
+</div>
+
+<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+<script src="../config.js"></script>
+<script src="../assets/liff-common.js"></script>
+<script>
+(function () {
+  'use strict';
+  var profile = null, src = 'unknown', sending = false;
+
+  // 紹介者名を出す経路。★ここを増やすときは要件定義（Notion）側も一緒に直す。
+  var NEEDS_REFERRER = ['DM／個人LINE', '友人紹介（リファラル）'];
+
+  RVSS.boot({
+    liffKey: 'rookies',
+    onReady: function (p, s) {
+      profile = p; src = s;
+      RVSS.show('form-area');
+      // ★日程の読み込みは無い。10/17 の1日だけのイベントなので、
+      //   予定タブを見にいかず、GASが落ちていてもフォームは開ける。
+    }
+  });
+
+  var sourceEl = document.getElementById('source');
+  var referrerField = document.getElementById('referrer-field');
+  sourceEl.addEventListener('change', function () {
+    var need = NEEDS_REFERRER.indexOf(sourceEl.value) >= 0;
+    referrerField.hidden = !need;
+    if (!need) document.getElementById('referrer').value = '';
+  });
+
+  // 電話番号＝数字だけ残す（ハイフン・空白・全角を打たれても通す）。
+  function normalizePhone(raw) {
+    return String(raw || '')
+      .replace(/[０-９]/g, function (c) { return String.fromCharCode(c.charCodeAt(0) - 0xFEE0); })
+      .replace(/[^0-9]/g, '');
+  }
+
+  document.getElementById('submit').addEventListener('click', function () {
+    if (sending) return;
+    var name = document.getElementById('name').value.trim();
+    var school = document.getElementById('school').value.trim();
+    var grade = document.getElementById('grade').value;
+    var phone = normalizePhone(document.getElementById('phone').value);
+    var area = document.getElementById('area').value;
+    var source = sourceEl.value;
+    var referrer = document.getElementById('referrer').value.trim();
+    var after = document.getElementById('after').value;
+    var needReferrer = NEEDS_REFERRER.indexOf(source) >= 0;
+
+    if (!name) { return RVSS.setStatus('お名前を入力してください。', 'err'); }
+    if (!school) { return RVSS.setStatus('所属大学を入力してください。', 'err'); }
+    if (!grade) { return RVSS.setStatus('学年を選んでください。', 'err'); }
+    if (!/^0\d{9,10}$/.test(phone)) { return RVSS.setStatus('電話番号は 0 から始まる10〜11桁の数字でご入力ください（ハイフンなし）。', 'err'); }
+    if (!area) { return RVSS.setStatus('参加予定エリアを選んでください。', 'err'); }
+    if (!source) { return RVSS.setStatus('このイベントを知った経路を選んでください。', 'err'); }
+    if (needReferrer && !referrer) { return RVSS.setStatus('ご連絡をくれたメンバー、または紹介してくれた友人のお名前を入力してください。', 'err'); }
+    if (!after) { return RVSS.setStatus('公式懇親会への参加希望を選んでください。', 'err'); }
+
+    sending = true;
+    var btn = document.getElementById('submit');
+    btn.disabled = true; btn.textContent = '送信しています…';
+    RVSS.setStatus('送信しています…', '');
+
+    RVSS.postToGas({
+      kind: 'rookies',
+      name: name,
+      school: school,
+      grade: grade,
+      phone: phone,
+      area: area,
+      source: source,
+      referrer: needReferrer ? referrer : '',
+      after: after,
+      src: src,
+      lineUserId: (profile && profile.userId) || '',
+      lineDisplayName: (profile && profile.displayName) || ''
+    }).then(function () {
+      RVSS.hide('form-area');
+      RVSS.show('done');
+      showDoneLinks();
+      window.scrollTo(0, 0);
+    }).catch(function () {
+      sending = false;
+      btn.disabled = false; btn.textContent = 'もう一度送る';
+      RVSS.setStatus('送信を確認できませんでした。もう一度お試しください。それでも進まない場合は公式LINEでお知らせください。', 'err');
+    });
+  });
+
+  // 完了画面の連絡先は config に入っているものだけ出す（空リンクを見せない）。
+  function showDoneLinks() {
+    [['ROOKIES_LINE_URL', 'line-link'], ['ROOKIES_IG_URL', 'ig-link']].forEach(function (pair) {
+      var url = window.RVSS_CONFIG[pair[0]];
+      if (!url) return;
+      var a = document.getElementById(pair[1]);
+      a.href = url; a.hidden = false;
+    });
+  }
+})();
+</script>
+</body>
+</html>

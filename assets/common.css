@@ -55,6 +55,7 @@ label .req {
 
 input[type="text"],
 input[type="email"],
+input[type="tel"],
 select,
 textarea {
   width: 100%;
@@ -182,3 +183,32 @@ button[disabled] { background: #b9bcc0; cursor: default; }
 .done-links a small { display: block; color: var(--fg-sub); font-size: 12.5px; margin-top: 3px; }
 
 [hidden] { display: none !important; }
+
+/* ============================================================
+ * イベント申込（REAL ROOKIES 10/17）
+ *   ★ヘッダー画像はリーフレットそのもの。何のイベントかを文字で読ませる前に見せる。
+ * ========================================================== */
+.hero {
+  /* body の padding（20px 18px）を打ち消して、画像だけ画面の端まで出す */
+  margin: -20px -18px 18px;
+}
+.hero img { display: block; width: 100%; height: auto; }
+
+.info {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 14px 15px;
+  margin: 0 0 22px;
+  font-size: 14px;
+}
+.info dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 7px 12px; }
+.info dt { color: var(--fg-sub); font-size: 13px; white-space: nowrap; }
+.info dd { margin: 0; }
+.info .info-note { margin: 10px 0 0; font-size: 12.5px; color: var(--fg-sub); line-height: 1.6; }
+
+/* 分岐で出す項目（紹介者名）。出入りが分かるように左に線を出す。 */
+.branch {
+  border-left: 3px solid var(--accent);
+  padding-left: 12px;
+  margin-left: 1px;
+}

@@ -18,7 +18,8 @@ window.RVSS_CONFIG = {
     interview: '',  // ①面接予約     → /interview/
     mendan: '',     // ②面談予約     → /mendan/
     watch: '',      // ③視聴の器     → /watch/
-    teirei: ''      // ④土曜定例の体験参加 → /teirei/（2026-09-08 追加）
+    teirei: '',     // ④土曜定例の体験参加 → /teirei/（2026-09-08 追加）
+    rookies: ''     // ⑤REAL ROOKIES 10/17 参加申込 → /rookies/（2026-09-15 追加）
   },
 
   // 視聴LIFFに出す動画。YouTube の限定公開ID を入れる（撮影待ち）。
@@ -49,5 +50,13 @@ window.RVSS_CONFIG = {
 
   // Googleカレンダーの追加リンク（任意）。空なら出さない。
   //   例＝https://calendar.google.com/calendar/render?action=TEMPLATE&text=...&dates=...
-  TEIREI_CALENDAR_URL: ''
+  TEIREI_CALENDAR_URL: '',
+
+  // ★REAL ROOKIES（10/17）の申込完了画面に出す連絡先。
+  //   出どころ＝平井さんの要件定義（Notion「『REAL ROOKIES』参加申込フォーム（外部向け）要件定義書」）。
+  //   ⚠ 空ならボタンを出さない（空リンクを見せない）。
+  //   ⚠ 9/14 PM定例では「平井さんの個人LINE＋Instagram」だったが、
+  //     9/15 の要件定義では「RVSS公式LINE＋Instagram」に変わっている。要件定義のほうを採った。
+  ROOKIES_LINE_URL: 'https://line.me/R/ti/p/@392huviq',
+  ROOKIES_IG_URL: 'https://www.instagram.com/k_kai27/'
 };
