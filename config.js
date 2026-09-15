@@ -14,12 +14,15 @@ window.RVSS_CONFIG = {
   //   3本とも同じチャネル（2010676990）配下で作る。
   //   エンドポイントURL＝ https://<ユーザー名>.github.io/rvss-liff/<パス>/
   //   Scope＝profile（openid は不要）／ボット連携＝On（friend_required）
+  //   ★2026-09-15｜チャネルは新設した「RVSS 採用フォーム」(2011618269)。
+  //     既存の 2010676990（RVSS 合説フォーム）は守屋に権限が無く触れないため。
+  //     プロバイダーは公式LINEの Messaging API と同じ「西原 浩貴」配下なのでボット連携が効く。
   LIFF_IDS: {
-    interview: '',  // ①面接予約     → /interview/
-    mendan: '',     // ②面談予約     → /mendan/
-    watch: '',      // ③視聴の器     → /watch/
-    teirei: '',     // ④土曜定例の体験参加 → /teirei/（2026-09-08 追加）
-    rookies: ''     // ⑤REAL ROOKIES 10/17 参加申込 → /rookies/（2026-09-15 追加）
+    interview: '2011618269-t2d8nrIF',  // ①面接予約     → /interview/
+    mendan: '2011618269-f4IcRbH3',     // ②面談予約     → /mendan/
+    watch: '',                         // ③視聴の器     → /watch/（発行待ち）
+    teirei: '',                        // ④土曜定例の体験参加 → /teirei/（発行待ち）
+    rookies: '2011618269-ENnQWBeh'     // ⑤REAL ROOKIES 10/17 参加申込 → /rookies/
   },
 
   // 視聴LIFFに出す動画。YouTube の限定公開ID を入れる（撮影待ち）。
