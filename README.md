@@ -13,8 +13,8 @@ liff/
   interview/index.html   ① 面接予約
   mendan/index.html      ② 面談予約（Bファネルが全員通る唯一の地点）
   watch/index.html       ③ オンデマンド視聴の器
-  teirei/index.html      ④ 土曜定例の体験参加（2026-09-08 追加）
-  rookies/index.html     ⑤ REAL ROOKIES 10/17 参加申込（2026-09-15 追加）
+  rookies/index.html     ④ REAL ROOKIES 10/17 参加申込（2026-09-15 追加）
+  ※土曜定例の体験参加は情シス版が本番（下記「削除した④」）。ここには置かない。
 ```
 
 ---
@@ -53,10 +53,21 @@ Settings → Pages → Source = `main` / root → 保存。
 | ① | RVSS 面接予約 | `2011618269-t2d8nrIF` | `https://liff.line.me/2011618269-t2d8nrIF` |
 | ② | RVSS 面談予約 | `2011618269-f4IcRbH3` | `https://liff.line.me/2011618269-f4IcRbH3` |
 | ③ | RVSS 説明動画の視聴 | `2011618269-KAXaH1SR` | `https://liff.line.me/2011618269-KAXaH1SR` |
-| ④ | RVSS 土曜定例の体験参加 | `2011618269-iaNe966R` | `https://liff.line.me/2011618269-iaNe966R` |
-| ⑤ | REAL ROOKIES 10/17 参加申込 | `2011618269-ENnQWBeh` | `https://liff.line.me/2011618269-ENnQWBeh` |
+| ④ | REAL ROOKIES 10/17 参加申込 | `2011618269-ENnQWBeh` | `https://liff.line.me/2011618269-ENnQWBeh` |
+| ~~廃~~ | ~~RVSS 土曜定例の体験参加~~ | ~~`2011618269-iaNe966R`~~ | **配らない**（下記「削除した④」） |
 
-**5本とも サイズ Full ／ Scope `profile` のみ ／ 友だち追加オプション On (Normal)。**
+**4本とも サイズ Full ／ Scope `profile` のみ ／ 友だち追加オプション On (Normal)。**
+
+### ★削除した④｜土曜定例の体験参加（2026-09-16）
+
+**土曜定例の体験参加は情シス版が本番＝`https://rvss-dx-ten.vercel.app/liff/saturday`。**
+2026-09-11 14:57 に井上さん（情シス）が #335_公式line連携 で本番反映を報告しており、
+**9/15 時点で実申込3件**（結城さん 9/26・髙橋さん 9/19・三木さん 9/19）が採用管理シートの
+`土曜定例申込_LIFF受` タブに入っている。守屋も 9/15 20:38 に「申込、2件確認できたので問題ないです」と返答済み。
+
+∴ このリポジトリの `teirei/` は**重複**だったので削除した（履歴には残る）。
+発行済みの LIFF アプリ `2011618269-iaNe966R` は**配らない**（LINE Developers 側の削除は手作業）。
+**土曜定例以外のLIFFは採用側で作ってよい**（2026-09-16 守屋判断）。
 
 ⚠ **チャネルの公開は元に戻せない**（「開発中」へ戻すにはチャネルを削除して作り直す）。
 ⚠ **`2010676990` 側の情シス版LIFF3本（合説申込・ES提出・面接予約）はそのまま生きている。**止めるかどうかは `e481aa3f` の判断。
@@ -72,14 +83,11 @@ Settings → Pages → Source = `main` / root → 保存。
 | ① | RVSS 面接予約 | `https://<ユーザー名>.github.io/rvss-liff/interview/` | Full |
 | ② | RVSS 面談予約 | `https://<ユーザー名>.github.io/rvss-liff/mendan/` | Full |
 | ③ | RVSS 説明動画 | `https://<ユーザー名>.github.io/rvss-liff/watch/` | Full |
-| **④** | **RVSS 土曜定例の体験参加** | `https://<ユーザー名>.github.io/rvss-liff/teirei/` | Full |
-| **⑤** | **REAL ROOKIES 10/17 参加申込** | `https://<ユーザー名>.github.io/rvss-liff/rookies/` | Full |
+| **④** | **REAL ROOKIES 10/17 参加申込** | `https://<ユーザー名>.github.io/rvss-liff/rookies/` | Full |
 
-★**④は 2026-09-08 追加**（`759fb2f8`）。**9/19・9/26 の体験参加をここで受ける。**一斉配信のリンク先になるので、**9/13前後の配信までに発行が要る。**
+★**④は 2026-09-15 追加**（9/14 PM定例「入口＝LIFFの申込フォーム。作成は守屋。9/15中に完成させ、採用管理シートにデータが落ちるところまで通す」）。
 
-★**⑤は 2026-09-15 追加**（9/14 PM定例「入口＝LIFFの申込フォーム。作成は守屋。9/15中に完成させ、採用管理シートにデータが落ちるところまで通す」）。
-
-**5本とも共通の設定**
+**4本とも共通の設定**
 - Scope＝**`profile` だけ**（`openid` は要らない。要らない権限を取ると同意画面が長くなる）
 - **ボット連携（friend_required）＝On**
   ∵ Off だと友だちにならずに見て消える人が出て、追いLINE（`e8af2061`）が打てない

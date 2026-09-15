@@ -21,8 +21,11 @@ window.RVSS_CONFIG = {
     interview: '2011618269-t2d8nrIF',  // ①面接予約     → /interview/
     mendan: '2011618269-f4IcRbH3',     // ②面談予約     → /mendan/
     watch: '2011618269-KAXaH1SR',      // ③視聴の器     → /watch/
-    teirei: '2011618269-iaNe966R',     // ④土曜定例の体験参加 → /teirei/
-    rookies: '2011618269-ENnQWBeh'     // ⑤REAL ROOKIES 10/17 参加申込 → /rookies/
+    rookies: '2011618269-ENnQWBeh'     // ④REAL ROOKIES 10/17 参加申込 → /rookies/
+    // ⚠ 土曜定例（体験参加）はここに置かない。情シス版が本番＝
+    //   https://rvss-dx-ten.vercel.app/liff/saturday（2026-09-11 に井上さんが本番反映・
+    //   9/15 時点で実申込3件が『土曜定例申込_LIFF受』に入っている）。
+    //   こちらで発行した 2011618269-iaNe966R は重複なので配らない（2026-09-16 守屋判断）。
   },
 
   // 視聴LIFFに出す動画。YouTube の限定公開ID を入れる（撮影待ち）。
@@ -45,15 +48,9 @@ window.RVSS_CONFIG = {
   //     （広報のシナリオを短くして除外タグ自体を要らなくする）で、これはつなぎ。
   LSTEP_TAG_URL: '',
 
-  // ★土曜定例（全体定例）の当日リンク。申込完了画面に出す。
-  //   2026-09-09 に守屋が #335 で情シスへ依頼した「応募完了後にzoomリンクを表示」の、巻き取り版の受け皿。
-  //   ⚠ 空なら完了画面にボタンを出さない（空リンクを見せない）。
-  //   ⚠ 合説のZoomとは別物。全体定例のZoom URLを貼ること。
-  TEIREI_ZOOM_URL: '',
-
-  // Googleカレンダーの追加リンク（任意）。空なら出さない。
-  //   例＝https://calendar.google.com/calendar/render?action=TEMPLATE&text=...&dates=...
-  TEIREI_CALENDAR_URL: '',
+  // ★TEIREI_ZOOM_URL / TEIREI_CALENDAR_URL は 2026-09-16 に削除した。
+  //   土曜定例の体験参加は情シス版（rvss-dx-ten.vercel.app/liff/saturday）が本番で、
+  //   完了画面のZoom・カレンダー表示もそちらが持っている。
 
   // ★REAL ROOKIES（10/17）の申込完了画面に出す連絡先。
   //   出どころ＝平井さんの要件定義（Notion「『REAL ROOKIES』参加申込フォーム（外部向け）要件定義書」）。
