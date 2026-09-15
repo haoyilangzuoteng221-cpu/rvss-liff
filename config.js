@@ -20,8 +20,8 @@ window.RVSS_CONFIG = {
   LIFF_IDS: {
     interview: '2011618269-t2d8nrIF',  // ①面接予約     → /interview/
     mendan: '2011618269-f4IcRbH3',     // ②面談予約     → /mendan/
-    watch: '',                         // ③視聴の器     → /watch/（発行待ち）
-    teirei: '',                        // ④土曜定例の体験参加 → /teirei/（発行待ち）
+    watch: '2011618269-KAXaH1SR',      // ③視聴の器     → /watch/
+    teirei: '2011618269-iaNe966R',     // ④土曜定例の体験参加 → /teirei/
     rookies: '2011618269-ENnQWBeh'     // ⑤REAL ROOKIES 10/17 参加申込 → /rookies/
   },
 
