@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>RVSS オンライン交流会のお申し込み</title>
+<link rel="stylesheet" href="../assets/common.css">
+<style>
+  /* 日付ごとに時刻ボタンを並べる。20分刻みで5日先まで（最大100枠ほど）出るので、日付を横に送って選ぶ */
+  .days { display: flex; gap: 8px; overflow-x: auto; padding: 4px 0 10px; -webkit-overflow-scrolling: touch; }
+  .days button { flex: 0 0 auto; width: auto; padding: 10px 14px; margin: 0; font-size: 15px;
+                 background: #fff; color: #333; border: 1px solid #ccc; border-radius: 999px; }
+  .days button.on { background: #06c755; color: #fff; border-color: #06c755; }
+  .times { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .times button { margin: 0; padding: 12px 0; font-size: 16px; background: #fff; color: #333;
+                  border: 1px solid #ccc; border-radius: 10px; }
+  .times button.on { background: #06c755; color: #fff; border-color: #06c755; }
+  .picked { margin-top: 10px; font-weight: bold; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div id="loading" class="loading">読み込んでいます…</div>
+  <div id="boot-status" class="status" hidden></div>
+
+  <div id="form-area" hidden>
+    <h1 id="title">オンライン交流会のお申し込み</h1>
+    <p class="lead">RVSSのメンバーと20分、Zoomで直接話せる場です。都合のよい時間を選んでください。</p>
+
+    <div class="field">
+      <label>ご希望の日時<span class="req">必須</span></label>
+      <div id="days" class="days"></div>
+      <div id="times" class="times"></div>
+      <p id="picked" class="picked" hidden></p>
+      <p id="noslot" class="note" hidden>いまお選びいただける時間がありません。時間をおいて開き直してください。</p>
+    </div>
+
+    <div class="field">
+      <label for="name">お名前<span class="req">必須</span></label>
+      <input type="text" id="name" autocomplete="name" placeholder="山田 太郎">
+    </div>
+
+    <div class="field">
+      <label for="email">メールアドレス<span class="req">必須</span></label>
+      <input type="email" id="email" autocomplete="email" inputmode="email" placeholder="example@gmail.com">
+    </div>
+
+    <div class="field">
+      <label for="school">大学・学年<span class="req">必須</span></label>
+      <input type="text" id="school" placeholder="〇〇大学 〇〇学部 2年">
+    </div>
+
+    <button id="submit" type="button">この日時で申し込む</button>
+    <div id="status" class="status" hidden></div>
+  </div>
+
+  <div id="done" class="done" hidden>
+    <h2>お申し込みを受け付けました</h2>
+    <p id="done-when"></p>
+    <p>確認のメッセージをLINEでお送りします。開始の2時間前にも、参加リンクをLINEでお知らせします。</p>
+  </div>
+
+</div>
+
+<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+<script src="../config.js"></script>
+<script src="../assets/liff-common.js"></script>
+<script>
+(function () {
+  'use strict';
+  var CFG = window.RVSS_CONFIG;
+  var KIND = '交流会';
+  var profile = null, src = 'unknown', sending = false;
+  var items = [], picked = null, day = null;
+
+  var NAME = CFG.KOURYU_NAME || 'オンライン交流会';
+  document.title = 'RVSS ' + NAME + 'のお申し込み';
+  document.getElementById('title').textContent = NAME + 'のお申し込み';
+
+  /* GAS の doGet（?kind=交流会）から、いま申し込める枠を取る。
+     ★枠は守屋のカレンダーの空きから GAS が計算する（開始12時間前まで・1枠に何人でも）。 */
+  function load() {
+    return new Promise(function (resolve, reject) {
+      var cb = '__rvssKouryu' + Date.now();
+      var s = document.createElement('script');
+      var timer = setTimeout(function () { done(); reject(new Error('timeout')); }, 15000);
+      function done() { clearTimeout(timer); try { delete window[cb]; } catch (e) {} if (s.parentNode) s.parentNode.removeChild(s); }
+      window[cb] = function (j) { done(); resolve((j && j.items) || []); };
+      s.src = CFG.GAS_ENDPOINT + '?callback=' + cb + '&kind=' + encodeURIComponent(KIND);
+      s.onerror = function () { done(); reject(new Error('network')); };
+      document.head.appendChild(s);
+    });
+  }
+
+  function render() {
+    var daysEl = document.getElementById('days');
+    var timesEl = document.getElementById('times');
+    daysEl.innerHTML = ''; timesEl.innerHTML = '';
+    if (!items.length) { RVSS.show('noslot'); return; }
+    RVSS.hide('noslot');
+
+    var order = [], byDay = {};
+    items.forEach(function (it) {
+      if (!byDay[it.date]) { byDay[it.date] = []; order.push(it.date); }
+      byDay[it.date].push(it);
+    });
+    if (!day || !byDay[day]) day = order[0];
+
+    order.forEach(function (d) {
+      var b = document.createElement('button');
+      b.type = 'button'; b.textContent = byDay[d][0].dateLabel;
+      if (d === day) b.className = 'on';
+      b.addEventListener('click', function () { day = d; render(); });
+      daysEl.appendChild(b);
+    });
+    byDay[day].forEach(function (it) {
+      var b = document.createElement('button');
+      b.type = 'button'; b.textContent = it.time;
+      if (picked && picked.value === it.value) b.className = 'on';
+      b.addEventListener('click', function () {
+        picked = it;
+        var p = document.getElementById('picked');
+        p.textContent = '選択中：' + it.label;
+        p.hidden = false;
+        render();
+      });
+      timesEl.appendChild(b);
+    });
+  }
+
+  RVSS.boot({
+    liffKey: 'kouryu',
+    onReady: function (p, s) {
+      profile = p; src = s;
+      RVSS.show('form-area');
+      load().then(function (list) { items = list; render(); })
+        .catch(function () { RVSS.setStatus('日時の読み込みに失敗しました。LINEアプリから開き直してください。', 'err'); });
+    }
+  });
+
+  document.getElementById('submit').addEventListener('click', function () {
+    if (sending) return;
+    var name = document.getElementById('name').value.trim();
+    var email = document.getElementById('email').value.trim();
+    var school = document.getElementById('school').value.trim();
+    if (!picked) { return RVSS.setStatus('ご希望の日時を選んでください。', 'err'); }
+    if (!name) { return RVSS.setStatus('お名前を入力してください。', 'err'); }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { return RVSS.setStatus('メールアドレスの形式をご確認ください。', 'err'); }
+    if (!school) { return RVSS.setStatus('大学・学年を入力してください。', 'err'); }
+
+    sending = true;
+    var btn = document.getElementById('submit');
+    btn.disabled = true; btn.textContent = '送信しています…';
+    RVSS.setStatus('空きを確認しています…', '');
+
+    // ★送信の結果は画面から読めない（GAS は CORS を返さない＝liff-common.js の決めごと1）。
+    //   ∴ 送る直前にもう一度枠を取り直し、選んだ枠がまだあるかをこちらで確かめる。
+    load().then(function (list) {
+      items = list;
+      var still = list.some(function (it) { return it.value === picked.value; });
+      if (!still) {
+        sending = false; btn.disabled = false; btn.textContent = 'この日時で申し込む';
+        picked = null; document.getElementById('picked').hidden = true; render();
+        return RVSS.setStatus('選んだ時間は締め切られたか、埋まりました。別の時間を選んでください。', 'err');
+      }
+      RVSS.setStatus('送信しています…', '');
+      return RVSS.postToGas({
+        kind: 'kouryu',
+        name: name,
+        email: email,
+        school: school,
+        planDate: picked.value,
+        src: src,
+        lineUserId: (profile && profile.userId) || '',
+        lineDisplayName: (profile && profile.displayName) || ''
+      }).then(function () {
+        RVSS.hide('form-area');
+        document.getElementById('done-when').textContent = picked.label + '（20分・Zoom）';
+        RVSS.show('done');
+      });
+    }).catch(function () {
+      sending = false;
+      btn.disabled = false; btn.textContent = 'もう一度送る';
+      RVSS.setStatus('送信を確認できませんでした。もう一度お試しください。それでも進まない場合はLINEでお知らせください。', 'err');
+    });
+  });
+})();
+</script>
+</body>
+</html>

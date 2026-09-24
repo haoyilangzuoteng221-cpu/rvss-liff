@@ -21,12 +21,19 @@ window.RVSS_CONFIG = {
     interview: '2011618269-t2d8nrIF',  // ①面接予約     → /interview/
     mendan: '2011618269-f4IcRbH3',     // ②面談予約     → /mendan/
     watch: '2011618269-KAXaH1SR',      // ③視聴の器     → /watch/
-    rookies: '2011618269-ENnQWBeh'     // ④REAL ROOKIES 10/17 参加申込 → /rookies/
+    rookies: '2011618269-ENnQWBeh',    // ④REAL ROOKIES 10/17 参加申込 → /rookies/
+    // ⑤オンライン交流会の予約 → /kouryu/（2026-09-24）
+    //   ★配っていなかった旧・土曜定例用の ID を転用する。LINE Developers でエンドポイントURLを /kouryu/ へ変える（守屋）
+    kouryu: '2011618269-iaNe966R'
     // ⚠ 土曜定例（体験参加）はここに置かない。情シス版が本番＝
     //   https://rvss-dx-ten.vercel.app/liff/saturday（2026-09-11 に井上さんが本番反映・
     //   9/15 時点で実申込3件が『土曜定例申込_LIFF受』に入っている）。
     //   こちらで発行した 2011618269-iaNe966R は重複なので配らない（2026-09-16 守屋判断）。
+    //   ★2026-09-24 この ID は交流会（kouryu）へ転用した。
   },
+
+  // 交流会の名称。★未確定（Adness dafc3ae2）。決まったらここと GAS の KOURYU.PUBLIC_NAME を差し替える
+  KOURYU_NAME: 'オンライン交流会',
 
   // 視聴LIFFに出す動画。YouTube の限定公開ID を入れる（撮影待ち）。
   // 入るまでは watch ページが「準備中」を出して止まる（空のプレイヤーを見せない）。

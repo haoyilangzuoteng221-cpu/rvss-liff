@@ -54,7 +54,10 @@ Settings → Pages → Source = `main` / root → 保存。
 | ② | RVSS 面談予約 | `2011618269-f4IcRbH3` | `https://liff.line.me/2011618269-f4IcRbH3` |
 | ③ | RVSS 説明動画の視聴 | `2011618269-KAXaH1SR` | `https://liff.line.me/2011618269-KAXaH1SR` |
 | ④ | REAL ROOKIES 10/17 参加申込 | `2011618269-ENnQWBeh` | `https://liff.line.me/2011618269-ENnQWBeh` |
-| ~~廃~~ | ~~RVSS 土曜定例の体験参加~~ | ~~`2011618269-iaNe966R`~~ | **配らない**（下記「削除した④」） |
+| ⑤ | オンライン交流会の予約（★2026-09-24 旧・土曜定例の ID を転用） | `2011618269-iaNe966R` | `https://liff.line.me/2011618269-iaNe966R` |
+
+★⑤は LINE Developers でエンドポイントURLを `https://haoyilangzuoteng221-cpu.github.io/rvss-liff/kouryu/` へ変えてから配る。
+枠は守屋のカレンダーの空きから GAS が計算する（全曜日17:00〜23:00・20分刻み・開始12時間前まで・1枠に何人でも）。仕組みは GAS の `交流会_20260923.js` の冒頭。
 
 **4本とも サイズ Full ／ Scope `profile` のみ ／ 友だち追加オプション On (Normal)。**
 
