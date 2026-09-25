@@ -35,9 +35,9 @@ window.RVSS_CONFIG = {
   // 交流会の名称。★2026-09-25 守屋確定（Adness dafc3ae2）。変えるときは GAS の KOURYU.PUBLIC_NAME も同時に
   KOURYU_NAME: '現役メンバーに聞ける20分座談会',
 
-  // 視聴LIFFに出す動画。YouTube の限定公開ID を入れる（撮影待ち）。
+  // 視聴LIFFに出す動画。YouTube の限定公開ID。
   // 入るまでは watch ページが「準備中」を出して止まる（空のプレイヤーを見せない）。
-  YOUTUBE_ID: '',
+  YOUTUBE_ID: 'yrXmfHOhBwo',   // 2026-09-26 オンデマンド v5（チャンネル RVSS・限定公開・埋め込み可）
 
   // 視聴期限（時間）。決定10（2026-08-25）＝48時間。
   WATCH_DEADLINE_HOURS: 48,
