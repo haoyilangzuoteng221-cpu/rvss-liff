@@ -37,8 +37,16 @@
   </div>
 
   <div id="done" class="done" hidden>
-    <h2>カジュアル面談のご予約を受け付けました</h2>
-    <p>当日のZoomリンクは、前日までにLINEでお送りします。<br>このページは閉じていただいて大丈夫です。</p>
+    <h2>カジュアル面談の<br>ご予約を受け付けました</h2>
+    <p id="done-when"></p>
+    <!-- ★2026-09-25 守屋＝申込が終わったら「カレンダー追加」と「Zoom」の2つのリンクを出す（合説の申込後と同じ形）。
+         Zoom の URL は公開リポジトリに置かず、日程と一緒に GAS（doGet kind=面接 の zoom）から受け取る。
+         取れなかったときはボタンごと出さず、下の一文で LINE の案内に寄せる（押せないボタンを見せない）。 -->
+    <div class="done-links">
+      <a id="cal-link" href="#" hidden>📅 Googleカレンダーに追加する<small>日時とZoomのURLが予定に入ります</small></a>
+      <a id="zoom-link" href="#" hidden>💻 当日のZoomを開く<small>時間になったらここから入ってください</small></a>
+    </div>
+    <p id="done-note">当日のZoomリンクは、前日までにLINEでお送りします。<br>このページは閉じていただいて大丈夫です。</p>
   </div>
 
 </div>
@@ -71,6 +79,38 @@
     }
   });
 
+  /* 完了画面の2つのリンク。選んだ枠（"9/28(月) 22:00〜23:00"＋date=2026-09-28）から日本時間で予定を組む。 */
+  function showDoneLinks(planDate) {
+    var sch = RVSS.lastSchedule || {};
+    var item = (sch.items || []).filter(function (x) { return x.value === planDate; })[0];
+    var zoom = /^https:\/\/[a-z0-9.-]*zoom\.us\//i.test(sch.zoom || '') ? sch.zoom : '';
+    document.getElementById('done-when').textContent = planDate + '（オンライン・Zoom）';
+    var m = item && item.date && /(\d{1,2}):(\d{2})\s*[〜~～-]\s*(\d{1,2}):(\d{2})/.exec(item.label || item.value);
+    if (m) {
+      var ymd = item.date.replace(/-/g, '');
+      var hm = function (h, mi) { return ('0' + h).slice(-2) + mi + '00'; };
+      var cal = 'https://calendar.google.com/calendar/render?action=TEMPLATE'
+        + '&text=' + encodeURIComponent('RVSS カジュアル面談')
+        + '&dates=' + ymd + 'T' + hm(m[1], m[2]) + '/' + ymd + 'T' + hm(m[3], m[4])
+        + '&ctz=Asia%2FTokyo'
+        + '&details=' + encodeURIComponent('RVSSのメンバーとオンラインで話すカジュアル面談です。' + (zoom ? '\nZoom: ' + zoom : ''))
+        + (zoom ? '&location=' + encodeURIComponent(zoom) : '');
+      linkOut('cal-link', cal);
+    }
+    if (zoom) {
+      linkOut('zoom-link', zoom);
+      document.getElementById('done-note').innerHTML = '当日は上のZoomから入ってください。<br>このページは閉じていただいて大丈夫です。';
+    }
+  }
+  // LINE の中のブラウザではなく、端末の既定ブラウザ（Zoom はアプリ）で開く
+  function linkOut(id, url) {
+    var a = document.getElementById(id);
+    a.href = url; a.target = '_blank'; a.rel = 'noopener'; a.hidden = false;
+    a.addEventListener('click', function (e) {
+      if (window.liff && liff.isInClient && liff.isInClient()) { e.preventDefault(); liff.openWindow({ url: url, external: true }); }
+    });
+  }
+
   document.getElementById('submit').addEventListener('click', function () {
     if (sending) return;
     var name = document.getElementById('name').value.trim();
@@ -97,6 +137,7 @@
       lineDisplayName: (profile && profile.displayName) || ''
     }).then(function () {
       RVSS.hide('form-area');
+      showDoneLinks(planDate);
       RVSS.show('done');
     }).catch(function () {
       sending = false;

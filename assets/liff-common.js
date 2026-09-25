@@ -94,6 +94,7 @@
    */
   function fillDates(sel, kindFilter) {
     return fetchSchedule(kindFilter).then(function (j) {
+      global.RVSS.lastSchedule = j;       // 完了画面が選んだ枠の日付や Zoom を引けるように残す（2026-09-25）
       var items = j.items || [];
       // items が空でも dates（表示文字列だけ）があれば使う（旧レスポンス互換）
       if (!items.length && !kindFilter && (j.dates || []).length) {
