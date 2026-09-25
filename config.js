@@ -32,8 +32,8 @@ window.RVSS_CONFIG = {
     //   ★2026-09-24 この ID は交流会（kouryu）へ転用した。
   },
 
-  // 交流会の名称。★未確定（Adness dafc3ae2）。決まったらここと GAS の KOURYU.PUBLIC_NAME を差し替える
-  KOURYU_NAME: 'オンライン交流会',
+  // 交流会の名称。★2026-09-25 守屋確定（Adness dafc3ae2）。変えるときは GAS の KOURYU.PUBLIC_NAME も同時に
+  KOURYU_NAME: '現役メンバーに聞ける20分座談会',
 
   // 視聴LIFFに出す動画。YouTube の限定公開ID を入れる（撮影待ち）。
   // 入るまでは watch ページが「準備中」を出して止まる（空のプレイヤーを見せない）。

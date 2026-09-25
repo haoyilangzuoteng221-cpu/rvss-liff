@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>RVSS オンライン交流会のお申し込み</title>
+<title>RVSS 現役メンバーに聞ける20分座談会のお申し込み</title>
 <link rel="stylesheet" href="../assets/common.css">
 <style>
   /* 日付ごとに時刻ボタンを並べる。20分刻みで5日先まで（最大100枠ほど）出るので、日付を横に送って選ぶ */
@@ -25,7 +25,7 @@
   <div id="boot-status" class="status" hidden></div>
 
   <div id="form-area" hidden>
-    <h1 id="title">オンライン交流会のお申し込み</h1>
+    <h1 id="title">現役メンバーに聞ける20分座談会のお申し込み</h1>
     <p class="lead">RVSSのメンバーと20分、Zoomで直接話せる場です。都合のよい時間を選んでください。</p>
 
     <div class="field">
@@ -74,7 +74,7 @@
   var profile = null, src = 'unknown', sending = false;
   var items = [], picked = null, day = null;
 
-  var NAME = CFG.KOURYU_NAME || 'オンライン交流会';
+  var NAME = CFG.KOURYU_NAME || '現役メンバーに聞ける20分座談会';
   document.title = 'RVSS ' + NAME + 'のお申し込み';
   document.getElementById('title').textContent = NAME + 'のお申し込み';
 
