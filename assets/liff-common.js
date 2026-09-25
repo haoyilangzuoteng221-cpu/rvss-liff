@@ -115,9 +115,11 @@
   /**
    * 隠し iframe + form で POST する。
    * @param {Object} data key/value（値は文字列化される）
+   * @param {number} [timeoutMs] 待つ上限（既定15秒）。★交流会は GAS 側でカレンダー登録・通知メール・確認LINEまで
+   *   やるので15秒前後かかる（2026-09-25 実測）→ 交流会の画面だけ長めに渡す。
    * @returns {Promise<void>} iframe が load したら解決。届いたかどうかまでは読めない。
    */
-  function postToGas(data) {
+  function postToGas(data, timeoutMs) {
     return new Promise(function (resolve, reject) {
       var name = '__rvssPost' + Date.now();
       var iframe = document.createElement('iframe');
@@ -147,7 +149,7 @@
         // 送信自体は飛んでいる見込みだが、確認できないので失敗として扱う。
         // ★ここで成功にすると、落ちた申込を誰も拾えなくなる。
         reject(new Error('no_response'));
-      }, 15000);
+      }, timeoutMs || 15000);
 
       function cleanup() {
         clearTimeout(timer);

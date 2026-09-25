@@ -164,7 +164,7 @@
         picked = null; document.getElementById('picked').hidden = true; render();
         return RVSS.setStatus('選んだ時間は締め切られたか、埋まりました。別の時間を選んでください。', 'err');
       }
-      RVSS.setStatus('送信しています…', '');
+      RVSS.setStatus('送信しています…（20秒ほどかかることがあります。このままお待ちください）', '');
       return RVSS.postToGas({
         kind: 'kouryu',
         name: name,
@@ -174,7 +174,7 @@
         src: src,
         lineUserId: (profile && profile.userId) || '',
         lineDisplayName: (profile && profile.displayName) || ''
-      }).then(function () {
+      }, 45000).then(function () {
         RVSS.hide('form-area');
         document.getElementById('done-when').textContent = picked.label + '（20分・Zoom）';
         RVSS.show('done');
