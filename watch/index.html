@@ -5,6 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>RVSS 説明動画</title>
 <link rel="stylesheet" href="../assets/common.css">
+<style>
+  /* ★2026-09-26 守屋「画面下からって書いてあるのに、画面下にそもそもフォームがない」
+     → 申込ボタンは最初から動画のすぐ下に置く。終盤（CTA が「すぐ下のボタン」と言う所）で光らせて画面内へ寄せる。 */
+  .cta-under { margin: 12px 0 18px; }
+  .cta-under .hint { font-size: 13px; color: var(--fg-sub); margin: 8px 2px 0; text-align: center; }
+  .cta-under.on button { animation: rvssPulse 1.6s ease-in-out infinite; }
+  @keyframes rvssPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(6, 199, 85, .55); }
+    50%      { box-shadow: 0 0 0 10px rgba(6, 199, 85, 0); }
+  }
+</style>
 </head>
 <body>
 <div class="wrap">
@@ -28,7 +39,7 @@
   <!-- 本編 -->
   <div id="watch-area" hidden>
     <h1>RVSSってどんな団体？</h1>
-    <p class="lead">最後までご覧いただくと、カジュアル面談のお申し込みに進めます。</p>
+    <p class="lead">動画のすぐ下のボタンから、カジュアル面談を申し込めます。</p>
 
     <div class="countdown" id="countdown">
       <span class="label">視聴期限まで</span>
@@ -37,13 +48,14 @@
 
     <div class="player"><div id="player"></div></div>
 
+    <!-- 動画のすぐ下＝動画の最後の CTA「この動画のすぐ下のボタンから申し込めます」が指す場所。最初から出しておく -->
+    <div id="cta" class="cta-under">
+      <button id="go-interview" type="button">カジュアル面談を申し込む</button>
+      <p class="hint" id="cta-hint">入力は3つだけ（氏名・メール・日程）。Zoomで話せます。</p>
+    </div>
+
     <div class="bar"><i id="bar-fill"></i></div>
     <p class="note" id="progress-text">再生すると、ここに進み具合が出ます。</p>
-
-    <div id="cta" hidden style="margin-top:24px">
-      <button id="go-interview" type="button">カジュアル面談を申し込む</button>
-      <p class="note">ご視聴ありがとうございました。次はカジュアル面談でお話ししましょう。</p>
-    </div>
 
     <div id="status" class="status" hidden></div>
   </div>
@@ -139,8 +151,19 @@
     if (maxPct >= 95 && !sentMarks[100]) {
       sentMarks[100] = true;
       report('done', 100);
-      RVSS.show('cta');
+      highlightCta();
     }
+  }
+
+  /* 終盤：ボタンを光らせ、全画面なら抜けて、ボタンを画面内へ寄せる（動画の CTA が「すぐ下のボタン」と言うのは 381 秒／95%＝372 秒） */
+  function highlightCta() {
+    var box = document.getElementById('cta');
+    if (box.classList.contains('on')) return;
+    box.classList.add('on');
+    document.getElementById('cta-hint').textContent = 'ご視聴ありがとうございました。次はカジュアル面談でお話ししましょう。';
+    try { if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen(); } catch (e) {}
+    try { if (document.webkitFullscreenElement && document.webkitExitFullscreen) document.webkitExitFullscreen(); } catch (e) {}
+    try { box.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) { box.scrollIntoView(); }
   }
 
   function buildPlayer() {
