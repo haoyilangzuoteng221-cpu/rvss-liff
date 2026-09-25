@@ -28,7 +28,7 @@
   <!-- 本編 -->
   <div id="watch-area" hidden>
     <h1>RVSSってどんな団体？</h1>
-    <p class="lead">最後までご覧いただくと、面接のお申し込みに進めます。</p>
+    <p class="lead">最後までご覧いただくと、カジュアル面談のお申し込みに進めます。</p>
 
     <div class="countdown" id="countdown">
       <span class="label">視聴期限まで</span>
@@ -41,8 +41,8 @@
     <p class="note" id="progress-text">再生すると、ここに進み具合が出ます。</p>
 
     <div id="cta" hidden style="margin-top:24px">
-      <button id="go-interview" type="button">面接を申し込む</button>
-      <p class="note">ご視聴ありがとうございました。次は面接でお話ししましょう。</p>
+      <button id="go-interview" type="button">カジュアル面談を申し込む</button>
+      <p class="note">ご視聴ありがとうございました。次はカジュアル面談でお話ししましょう。</p>
     </div>
 
     <div id="status" class="status" hidden></div>
@@ -228,12 +228,14 @@
     location.reload();
   });
 
-  /* ★2026-09-18 Daichi＝オンデマンドの後に投げるのは「面接」。
+  /* ★2026-09-25 Daichi＝呼び方は「カジュアル面談」に揃える（ハードルを下げる）。動画・このページ・面接LIFF・公式LINEの M1/M2 すべて同じ言葉。
+     行き先は面接LIFF（interview）のまま＝中身は選考の面接枠（予定タブの種別＝面接）。
+     ★2026-09-18 Daichi＝オンデマンドの後に投げるのは「面接」。
      面談フォームは短縮ルート（組織説明を挟んでいない人）の入口なので、ここからは出さない。
      ⚠ 9/18 まで mendan を指していた。面談LIFFは枠0件なので、踏んでも選べない状態だった。 */
   document.getElementById('go-interview').addEventListener('click', function () {
     var id = (CFG.LIFF_IDS || {}).interview;
-    if (!id) { RVSS.setStatus('面接の申し込み口がまだ準備中です。LINEでご連絡ください。', 'err'); return; }
+    if (!id) { RVSS.setStatus('カジュアル面談の申し込み口がまだ準備中です。LINEでご連絡ください。', 'err'); return; }
     // 流入元を引き継ぐ（どの経路の人が面接まで来たかを最後まで追う）
     location.href = 'https://liff.line.me/' + id + '?src=' + encodeURIComponent(src);
   });

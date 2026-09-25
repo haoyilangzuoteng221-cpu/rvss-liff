@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>RVSS 採用面接の日程調整</title>
+<title>RVSS カジュアル面談の日程調整</title>
 <link rel="stylesheet" href="../assets/common.css">
 </head>
 <body>
@@ -13,8 +13,8 @@
   <div id="boot-status" class="status" hidden></div>
 
   <div id="form-area" hidden>
-    <h1>採用面接の日程調整</h1>
-    <p class="lead">面接の日程をお選びください。3つだけ教えていただければ完了です。</p>
+    <h1>カジュアル面談の日程調整</h1>
+    <p class="lead">面談の日程をお選びください。3つだけ教えていただければ完了です。</p>
 
     <div class="field">
       <label for="name">氏名（ふりがな）<span class="req">必須</span></label>
@@ -27,9 +27,9 @@
     </div>
 
     <div class="field">
-      <label for="planDate">面接のご希望日程<span class="req">必須</span></label>
+      <label for="planDate">面談のご希望日程<span class="req">必須</span></label>
       <select id="planDate"><option value="">読み込んでいます…</option></select>
-      <p class="note">面接は22:00〜23:00の枠です。オンライン（Zoom）で行います。</p>
+      <p class="note">面談は22:00〜23:00の枠です。オンライン（Zoom）で行います。</p>
     </div>
 
     <button id="submit" type="button">この日程で予約する</button>
@@ -37,7 +37,7 @@
   </div>
 
   <div id="done" class="done" hidden>
-    <h2>面接のご予約を受け付けました</h2>
+    <h2>カジュアル面談のご予約を受け付けました</h2>
     <p>当日のZoomリンクは、前日までにLINEでお送りします。<br>このページは閉じていただいて大丈夫です。</p>
   </div>
 
@@ -56,7 +56,7 @@
     onReady: function (p, s) {
       profile = p; src = s;
       RVSS.show('form-area');
-      // 日程は「予定」タブの種別＝面接 を読む
+      // 日程は「予定」タブの種別＝面接 を読む（2026-09-25 Daichi：画面上の呼び方は「カジュアル面談」、枠は面接のまま）
       RVSS.fillDates(document.getElementById('planDate'), '面接')
         .then(function (n) {
           if (!n) {
