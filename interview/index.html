@@ -64,6 +64,11 @@
     onReady: function (p, s) {
       profile = p; src = s;
       RVSS.show('form-area');
+      // ★2026-09-26｜予約ページを開いたことを視聴ログへ残す（「開いたのに予約しなかった」を数えるため）。落ちても予約は止めない。
+      if (p && p.userId) {
+        RVSS.postToGas({ kind: 'watch', event: 'form', pct: '', src: s, lineUserId: p.userId,
+          lineDisplayName: p.displayName || '', email: '' }).catch(function () {});
+      }
       // 日程は「予定」タブの種別＝面接 を読む（2026-09-25 Daichi：画面上の呼び方は「カジュアル面談」、枠は面接のまま）
       RVSS.fillDates(document.getElementById('planDate'), '面接')
         .then(function (n) {

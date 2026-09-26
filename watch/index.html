@@ -259,8 +259,14 @@
   document.getElementById('go-interview').addEventListener('click', function () {
     var id = (CFG.LIFF_IDS || {}).interview;
     if (!id) { RVSS.setStatus('カジュアル面談の申し込み口がまだ準備中です。LINEでご連絡ください。', 'err'); return; }
+    // ★2026-09-26｜ボタンを押したことを記録してから移る（「押したのに予約しなかった」を数えるため）。
+    //   記録は非表示のフォーム送信なので、すぐ移ると送信が途中で切れる。0.7秒だけ待つ（記録が落ちても移動はする）。
+    if (this.dataset.going) return;
+    this.dataset.going = '1';
+    report('cta', maxPct);
     // 流入元を引き継ぐ（どの経路の人が面接まで来たかを最後まで追う）
-    location.href = 'https://liff.line.me/' + id + '?src=' + encodeURIComponent(src);
+    var to = 'https://liff.line.me/' + id + '?src=' + encodeURIComponent(src);
+    setTimeout(function () { location.href = to; }, 700);
   });
 })();
 </script>
