@@ -73,6 +73,13 @@
 </div>
 
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+<!-- ★2026-09-29 情シス（井上さん）の訪問計測。#335 スレッドの手順どおり（watch の rvss-ondemand-visits と同じ型）。
+     認証後のページ訪問を LINE userID で記録する。失敗しても申込・予約は止まらない。
+     ★LINE のアクセストークンを情シスのサーバーへ渡すスクリプトなので、9/29 に中身を読んだ版に固定する（integrity）。
+       情シスがスクリプトを更新したら、ここのハッシュを差し替えるまで計測だけ止まる（申込・予約は止まらない）。 -->
+<script src="https://rvss-dx-ten.vercel.app/integrations/rvss-action-visits.js"
+        integrity="sha384-bF87t8MAX1DVifpxK9/TfKPG757JY76E6FULbuWdrgOYCKdz3I5kXpXhimiy4AQ9"
+        crossorigin="anonymous"></script>
 <script src="../config.js"></script>
 <script src="../assets/liff-common.js"></script>
 <script>
@@ -138,10 +145,29 @@
     });
   }
 
+  /* ---------- 情シスの訪問計測（2026-09-29） ----------
+     認証（liff.init）より前に作る＝ログイン画面へ飛ぶ前の ?src= を保持するため。 */
+  var rvssVisitTracker = null;
+  try {
+    rvssVisitTracker = window.RVSSActionVisits.createTracker({
+      endpoint: 'https://rvss-dx-ten.vercel.app/api/liff/visit',
+      formType: 'discussion'
+    });
+  } catch (_) {
+    console.warn('RVSS訪問計測を初期化できませんでした');
+  }
   RVSS.boot({
     liffKey: 'kouryu',
     onReady: function (p, s) {
       profile = p; src = s;
+      // 認証・プロフィール取得の直後に訪問を記録（情シスの訪問計測・画面表示や申込を待たせない）
+      if (rvssVisitTracker) {
+        rvssVisitTracker.record(window.liff)
+          .then(function (result) {
+            if (!result.ok) console.warn('RVSS訪問計測に失敗しました', result.status);
+          })
+          .catch(function () { console.warn('RVSS訪問計測に失敗しました'); });
+      }
       RVSS.show('form-area');
       load().then(function (list) { items = list; render(); })
         .catch(function () { RVSS.setStatus('日時の読み込みに失敗しました。LINEアプリから開き直してください。', 'err'); });
