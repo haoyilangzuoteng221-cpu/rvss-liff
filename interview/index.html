@@ -66,6 +66,15 @@
   'use strict';
   var profile = null, src = 'unknown', sending = false;
 
+  /* ---------- REAL ROOKIES 当日の QR から開いたときだけ、題名と冒頭の文を変える（2026-09-29 守屋・Adness efab10d9） ----------
+     QR＝https://liff.line.me/2011618269-t2d8nrIF?src=rr1017 。枠・入力項目・完了画面・予約の処理は通常と同じ（枠を二重に持たない）。
+     公式LINE の一斉配信には載せない（当日の1on1で一緒に入力する動線だけ）。 */
+  if (/^rr1017/i.test(RVSS.readSrc())) {
+    document.title = 'RVSS REAL ROOKIES 参加者の方へ｜面談のご予約';
+    document.querySelector('#form-area h1').textContent = 'REAL ROOKIES 参加者の方へ｜面談のご予約';
+    document.querySelector('#form-area .lead').innerHTML = '本日の1on1の続きを、担当者との面談でお話しします。<br>この場で日程をお選びください。';
+  }
+
   /* ---------- 情シスの訪問計測（2026-09-29） ----------
      認証（liff.init）より前に作る＝ログイン画面へ飛ぶ前の ?src= を保持するため。 */
   var rvssVisitTracker = null;
