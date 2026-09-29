@@ -51,7 +51,7 @@
     <!-- 動画のすぐ下＝動画の最後の CTA「この動画のすぐ下のボタンから申し込めます」が指す場所。最初から出しておく -->
     <div id="cta" class="cta-under">
       <button id="go-interview" type="button">カジュアル面談を申し込む</button>
-      <p class="hint" id="cta-hint">入力は3つだけ（氏名・メール・日程）。Zoomで話せます。</p>
+      <p class="hint" id="cta-hint">約30分・Zoomで話せます。入力は3つだけ（氏名・メール・日程）で、日時はその場で選べます。</p>
     </div>
 
     <div class="bar"><i id="bar-fill"></i></div>
@@ -160,7 +160,7 @@
     var box = document.getElementById('cta');
     if (box.classList.contains('on')) return;
     box.classList.add('on');
-    document.getElementById('cta-hint').textContent = 'ご視聴ありがとうございました。次はカジュアル面談でお話ししましょう。';
+    document.getElementById('cta-hint').textContent = 'ご視聴ありがとうございました。次はカジュアル面談（約30分・Zoom）でお話ししましょう。';
     try { if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen(); } catch (e) {}
     try { if (document.webkitFullscreenElement && document.webkitExitFullscreen) document.webkitExitFullscreen(); } catch (e) {}
     try { box.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) { box.scrollIntoView(); }
@@ -263,7 +263,11 @@
     //   記録は非表示のフォーム送信なので、すぐ移ると送信が途中で切れる。0.7秒だけ待つ（記録が落ちても移動はする）。
     if (this.dataset.going) return;
     this.dataset.going = '1';
-    report('cta', maxPct);
+    // ★2026-09-29｜押した瞬間の再生位置を送る（守屋 9/29 改善案②。旧＝maxPct＝それまでに一番先まで見た位置）。
+    //   GAS の分析は cta の pct を「最大到達」の更新にも使うが、max は下がらないので影響しない。位置は視聴ログ E列に残る。
+    var nowPct = maxPct;
+    try { if (player && duration) nowPct = Math.min(100, Math.round((player.getCurrentTime() || 0) / duration * 100)); } catch (e) {}
+    report('cta', nowPct);
     // 流入元を引き継ぐ（どの経路の人が面接まで来たかを最後まで追う）
     var to = 'https://liff.line.me/' + id + '?src=' + encodeURIComponent(src);
     setTimeout(function () { location.href = to; }, 700);
