@@ -82,6 +82,15 @@
   var sentMarks = {};          // 25/50/75/100 の節目を1回ずつだけ送る
   var LS_KEY = 'rvss_watch_started_at';
 
+  /* ★2026-09-30｜REAL ROOKIES で面談を予約済みの人（翌日20時台の自動LINE rookies_od から ?src=rr1017_od で来る）。
+     動画はそのまま。申込ボタンを出さず、最後は「面談でお会いできるのを楽しみに」にする（守屋 9/30「ページだけ変える」）。 */
+  var RR_BOOKED = /^rr1017/i.test(RVSS.readSrc());
+  if (RR_BOOKED) {
+    document.querySelector('#watch-area .lead').textContent = '面談の前に、RVSSがどんな団体かをご覧ください。';
+    document.getElementById('go-interview').hidden = true;
+    document.getElementById('cta-hint').textContent = '面談でお会いできるのを楽しみにしています。';
+  }
+
   /* ---------- 視聴期限（クライアント側で持つ） ----------
      ★厳格なゲートではない。決定10（2026-08-25）＝期限切れ後は自己再発行を1タップ。
        狙いは「早く見てもらう」ことなので、端末をまたいだ厳密な管理は要らない。
@@ -150,7 +159,10 @@
     });
     if (maxPct >= 95 && !sentMarks[100]) {
       sentMarks[100] = true;
-      report('done', 100);
+      // ★2026-09-30｜予約済みのルーキーズ参加者には「カジュアル面談を予約しましょう」（M1）を送らない。
+      //   GAS は event=done のときだけ M1 を送り、視聴完了の記録は pct>=95 でも付く（LIFF拡張 rvssLx_ の 263・400 行）。
+      //   ∴ progress/100 で送れば、完了は記録されて M1 だけ出ない（Web アプリの再デプロイ不要）。
+      report(RR_BOOKED ? 'progress' : 'done', 100);
       highlightCta();
     }
   }
@@ -160,7 +172,9 @@
     var box = document.getElementById('cta');
     if (box.classList.contains('on')) return;
     box.classList.add('on');
-    document.getElementById('cta-hint').textContent = 'ご視聴ありがとうございました。次はカジュアル面談（約30分・Zoom）でお話ししましょう。';
+    document.getElementById('cta-hint').textContent = RR_BOOKED
+      ? 'ご視聴ありがとうございました。面談でお会いできるのを楽しみにしています！'
+      : 'ご視聴ありがとうございました。次はカジュアル面談（約30分・Zoom）でお話ししましょう。';
     try { if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen(); } catch (e) {}
     try { if (document.webkitFullscreenElement && document.webkitExitFullscreen) document.webkitExitFullscreen(); } catch (e) {}
     try { box.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) { box.scrollIntoView(); }
