@@ -38,7 +38,7 @@ window.RVSS_CONFIG = {
 
   // 視聴LIFFに出す動画。YouTube の限定公開ID。
   // 入るまでは watch ページが「準備中」を出して止まる（空のプレイヤーを見せない）。
-  YOUTUBE_ID: 'yrXmfHOhBwo',   // 2026-09-26 オンデマンド v5（チャンネル RVSS・限定公開・埋め込み可）
+  YOUTUBE_ID: 'lmkSz3wLtSE',   // 2026-10-01 オンデマンド v8（森さんの声入り・396秒・チャンネル RVSS・限定公開・埋め込み可）。旧 v5＝yrXmfHOhBwo
 
   // 視聴期限（時間）。決定10（2026-08-25）＝48時間。
   WATCH_DEADLINE_HOURS: 48,
