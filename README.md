@@ -222,6 +222,7 @@ Settings → Pages → Source = `main` / root → 保存。
 | 名寄せキー | **LINE_userID ＋ 電話番号**（重複ガードもこの2つで見る） |
 | 落ちる先 | 採用管理シートの **`ルーキーズ申込_LIFF受`** タブ（12列）。**候補者マスターへは混ぜない**（合説を通っていない別ファネルなので、混ぜると n2 の分母が壊れる） |
 | 入口の種類(45列) | `?src=` が無いときは **`kikaku_rookies`** として記録する。∵ このフォーム自体が企画部署の入口で、`unknown` に倒すと入口が数えられない |
+| 媒体別の src（★2026-10-02） | 広報の岡田さんの依頼（イベントサイト掲載の媒体別流入を見たい）で、守屋が Slack で4本を渡した＝**`kikaku_rookies_union`／`kikaku_rookies_peatix`／`kikaku_rookies_kokuchpro`／`kikaku_rookies_youtrust`**。LIFF は新規発行していない（同じ ID の `?src=` を変えただけ）。頭を `kikaku_` にしたのは45列の `企画部署` を保つため（`union` 単体だと `rvssLx_srcToEntryType_` が空を返す）。⚠ **10/2 時点で、既定値以外の src が実際に L列まで通った実績はまだ無い**（13件すべて `kikaku_rookies`）。最初の媒体経由の申込が来たら L列を見て確かめる |
 | 冒頭の画像 | `assets/rookies-hero.jpg`（企画から受領した告知画像を長辺1200pxへ縮小・164KB）。差し替えるときは同じ比率（16:9前後）で置き直す |
 | 完了画面 | **RVSS公式LINE ＋ 平井さんのInstagram**。⚠ 9/14 PM定例では「平井さんの個人LINE」だったが、9/15 の要件定義で公式LINEに変わっている。`config.js` の `ROOKIES_LINE_URL` / `ROOKIES_IG_URL` で差し替えられる |
 
