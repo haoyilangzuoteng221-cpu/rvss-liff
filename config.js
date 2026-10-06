@@ -26,8 +26,8 @@ window.RVSS_CONFIG = {
     //   ★配っていなかった旧・土曜定例用の ID を転用する。LINE Developers でエンドポイントURLを /kouryu/ へ変える（守屋）
     kouryu: '2011618269-iaNe966R',
     // ⑥分科会の参加ページ → /bunkakai/（2026-10-06 公式LINE定例）
-    //   ★LIFF ID は未発行。LINE Developers（チャネル 2011618269）で発行してここへ貼る
-    bunkakai: ''
+    //   2026-10-06 発行（LIFFアプリ名「RVSS 分科会の参加」・Full・profile・友だち追加 On (Normal)）
+    bunkakai: '2011618269-R53fOad8'
     // ⚠ 土曜定例（体験参加）はここに置かない。情シス版が本番＝
     //   https://rvss-dx-ten.vercel.app/liff/saturday（2026-09-11 に井上さんが本番反映・
     //   9/15 時点で実申込3件が『土曜定例申込_LIFF受』に入っている）。

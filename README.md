@@ -55,6 +55,7 @@ Settings → Pages → Source = `main` / root → 保存。
 | ③ | RVSS 説明動画の視聴 | `2011618269-KAXaH1SR` | `https://liff.line.me/2011618269-KAXaH1SR` |
 | ④ | REAL ROOKIES 10/17 参加申込 | `2011618269-ENnQWBeh` | `https://liff.line.me/2011618269-ENnQWBeh` |
 | ⑤ | オンライン交流会の予約（★2026-09-24 旧・土曜定例の ID を転用） | `2011618269-iaNe966R` | `https://liff.line.me/2011618269-iaNe966R` |
+| ⑥ | RVSS 分科会の参加（2026-10-06・`/bunkakai/`） | `2011618269-R53fOad8` | `https://liff.line.me/2011618269-R53fOad8?course=ai`（コースは `ai`／`eigyo`／`shukatsu`。Zoom は config.js の `BUNKAKAI_COURSES`） |
 
 ★⑤は LINE Developers でエンドポイントURLを `https://haoyilangzuoteng221-cpu.github.io/rvss-liff/kouryu/` へ変えてから配る。
 枠は守屋のカレンダーの空きから GAS が計算する（全曜日17:00〜23:00・20分刻み・開始12時間前まで・1枠に何人でも）。仕組みは GAS の `交流会_20260923.js` の冒頭。
