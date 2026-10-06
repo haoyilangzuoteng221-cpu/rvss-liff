@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>RVSS 分科会｜参加はこちら</title>
+<link rel="stylesheet" href="../assets/common.css">
+<style>
+  .join { display: block; text-align: center; text-decoration: none; margin-top: 8px;
+          padding: 18px 0; font-size: 18px; font-weight: 700; border-radius: 12px;
+          background: #06c755; color: #fff; }
+  .join:active { background: #05a648; }
+  .course-list a { display: block; margin-top: 10px; padding: 14px 16px; border: 1px solid #ccc;
+                   border-radius: 12px; color: #333; text-decoration: none; background: #fff; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div id="loading" class="loading">読み込んでいます…</div>
+  <div id="boot-status" class="status" hidden></div>
+
+  <div id="form-area" hidden>
+    <div class="hero">
+      <img src="../assets/kouryu-logo.jpg" alt="REAL VALUE STUDENTS" width="900" height="300">
+    </div>
+
+    <h1 id="title">RVSS 分科会</h1>
+    <p class="lead" id="lead">下のボタンから Zoom に入れます。開始後の途中参加もできます。</p>
+
+    <!-- コースが決まっていて Zoom が入っているとき -->
+    <a id="join" class="join" href="#" hidden>参加はこちら（Zoom）</a>
+
+    <!-- コースの指定が無いとき＝Zoom が入っているコースを並べる -->
+    <div id="course-list" class="course-list" hidden></div>
+
+    <!-- Zoom がまだ入っていないとき（空のボタンを見せない） -->
+    <p id="not-ready" class="note" hidden>参加リンクは開始前にこのページに表示されます。時間をおいて開き直してください。</p>
+  </div>
+
+</div>
+
+<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+<!-- 情シス（井上さん）の訪問計測。kouryu・interview と同じ版（9/29 に中身を読んだ版）に固定する。
+     ★formType 'bunkakai' は 2026-10-06 時点で情シス側に未登録。井上さんが訪問分析に新しいアクションとして足したら、
+       その名前に合わせてここを直す（#335・Adness 72942d24）。失敗しても参加ボタンは止まらない。 -->
+<script src="https://rvss-dx-ten.vercel.app/integrations/rvss-action-visits.js"
+        integrity="sha384-bF87t8MAX1DVifpxK9/TfKPG757JY76E6FULbuWdrgOYCKdz3I5kXpXhimiy4AQ9"
+        crossorigin="anonymous"></script>
+<script src="../config.js"></script>
+<script src="../assets/liff-common.js"></script>
+<script>
+(function () {
+  'use strict';
+  var CFG = window.RVSS_CONFIG || {};
+  var COURSES = CFG.BUNKAKAI_COURSES || {};
+
+  /* ?course=ai などでコースを指定する（一斉配信のリンクに付ける）。liff.state に畳まれて来ても読む。 */
+  function readCourse() {
+    var q = new URLSearchParams(window.location.search);
+    var state = q.get('liff.state');
+    if (state) {
+      try {
+        var inner = new URLSearchParams(state.indexOf('?') >= 0 ? state.slice(state.indexOf('?')) : '');
+        if (inner.get('course')) q = inner;
+      } catch (e) { /* 読めなければ元のクエリのまま */ }
+    }
+    var c = (q.get('course') || '').trim();
+    return Object.prototype.hasOwnProperty.call(COURSES, c) ? c : '';
+  }
+
+  /* Zoom はLINE内ブラウザではなく外で開く（Zoom アプリに渡すため）。LIFF の外ならそのまま遷移。 */
+  function openZoom(url) {
+    try {
+      if (window.liff && liff.isInClient && liff.isInClient()) {
+        liff.openWindow({ url: url, external: true });
+        return;
+      }
+    } catch (_) { /* 下へ */ }
+    window.location.href = url;
+  }
+
+  function bindJoin(el, url) {
+    el.href = url;
+    el.addEventListener('click', function (e) { e.preventDefault(); openZoom(url); });
+  }
+
+  function render() {
+    var course = readCourse();
+    if (course) {
+      var c = COURSES[course];
+      document.getElementById('title').textContent = 'RVSS 分科会｜' + c.name;
+      if (c.zoom) {
+        var join = document.getElementById('join');
+        bindJoin(join, c.zoom);
+        join.hidden = false;
+      } else {
+        RVSS.show('not-ready');
+      }
+      return;
+    }
+    // コースの指定が無い＝Zoom が入っているコースだけ並べる
+    var list = document.getElementById('course-list');
+    Object.keys(COURSES).forEach(function (key) {
+      var c = COURSES[key];
+      if (!c.zoom) return;
+      var a = document.createElement('a');
+      a.textContent = c.name + 'コースに参加する（Zoom）';
+      bindJoin(a, c.zoom);
+      list.appendChild(a);
+    });
+    if (list.children.length) { list.hidden = false; } else { RVSS.show('not-ready'); }
+  }
+
+  /* 訪問計測は認証より前に作る＝ログイン画面へ飛ぶ前の ?src= を保持するため（kouryu と同じ） */
+  var tracker = null;
+  try {
+    tracker = window.RVSSActionVisits.createTracker({
+      endpoint: 'https://rvss-dx-ten.vercel.app/api/liff/visit',
+      formType: 'bunkakai'
+    });
+  } catch (_) {
+    console.warn('RVSS訪問計測を初期化できませんでした');
+  }
+
+  RVSS.boot({
+    liffKey: 'bunkakai',
+    onReady: function () {
+      if (tracker) {
+        tracker.record(window.liff)
+          .then(function (r) { if (!r.ok) console.warn('RVSS訪問計測に失敗しました', r.status); })
+          .catch(function () { console.warn('RVSS訪問計測に失敗しました'); });
+      }
+      RVSS.show('form-area');
+      render();
+    }
+  });
+})();
+</script>
+</body>
+</html>

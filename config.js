@@ -24,7 +24,10 @@ window.RVSS_CONFIG = {
     rookies: '2011618269-ENnQWBeh',    // ④REAL ROOKIES 10/17 参加申込 → /rookies/
     // ⑤オンライン交流会の予約 → /kouryu/（2026-09-24）
     //   ★配っていなかった旧・土曜定例用の ID を転用する。LINE Developers でエンドポイントURLを /kouryu/ へ変える（守屋）
-    kouryu: '2011618269-iaNe966R'
+    kouryu: '2011618269-iaNe966R',
+    // ⑥分科会の参加ページ → /bunkakai/（2026-10-06 公式LINE定例）
+    //   ★LIFF ID は未発行。LINE Developers（チャネル 2011618269）で発行してここへ貼る
+    bunkakai: ''
     // ⚠ 土曜定例（体験参加）はここに置かない。情シス版が本番＝
     //   https://rvss-dx-ten.vercel.app/liff/saturday（2026-09-11 に井上さんが本番反映・
     //   9/15 時点で実申込3件が『土曜定例申込_LIFF受』に入っている）。
@@ -59,6 +62,16 @@ window.RVSS_CONFIG = {
   // ★TEIREI_ZOOM_URL / TEIREI_CALENDAR_URL は 2026-09-16 に削除した。
   //   土曜定例の体験参加は情シス版（rvss-dx-ten.vercel.app/liff/saturday）が本番で、
   //   完了画面のZoom・カレンダー表示もそちらが持っている。
+
+  // ★分科会（杉本さん企画・2026-10-06 公式LINE定例）の参加ページ /bunkakai/ が出す Zoom。
+  //   一斉配信のリンクは https://liff.line.me/<分科会のLIFF ID>?course=ai&src=<配信名> の形にする。
+  //   zoom が空のコースは「開始前に表示されます」を出す（空のボタンを見せない）。
+  //   ⚠ コースの key は英数字だけ。日程・Zoom は杉本さんの設計待ち（Adness f02cb82f）
+  BUNKAKAI_COURSES: {
+    ai: { name: 'AI', zoom: '' },
+    eigyo: { name: '営業', zoom: '' },
+    shukatsu: { name: '就活', zoom: '' }
+  },
 
   // ★REAL ROOKIES（10/17）の申込完了画面に出す連絡先。
   //   出どころ＝平井さんの要件定義（Notion「『REAL ROOKIES』参加申込フォーム（外部向け）要件定義書」）。
