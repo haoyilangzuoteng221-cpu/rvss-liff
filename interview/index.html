@@ -69,7 +69,8 @@
   /* ---------- REAL ROOKIES 当日の QR から開いたときだけ、題名と冒頭の文を変える（2026-09-29 守屋・Adness efab10d9） ----------
      QR＝https://liff.line.me/2011618269-t2d8nrIF?src=rr1017 。枠・入力項目・完了画面・予約の処理は通常と同じ（枠を二重に持たない）。
      公式LINE の一斉配信には載せない（当日の1on1で一緒に入力する動線だけ）。 */
-  if (/^rr1017/i.test(RVSS.readSrc())) {
+  var entrySrc = RVSS.readSrc();
+  if (/^rr1017/i.test(entrySrc)) {
     document.title = 'RVSS REAL ROOKIES 参加者の方へ｜面談のご予約';
     document.querySelector('#form-area h1').textContent = 'REAL ROOKIES 参加者の方へ｜面談のご予約';
     document.querySelector('#form-area .lead').innerHTML = '本日の1on1の続きを、担当者との面談でお話しします。<br>この場で日程をお選びください。';
@@ -88,6 +89,11 @@
   }
   RVSS.boot({
     liffKey: 'interview',
+    // 外部ブラウザの初回ログインは、戻り先未指定だとsrcが消える。
+    // 許可済みのsrcだけを同じ予約ページへ引き継ぐ。認証情報はURLへ転記しない。
+    loginRedirectUri: /^rr1017/i.test(entrySrc)
+      ? window.location.origin + window.location.pathname + '?src=' + encodeURIComponent(entrySrc)
+      : undefined,
     onReady: function (p, s) {
       profile = p; src = s;
       // 認証・プロフィール取得の直後に訪問を記録（情シスの訪問計測・画面表示や申込を待たせない）

@@ -188,7 +188,13 @@
 
     liff.init({ liffId: liffId })
       .then(function () {
-        if (!liff.isLoggedIn()) { liff.login(); return null; }
+        if (!liff.isLoggedIn()) {
+          // 明示された戻り先があるページでは、ログイン後も流入元を保持する。
+          // 未指定のページは従来どおりLINE側のエンドポイントへ戻す。
+          if (opts.loginRedirectUri) liff.login({ redirectUri: opts.loginRedirectUri });
+          else liff.login();
+          return null;
+        }
         return liff.getProfile();
       })
       .then(function (profile) {
