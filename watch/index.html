@@ -84,7 +84,8 @@
 
   /* ★2026-09-30｜REAL ROOKIES で面談を予約済みの人（翌日20時台の自動LINE rookies_od から ?src=rr1017_od で来る）。
      動画はそのまま。申込ボタンを出さず、最後は「面談でお会いできるのを楽しみに」にする（守屋 9/30「ページだけ変える」）。 */
-  var RR_BOOKED = /^rr1017/i.test(RVSS.readSrc());
+  var entrySrc = RVSS.readSrc();
+  var RR_BOOKED = /^rr1017/i.test(entrySrc);
   // 直面談の前日案内から来る人も予約済み。再予約の導線と完了後のM1を出さない。
   var MEETING_BOOKED = RR_BOOKED || RVSS.readSrc() === 'direct_interview_od';
   if (MEETING_BOOKED) {
@@ -232,6 +233,10 @@
   /* ---------- 起動 ---------- */
   RVSS.boot({
     liffKey: 'watch',
+    // 予約済みルーキーズの流入元を、初回ログイン後も同じ動画ページへ引き継ぐ。
+    loginRedirectUri: RR_BOOKED
+      ? window.location.origin + window.location.pathname + '?src=' + encodeURIComponent(entrySrc)
+      : undefined,
     onReady: function (p, s) {
       profile = p; src = s;
 
