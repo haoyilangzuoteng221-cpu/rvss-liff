@@ -172,15 +172,19 @@
    *   opts.onReady   function(profile, src) — プロフィールが取れたら呼ばれる
    */
   function boot(opts) {
-    var src = readSrc();
+    var src = opts.entrySrc || readSrc();
+    function observe(event, result) { try { if (opts.analytics) opts.analytics.record(event, { stage: 'auth', result: result }); } catch (_) {} }
+    observe('auth_start', 'started');
     var liffId = (CFG.LIFF_IDS || {})[opts.liffKey] || '';
 
     if (!liffId) {
+      observe('auth_error', 'missing_id');
       hide('loading');
       setBootStatus('このページはまだ準備中です（LIFF ID が未設定）。担当者へお知らせください。', 'err');
       return;
     }
     if (typeof liff === 'undefined') {
+      observe('auth_error', 'sdk_missing');
       hide('loading');
       setBootStatus('LINEアプリの読み込みに失敗しました。通信環境を確かめて開き直してください。', 'err');
       return;
@@ -189,6 +193,7 @@
     liff.init({ liffId: liffId })
       .then(function () {
         if (!liff.isLoggedIn()) {
+          observe('auth_redirect', 'login');
           // 明示された戻り先があるページでは、ログイン後も流入元を保持する。
           // 未指定のページは従来どおりLINE側のエンドポイントへ戻す。
           if (opts.loginRedirectUri) liff.login({ redirectUri: opts.loginRedirectUri });
@@ -203,6 +208,7 @@
         opts.onReady(profile, src);
       })
       .catch(function (err) {
+        observe('auth_error', 'init_or_profile');
         hide('loading');
         setBootStatus('読み込みに失敗しました（' + (err && err.message ? err.message : 'unknown') + '）。LINEアプリから開き直してください。', 'err');
       });

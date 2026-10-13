@@ -60,16 +60,31 @@
         integrity="sha384-bF87t8MAX1DVifpxK9/TfKPG757JY76E6FULbuWdrgOYCKdz3I5kXpXhimiy4AQ9"
         crossorigin="anonymous"></script>
 <script src="../config.js"></script>
-<script src="../assets/liff-common.js"></script>
+<script src="../assets/liff-common.js?v=20261013.1"></script>
+<script src="../assets/journey-analytics.js?v=20261013.1"></script>
 <script>
 (function () {
   'use strict';
   var profile = null, src = 'unknown', sending = false;
+  var journey = window.RVSSJourney ? window.RVSSJourney.create('interview') : { record: function () {}, identify: function () {}, state: function () {}, flush: function () {}, context: function () { return {}; }, id: function () { return ''; }, source: RVSS.readSrc };
+  function inputState() {
+    var name = document.getElementById('name').value.trim();
+    var email = document.getElementById('email').value.trim();
+    return { nameFilled: !!name, emailState: !email ? 'empty' : /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? 'valid' : 'invalid',
+      dateFilled: !!document.getElementById('planDate').value, slot: document.getElementById('planDate').value };
+  }
+  ['name', 'email', 'planDate'].forEach(function (field) {
+    var el = document.getElementById(field);
+    el.addEventListener('focus', function () { journey.record('field_focus', Object.assign({ stage: 'input', field: field }, inputState())); });
+    ['change', 'blur'].forEach(function (event) { el.addEventListener(event, function () {
+      var state = inputState(); journey.state(state); journey.record('field_state', Object.assign({ stage: 'input', field: field }, state));
+    }); });
+  });
 
   /* ---------- REAL ROOKIES 当日の QR から開いたときだけ、題名と冒頭の文を変える（2026-09-29 守屋・Adness efab10d9） ----------
      QR＝https://liff.line.me/2011618269-t2d8nrIF?src=rr1017 。枠・入力項目・完了画面・予約の処理は通常と同じ（枠を二重に持たない）。
      公式LINE の一斉配信には載せない（当日の1on1で一緒に入力する動線だけ）。 */
-  var entrySrc = RVSS.readSrc();
+  var entrySrc = journey.source();
   if (/^rr1017/i.test(entrySrc)) {
     document.title = 'RVSS REAL ROOKIES 参加者の方へ｜面談のご予約';
     document.querySelector('#form-area h1').textContent = 'REAL ROOKIES 参加者の方へ｜面談のご予約';
@@ -89,13 +104,14 @@
   }
   RVSS.boot({
     liffKey: 'interview',
+    analytics: journey,
+    entrySrc: entrySrc,
     // 外部ブラウザの初回ログインは、戻り先未指定だとsrcが消える。
     // 許可済みのsrcだけを同じ予約ページへ引き継ぐ。認証情報はURLへ転記しない。
-    loginRedirectUri: /^rr1017/i.test(entrySrc)
-      ? window.location.origin + window.location.pathname + '?src=' + encodeURIComponent(entrySrc)
-      : undefined,
+    loginRedirectUri: window.location.origin + window.location.pathname + '?src=' + encodeURIComponent(entrySrc),
     onReady: function (p, s) {
       profile = p; src = s;
+      journey.identify(p);
       // 認証・プロフィール取得の直後に訪問を記録（情シスの訪問計測・画面表示や申込を待たせない）
       if (rvssVisitTracker) {
         rvssVisitTracker.record(window.liff)
@@ -105,20 +121,25 @@
           .catch(function () { console.warn('RVSS訪問計測に失敗しました'); });
       }
       RVSS.show('form-area');
+      journey.record('form_visible', { stage: 'form', result: 'visible' });
       // ★2026-09-26｜予約ページを開いたことを視聴ログへ残す（「開いたのに予約しなかった」を数えるため）。落ちても予約は止めない。
       if (p && p.userId) {
         RVSS.postToGas({ kind: 'watch', event: 'form', pct: '', src: s, lineUserId: p.userId,
           lineDisplayName: p.displayName || '', email: '' }).catch(function () {});
       }
       // 日程は「予定」タブの種別＝面接 を読む（2026-09-25 Daichi：画面上の呼び方は「カジュアル面談」、枠は面接のまま）
+      journey.record('schedule_start', { stage: 'schedule' });
       RVSS.fillDates(document.getElementById('planDate'), '面接')
         .then(function (n) {
+          journey.record(n ? 'schedule_ready' : 'schedule_empty', { stage: 'schedule', count: n,
+            slotOptions: (RVSS.lastSchedule.items || []).map(function (x) { return x.value; }), scheduleVersion: RVSS.lastSchedule.updatedAt || '' });
           if (!n) {
             RVSS.setStatus('いま予約できる枠がありません。お手数ですがLINEでご連絡ください。', 'err');
             document.getElementById('submit').disabled = true;
           }
         })
         .catch(function () {
+          journey.record('schedule_error', { stage: 'schedule', result: 'load_failed' });
           RVSS.setStatus('日程の読み込みに失敗しました。開き直すか、LINEでご連絡ください。', 'err');
           document.getElementById('submit').disabled = true;
         });
@@ -162,15 +183,19 @@
     var name = document.getElementById('name').value.trim();
     var email = document.getElementById('email').value.trim();
     var planDate = document.getElementById('planDate').value;
+    var state = inputState();
+    journey.state(state); journey.record('submit_click', Object.assign({ stage: 'submit' }, state));
 
-    if (!name) { return RVSS.setStatus('氏名（ふりがな）を入力してください。', 'err'); }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { return RVSS.setStatus('メールアドレスの形式をご確認ください。', 'err'); }
-    if (!planDate) { return RVSS.setStatus('ご希望の日程を選んでください。', 'err'); }
+    if (!name) { journey.record('validation_error', Object.assign({ stage: 'input', field: 'name', result: 'required' }, state)); return RVSS.setStatus('氏名（ふりがな）を入力してください。', 'err'); }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { journey.record('validation_error', Object.assign({ stage: 'input', field: 'email', result: !email ? 'required' : 'format' }, state)); return RVSS.setStatus('メールアドレスの形式をご確認ください。', 'err'); }
+    if (!planDate) { journey.record('validation_error', Object.assign({ stage: 'input', field: 'planDate', result: 'required' }, state)); return RVSS.setStatus('ご希望の日程を選んでください。', 'err'); }
 
     sending = true;
     var btn = document.getElementById('submit');
     btn.disabled = true; btn.textContent = '送信しています…';
     RVSS.setStatus('送信しています…', '');
+    var attemptId = journey.id();
+    journey.record('submit_attempt', Object.assign({ stage: 'submit', attemptId: attemptId }, state));
 
     RVSS.postToGas({
       kind: 'interview',
@@ -180,12 +205,17 @@
       planDate: planDate,
       src: src,
       lineUserId: (profile && profile.userId) || '',
-      lineDisplayName: (profile && profile.displayName) || ''
+      lineDisplayName: (profile && profile.displayName) || '',
+      journeyContext: JSON.stringify(journey.context()),
+      journeyAttemptId: attemptId
     }).then(function () {
+      journey.record('transport_response', { stage: 'response', result: 'unconfirmed', attemptId: attemptId });
       RVSS.hide('form-area');
       showDoneLinks(planDate);
       RVSS.show('done');
+      journey.record('confirmation_visible', { stage: 'response', result: 'unconfirmed', attemptId: attemptId });
     }).catch(function () {
+      journey.record('transport_error', { stage: 'submit', result: 'no_response', attemptId: attemptId });
       sending = false;
       btn.disabled = false; btn.textContent = 'もう一度送る';
       RVSS.setStatus('送信を確認できませんでした。もう一度お試しください。それでも進まない場合はLINEでお知らせください。', 'err');

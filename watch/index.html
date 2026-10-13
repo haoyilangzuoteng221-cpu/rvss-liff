@@ -71,12 +71,14 @@
         integrity="sha384-/aDQ/FnkSJY1sqXpWpgpj68GZgoWP0BfzEvQgdsdOo+fJupS3u05V/RThcp0IUx0"
         crossorigin="anonymous"></script>
 <script src="../config.js"></script>
-<script src="../assets/liff-common.js"></script>
+<script src="../assets/liff-common.js?v=20261013.1"></script>
+<script src="../assets/journey-analytics.js?v=20261013.1"></script>
 <script>
 (function () {
   'use strict';
 
   var CFG = window.RVSS_CONFIG;
+  var journey = window.RVSSJourney ? window.RVSSJourney.create('watch') : { record: function () {}, identify: function () {}, state: function () {}, flush: function () {}, source: RVSS.readSrc };
   var profile = null, src = 'unknown';
   var player = null, duration = 0, maxPct = 0, ticker = null;
   var sentMarks = {};          // 25/50/75/100 の節目を1回ずつだけ送る
@@ -84,10 +86,11 @@
 
   /* ★2026-09-30｜REAL ROOKIES で面談を予約済みの人（翌日20時台の自動LINE rookies_od から ?src=rr1017_od で来る）。
      動画はそのまま。申込ボタンを出さず、最後は「面談でお会いできるのを楽しみに」にする（守屋 9/30「ページだけ変える」）。 */
-  var entrySrc = RVSS.readSrc();
+  var entrySrc = journey.source();
   var RR_BOOKED = /^rr1017/i.test(entrySrc);
   // 直面談の前日案内から来る人も予約済み。再予約の導線と完了後のM1を出さない。
-  var MEETING_BOOKED = RR_BOOKED || RVSS.readSrc() === 'direct_interview_od';
+  var MEETING_BOOKED = RR_BOOKED || entrySrc === 'direct_interview_od';
+  journey.record('page_visible', { stage: 'entry', bookedEntry: MEETING_BOOKED });
   if (MEETING_BOOKED) {
     document.querySelector('#watch-area .lead').textContent = '面談の前に、RVSSがどんな団体かをご覧ください。';
     document.getElementById('go-interview').hidden = true;
@@ -124,6 +127,8 @@
 
   /* ---------- 記録を GAS へ送る ---------- */
   function report(event, pct) {
+    journey.state({ pct: maxPct });
+    journey.record(event === 'reissue' ? 'video_reissue' : 'video_progress', { stage: 'video', pct: pct == null ? 0 : pct });
     return RVSS.postToGas({
       kind: 'watch',
       event: event,                       // start | progress | done | reissue
@@ -190,8 +195,11 @@
       events: {
         onReady: function () {
           try { duration = player.getDuration() || 0; } catch (e) { duration = 0; }
+          journey.record('video_ready', { stage: 'video', durationSec: duration });
         },
+        onError: function (ev) { journey.record('video_error', { stage: 'video', errorCode: ev.data }); },
         onStateChange: function (ev) {
+          journey.record('video_state', { stage: 'video', playerState: ev.data, pct: maxPct });
           if (!duration) { try { duration = player.getDuration() || 0; } catch (e) {} }
           if (ev.data === YT.PlayerState.PLAYING) {
             if (!ticker) ticker = setInterval(onProgressTick, 3000);
@@ -233,12 +241,13 @@
   /* ---------- 起動 ---------- */
   RVSS.boot({
     liffKey: 'watch',
+    analytics: journey,
+    entrySrc: entrySrc,
     // 予約済みルーキーズの流入元を、初回ログイン後も同じ動画ページへ引き継ぐ。
-    loginRedirectUri: RR_BOOKED
-      ? window.location.origin + window.location.pathname + '?src=' + encodeURIComponent(entrySrc)
-      : undefined,
+    loginRedirectUri: window.location.origin + window.location.pathname + '?src=' + encodeURIComponent(entrySrc),
     onReady: function (p, s) {
       profile = p; src = s;
+      journey.identify(p);
 
       // 認証・プロフィール取得の直後に訪問を記録（「準備中」で止まる前に置く）
       if (rvssVisitTracker) {
@@ -249,9 +258,9 @@
           .catch(function () { console.warn('RVSS訪問計測に失敗しました'); });
       }
 
-      if (!CFG.YOUTUBE_ID) { RVSS.show('notready'); return; }
+      if (!CFG.YOUTUBE_ID) { journey.record('video_unavailable', { stage: 'video', result: 'missing_id' }); RVSS.show('notready'); return; }
 
-      if (isExpired()) { RVSS.show('expired'); return; }
+      if (isExpired()) { journey.record('video_expired', { stage: 'video' }); RVSS.show('expired'); return; }
 
       if (!startedAt()) {
         setStartedAt(Date.now());
@@ -279,7 +288,7 @@
      ⚠ 9/18 まで mendan を指していた。面談LIFFは枠0件なので、踏んでも選べない状態だった。 */
   document.getElementById('go-interview').addEventListener('click', function () {
     var id = (CFG.LIFF_IDS || {}).interview;
-    if (!id) { RVSS.setStatus('カジュアル面談の申し込み口がまだ準備中です。LINEでご連絡ください。', 'err'); return; }
+    if (!id) { journey.record('cta_unavailable', { stage: 'cta', result: 'missing_id' }); RVSS.setStatus('カジュアル面談の申し込み口がまだ準備中です。LINEでご連絡ください。', 'err'); return; }
     // ★2026-09-26｜ボタンを押したことを記録してから移る（「押したのに予約しなかった」を数えるため）。
     //   記録は非表示のフォーム送信なので、すぐ移ると送信が途中で切れる。0.7秒だけ待つ（記録が落ちても移動はする）。
     if (this.dataset.going) return;
@@ -289,6 +298,7 @@
     var nowPct = maxPct;
     try { if (player && duration) nowPct = Math.min(100, Math.round((player.getCurrentTime() || 0) / duration * 100)); } catch (e) {}
     report('cta', nowPct);
+    journey.record('cta_click', { stage: 'cta', pct: nowPct }); journey.flush(true);
     // 流入元を引き継ぐ（どの経路の人が面接まで来たかを最後まで追う）
     var to = 'https://liff.line.me/' + id + '?src=' + encodeURIComponent(src);
     setTimeout(function () { location.href = to; }, 700);
