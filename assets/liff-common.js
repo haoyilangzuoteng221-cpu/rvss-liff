@@ -75,7 +75,11 @@
         try { delete global[cbName]; } catch (e) { global[cbName] = undefined; }
         if (s && s.parentNode) s.parentNode.removeChild(s);
       }
-      global[cbName] = function (json) { cleanup(); resolve(json || {}); };
+      global[cbName] = function (json) {
+        cleanup();
+        if (json && json.ok === false) reject(new Error('schedule_rejected'));
+        else resolve(json || {});
+      };
       var s = document.createElement('script');
       // ★種別は GAS 側で絞る（予定タブを持っているのは向こう）。
       //   kind 未指定なら今までどおり合説の候補日が返る。

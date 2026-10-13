@@ -1,7 +1,7 @@
 /* RVSS予約導線の操作記録。入力値・トークン・URLは記録しない。保存確認後だけ送信待ちを消す。 */
 (function (w) {
   'use strict';
-  var VERSION = '20261013.2', QUEUE = 'rvss_ja_queue_v1', TTL = 7 * 86400000;
+  var VERSION = '20261013.3', QUEUE = 'rvss_ja_queue_v1', TTL = 7 * 86400000;
   var allowed = ['page_open', 'auth_start', 'auth_redirect', 'auth_ready', 'auth_error', 'form_visible',
     'schedule_start', 'schedule_ready', 'schedule_empty', 'schedule_error', 'field_focus', 'field_state',
     'submit_click', 'validation_error', 'submit_attempt', 'transport_response', 'transport_error',
