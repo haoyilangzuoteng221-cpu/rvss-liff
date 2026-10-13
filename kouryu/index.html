@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>RVSS 現役メンバーとZoomで20分話す｜お申し込み</title>
+<title>RVSS 就活・将来の相談会（現役メンバーと20分）｜お申し込み</title>
 <link rel="stylesheet" href="../assets/common.css">
 <style>
   /* 日付ごとに時刻ボタンを並べる。20分刻みで5日先まで（最大100枠ほど）出るので、日付を横に送って選ぶ */
@@ -34,8 +34,8 @@
            width="900" height="300">
     </div>
 
-    <h1 id="title">現役メンバーとZoomで20分話す</h1>
-    <p class="lead">RVSSの現役メンバーと20分、Zoomで直接話せる場です。ご都合の良い時間帯を選んでください。</p>
+    <h1 id="title">就活・将来の相談会（現役メンバーと20分）</h1>
+    <p class="lead">就活のこと、将来やりたいこと、大学生活の悩みを、RVSSの現役メンバーにZoomで20分相談できる場です。RVSSについての質問もどうぞ。ご都合の良い時間帯を選んでください。</p>
 
     <div class="field">
       <label>ご希望の日時<span class="req">必須</span></label>
@@ -58,6 +58,20 @@
     <div class="field">
       <label for="school">大学・学年<span class="req">必須</span></label>
       <input type="text" id="school" placeholder="〇〇大学 〇〇学部 2年">
+    </div>
+
+    <!-- ★2026-10-13 相談会化（守屋 文面OK）｜当日の話の材料。GAS は 交流会申込_LIFF受 の M列（相談したいこと）に入れる -->
+    <div class="field">
+      <label for="theme">相談したいこと<span class="req">必須</span></label>
+      <select id="theme">
+        <option value="">選んでください</option>
+        <option>就活の進め方</option>
+        <option>ガクチカ・自己PR</option>
+        <option>AI・スキルを身につけたい</option>
+        <option>やりたいことが見つからない</option>
+        <option>RVSSについて聞きたい</option>
+        <option>その他</option>
+      </select>
     </div>
 
     <button id="submit" type="button">この日時で申し込む</button>
@@ -90,7 +104,7 @@
   var profile = null, src = 'unknown', sending = false;
   var items = [], picked = null, day = null;
 
-  var NAME = CFG.KOURYU_NAME || '現役メンバーとZoomで20分話す';
+  var NAME = CFG.KOURYU_NAME || '就活・将来の相談会（現役メンバーと20分）';
   document.title = 'RVSS ' + NAME + '｜お申し込み';
   document.getElementById('title').textContent = NAME;   // ★2026-09-29 「〜話すのお申し込み」にならないよう名前だけ
 
@@ -183,6 +197,8 @@
     if (!name) { return RVSS.setStatus('お名前を入力してください。', 'err'); }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { return RVSS.setStatus('メールアドレスの形式をご確認ください。', 'err'); }
     if (!school) { return RVSS.setStatus('大学・学年を入力してください。', 'err'); }
+    var theme = document.getElementById('theme').value;
+    if (!theme) { return RVSS.setStatus('相談したいことを選んでください。', 'err'); }
 
     sending = true;
     var btn = document.getElementById('submit');
@@ -205,6 +221,7 @@
         name: name,
         email: email,
         school: school,
+        theme: theme,
         planDate: picked.value,
         src: src,
         lineUserId: (profile && profile.userId) || '',
