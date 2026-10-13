@@ -60,8 +60,8 @@
         integrity="sha384-bF87t8MAX1DVifpxK9/TfKPG757JY76E6FULbuWdrgOYCKdz3I5kXpXhimiy4AQ9"
         crossorigin="anonymous"></script>
 <script src="../config.js"></script>
-<script src="../assets/liff-common.js?v=20261013.1"></script>
-<script src="../assets/journey-analytics.js?v=20261013.1"></script>
+<script src="../assets/liff-common.js?v=20261013.2"></script>
+<script src="../assets/journey-analytics.js?v=20261013.2"></script>
 <script>
 (function () {
   'use strict';
@@ -121,7 +121,8 @@
           .catch(function () { console.warn('RVSS訪問計測に失敗しました'); });
       }
       RVSS.show('form-area');
-      journey.record('form_visible', { stage: 'form', result: 'visible' });
+      var initialState = inputState(); journey.state(initialState);
+      journey.record('form_visible', Object.assign({ stage: 'form', result: 'visible' }, initialState));
       // ★2026-09-26｜予約ページを開いたことを視聴ログへ残す（「開いたのに予約しなかった」を数えるため）。落ちても予約は止めない。
       if (p && p.userId) {
         RVSS.postToGas({ kind: 'watch', event: 'form', pct: '', src: s, lineUserId: p.userId,

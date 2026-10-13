@@ -71,8 +71,8 @@
         integrity="sha384-/aDQ/FnkSJY1sqXpWpgpj68GZgoWP0BfzEvQgdsdOo+fJupS3u05V/RThcp0IUx0"
         crossorigin="anonymous"></script>
 <script src="../config.js"></script>
-<script src="../assets/liff-common.js?v=20261013.1"></script>
-<script src="../assets/journey-analytics.js?v=20261013.1"></script>
+<script src="../assets/liff-common.js?v=20261013.2"></script>
+<script src="../assets/journey-analytics.js?v=20261013.2"></script>
 <script>
 (function () {
   'use strict';
@@ -127,7 +127,6 @@
 
   /* ---------- 記録を GAS へ送る ---------- */
   function report(event, pct) {
-    journey.state({ pct: maxPct });
     journey.record(event === 'reissue' ? 'video_reissue' : 'video_progress', { stage: 'video', pct: pct == null ? 0 : pct });
     return RVSS.postToGas({
       kind: 'watch',
@@ -144,9 +143,11 @@
   function loadYouTube() {
     return new Promise(function (resolve) {
       if (window.YT && window.YT.Player) return resolve();
-      window.onYouTubeIframeAPIReady = resolve;
+      var timer = setTimeout(function () { journey.record('video_error', { stage: 'video', errorCode: 1000 }); }, 20000);
+      window.onYouTubeIframeAPIReady = function () { clearTimeout(timer); resolve(); };
       var s = document.createElement('script');
       s.src = 'https://www.youtube.com/iframe_api';
+      s.onerror = function () { clearTimeout(timer); journey.record('video_error', { stage: 'video', errorCode: 1001 }); };
       document.head.appendChild(s);
     });
   }
@@ -157,6 +158,7 @@
     try { t = player.getCurrentTime() || 0; } catch (e) { return; }
     var pct = Math.min(100, Math.round((t / duration) * 100));
     if (pct > maxPct) maxPct = pct;
+    journey.state({ pct: maxPct, positionSec: t, durationSec: duration });
 
     document.getElementById('bar-fill').style.width = maxPct + '%';
     document.getElementById('progress-text').textContent =
