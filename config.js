@@ -42,7 +42,7 @@ window.RVSS_CONFIG = {
 
   // 視聴LIFFに出す動画。YouTube の限定公開ID。
   // 入るまでは watch ページが「準備中」を出して止まる（空のプレイヤーを見せない）。
-  YOUTUBE_ID: 'ZsRlQcT1Efw',   // 2026-10-09 オンデマンド v9（杉本さん 10/8 指示の表現修正・349秒・チャンネル RVSS・限定公開・埋め込み可）。旧 v8＝lmkSz3wLtSE（10/1〜10/9）／v5＝yrXmfHOhBwo
+  YOUTUBE_ID: 'ZhhdgT-HhlY',   // 2026-10-14 オンデマンド v9 HERO’ZZ除去版（3:55修正・349秒・RVSS・限定公開・埋め込み可・守屋が全編確認し公開承認）。旧 v9＝ZsRlQcT1Efw／v8＝lmkSz3wLtSE／v5＝yrXmfHOhBwo
 
   // 視聴期限（時間）。決定10（2026-08-25）＝48時間。
   WATCH_DEADLINE_HOURS: 48,
