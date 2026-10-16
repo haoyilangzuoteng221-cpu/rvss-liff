@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>REAL ROOKIES｜AFTER FORM</title>
+<link rel="stylesheet" href="../assets/common.css">
+<style>fieldset { border: 0; padding: 0; min-width: 0; } legend { font-weight: 600; margin-bottom: 8px; } [hidden] { display: none !important; }</style>
+</head>
+<body>
+<main class="wrap">
+  <div id="loading" class="loading">読み込んでいます…</div>
+  <div id="boot-status" class="status" role="status" hidden></div>
+  <div id="form-area" hidden>
+    <h1>REAL ROOKIES｜AFTER FORM</h1>
+    <p class="lead">REAL ROOKIES、お疲れさまでした！<br>今日の体験について、3〜4分ほどで回答をお願いします。<br>今後のイベントづくりや、終了後の交流・フォローにも活用させていただきます。</p>
+    <form id="survey-form">
+      <div class="field"><label for="name">お名前（必須）</label><input id="name" type="text" autocomplete="name" maxlength="100" required></div>
+      <div id="questions"></div>
+      <button id="submit" type="submit">回答を送信する</button>
+      <div id="status" class="status" role="status" hidden></div>
+    </form>
+  </div>
+  <div id="done" class="done" role="status" hidden><h2>ご回答ありがとうございます！</h2><p>回答を受け付けました。会場の交流・プログラムへお戻りください。</p></div>
+</main>
+<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+<script src="../config.js"></script>
+<script src="../assets/liff-common.js"></script>
+<script src="../assets/rookies-survey.js"></script>
+<script>RVSS_ROOKIES_SURVEY.start();</script>
+</body>
+</html>

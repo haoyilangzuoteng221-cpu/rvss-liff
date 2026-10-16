@@ -10,6 +10,10 @@ window.RVSS_CONFIG = {
   GAS_ENDPOINT:
     'https://script.google.com/macros/s/AKfycbxtbP-FcEnrjQT8m50gZ7VaMoUZJncTwdNHE37QdJXyKKeU0kIELi3ffCNLpuJ5_dkm/exec',
 
+  // REAL ROOKIES 終了後アンケート専用。既存フォームの公開先は変更しない。
+  ROOKIES_SURVEY_GAS_ENDPOINT:
+    'https://script.google.com/macros/s/AKfycbxrLt-cGq5yFkSG46OxS73oBdP4Gs2MECpRIfN_AeQh30SjhvOFIaUJ9qr-ARNEYb1g/exec',
+
   // ★LINE Developers で LIFF アプリを作ったら、ここへ ID を貼る。
   //   3本とも同じチャネル（2010676990）配下で作る。
   //   エンドポイントURL＝ https://<ユーザー名>.github.io/rvss-liff/<パス>/
@@ -27,7 +31,9 @@ window.RVSS_CONFIG = {
     kouryu: '2011618269-iaNe966R',
     // ⑥分科会の参加ページ → /bunkakai/（2026-10-06 公式LINE定例）
     //   2026-10-06 発行（LIFFアプリ名「RVSS 分科会の参加」・Full・profile・友だち追加 On (Normal)）
-    bunkakai: '2011618269-R53fOad8'
+    bunkakai: '2011618269-R53fOad8',
+    // ⑦REAL ROOKIES 終了後アンケート（Full・openid/profile・友だち追加 On (Normal)）
+    rookiesSurvey: '2011618269-w5xaORrd'
     // ⚠ 土曜定例（体験参加）はここに置かない。情シス版が本番＝
     //   https://rvss-dx-ten.vercel.app/liff/saturday（2026-09-11 に井上さんが本番反映・
     //   9/15 時点で実申込3件が『土曜定例申込_LIFF受』に入っている）。
