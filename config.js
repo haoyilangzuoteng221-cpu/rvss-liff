@@ -14,6 +14,11 @@ window.RVSS_CONFIG = {
   ROOKIES_SURVEY_GAS_ENDPOINT:
     'https://script.google.com/macros/s/AKfycbxrLt-cGq5yFkSG46OxS73oBdP4Gs2MECpRIfN_AeQh30SjhvOFIaUJ9qr-ARNEYb1g/exec',
 
+  // ★2026-10-17 守屋＝面談（面接LIFF）の11月枠は来週の半ばから出す。
+  //   予定タブには11月の行が入っている（予約済みの人の記録を守るため消さない）ので、画面側で月ごとに公開日を持つ。
+  //   キー＝枠の年月(YYYYMM)、値＝この日(YYYYMMDD・端末の日付)から表示。月が来て不要になった行は消してよい。
+  INTERVIEW_SLOT_REVEAL: { '202611': '20261021' },
+
   // ★LINE Developers で LIFF アプリを作ったら、ここへ ID を貼る。
   //   3本とも同じチャネル（2010676990）配下で作る。
   //   エンドポイントURL＝ https://<ユーザー名>.github.io/rvss-liff/<パス>/

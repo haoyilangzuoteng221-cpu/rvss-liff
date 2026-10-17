@@ -113,6 +113,17 @@
       .map(function (x) { return x.it; });
   }
 
+  /** 公開日前の月の枠を外す（reveal＝{YYYYMM: 'YYYYMMDD'}）。config に無い月はそのまま出す。 */
+  function hideUnrevealed_(items, reveal, now) {
+    if (!reveal) return items;
+    var d = now || new Date();
+    var today = '' + d.getFullYear() + ('0' + (d.getMonth() + 1)).slice(-2) + ('0' + d.getDate()).slice(-2);
+    return items.filter(function (it) {
+      var from = reveal[dateTimeKey_(it).slice(0, 6)];
+      return !from || today >= from;
+    });
+  }
+
   /**
    * 日程プルダウンを埋める。
    * @param {HTMLSelectElement} sel
@@ -129,6 +140,7 @@
       }
       // ★2026-10-17 守屋＝GAS は予定タブの行の順で返すので、11月の後ろに10月の枠が埋もれていた。早い日時順に並べる。
       items = sortByDateTime_(items);
+      if (String(kindFilter || '').indexOf('面接') >= 0) items = hideUnrevealed_(items, CFG.INTERVIEW_SLOT_REVEAL);
       while (sel.firstChild) sel.removeChild(sel.firstChild);
       var head = document.createElement('option');
       head.value = ''; head.textContent = '選んでください';
