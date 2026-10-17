@@ -90,6 +90,29 @@
     });
   }
 
+  /** 日程の並び替え用キー。date(yyyy-MM-dd) が無ければ表示文字列の M/D から作る。読めない枠は末尾。 */
+  function dateTimeKey_(it) {
+    var label = String(it.label || it.value || '');
+    var key = '';
+    var d = String(it.date || '').match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (d) key = d[1] + d[2] + d[3];
+    else {
+      var md = label.match(/(\d{1,2})\/(\d{1,2})/);
+      if (!md) return '99999999';
+      var now = new Date(), y = now.getFullYear();
+      if (Number(md[1]) < now.getMonth() + 1 - 6) y += 1;   // 年をまたぐ枠（12月に1月の枠）
+      key = y + ('0' + md[1]).slice(-2) + ('0' + md[2]).slice(-2);
+    }
+    var t = label.match(/(\d{1,2})[:：](\d{2})/);
+    return key + (t ? ('0' + t[1]).slice(-2) + t[2] : '9999');
+  }
+
+  function sortByDateTime_(items) {
+    return items.map(function (it, i) { return { it: it, i: i, k: dateTimeKey_(it) }; })
+      .sort(function (a, b) { return a.k < b.k ? -1 : a.k > b.k ? 1 : a.i - b.i; })
+      .map(function (x) { return x.it; });
+  }
+
   /**
    * 日程プルダウンを埋める。
    * @param {HTMLSelectElement} sel
@@ -104,6 +127,8 @@
       if (!items.length && !kindFilter && (j.dates || []).length) {
         items = (j.dates || []).map(function (d) { return { value: d, label: d }; });
       }
+      // ★2026-10-17 守屋＝GAS は予定タブの行の順で返すので、11月の後ろに10月の枠が埋もれていた。早い日時順に並べる。
+      items = sortByDateTime_(items);
       while (sel.firstChild) sel.removeChild(sel.firstChild);
       var head = document.createElement('option');
       head.value = ''; head.textContent = '選んでください';
