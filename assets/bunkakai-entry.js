@@ -8,7 +8,7 @@
   function randomId() { var b = new Uint8Array(16); global.crypto.getRandomValues(b); return Array.from(b).map(function (n) { return n.toString(16).padStart(2, '0'); }).join(''); }
   function post(data) {
     if (preview) return Promise.resolve(data.action === 'bootstrap' ? {ok:true,action:'bootstrap',slots:[
-      {id:'ai_20261030',label:'10月30日（金）21:00開始（講義30分）'}, {id:'ai_20261102',label:'11月2日（月）21:00開始（講義30分）'}
+      {id:'ai_20261030',label:'10月30日（金）21:00〜21:30'}, {id:'ai_20261102',label:'11月2日（月）21:00〜21:30'}
     ]} : {ok:true,action:'submit',responseId:'確認用・保存なし',slotLabel:slots.filter(function (s) {return s.id === data.slotId;})[0].label});
     return new Promise(function (resolve, reject) {
       if (!/^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec$/.test(ENDPOINT)) { reject(new Error('not_ready')); return; }
@@ -33,7 +33,7 @@
   function boot() {
     post({action:'bootstrap',accessToken:preview?'':token()}).then(function(r){
       slots=r.slots||[]; if(!slots.length) throw new Error('closed');
-      slots.forEach(function(s){var label=document.createElement('label');label.className='session';var radio=document.createElement('input');radio.type='radio';radio.name='slot';radio.value=s.id;radio.required=true;var span=document.createElement('span');var strong=document.createElement('strong');strong.textContent=s.label.split('21:00')[0];var small=document.createElement('small');small.textContent='21:00開始 · 前半30分の講義';span.appendChild(strong);span.appendChild(small);label.appendChild(radio);label.appendChild(span);document.getElementById('sessions').appendChild(label);});
+      slots.forEach(function(s){var label=document.createElement('label');label.className='session';var radio=document.createElement('input');radio.type='radio';radio.name='slot';radio.value=s.id;radio.required=true;var span=document.createElement('span');var strong=document.createElement('strong');strong.textContent=s.label.split('21:00')[0];var small=document.createElement('small');small.textContent='21:00〜21:30';span.appendChild(strong);span.appendChild(small);label.appendChild(radio);label.appendChild(span);document.getElementById('sessions').appendChild(label);});
       global.RVSS.hide('loading');global.RVSS.show('form-area');
     }).catch(function(e){global.RVSS.hide('loading');global.RVSS.setBootStatus(errorText(e.message),'err');});
   }

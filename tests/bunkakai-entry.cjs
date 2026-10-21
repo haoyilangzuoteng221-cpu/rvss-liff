@@ -7,7 +7,7 @@ function setup(mode='ok'){
     const p=Object.fromEntries(this.children.map(n=>[n.name,n.value]));posts.push(p);
     const isBoot=bootstrap;bootstrap=false;
     if(!isBoot&&mode==='noAck')return;
-    queueMicrotask(()=>{const result=isBoot?{ok:true,action:'bootstrap',slots:[{id:'ai_20261030',label:'10月30日（金）21:00開始（講義30分）'}]}:mode==='reject'?{ok:false,action:'submit',error:'closed'}:{ok:true,action:'submit',slotLabel:'10月30日（金）21:00開始（講義30分）',...(mode==='noReceipt'?{}:{responseId:'receipt-fixture'})};
+    queueMicrotask(()=>{const result=isBoot?{ok:true,action:'bootstrap',slots:[{id:'ai_20261030',label:'10月30日（金）21:00〜21:30'}]}:mode==='reject'?{ok:false,action:'submit',error:'closed'}:{ok:true,action:'submit',slotLabel:'10月30日（金）21:00〜21:30',...(mode==='noReceipt'?{}:{responseId:'receipt-fixture'})};
       const packet={origin:(!isBoot&&mode==='forged')?'https://evil.invalid':'https://fixture-script.googleusercontent.com',source:{},data:{type:'rvss-bunkakai-entry',requestId:p.requestId,result}};messages.forEach(fn=>fn(packet));});
   }};}
   ['entry-form','submit','loading','boot-status','sessions','form-area','done','done-when','receipt','status','preview-note','name'].forEach(id=>els[id]=node(id));
