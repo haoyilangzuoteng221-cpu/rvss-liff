@@ -1,0 +1,22 @@
+:root{--accent:#087a59;--accent-press:#076449;--fg:#152c48;--fg-sub:#536780}
+body{padding:24px 16px 32px;background:#f4f8fb;color:var(--fg)}
+.wrap{max-width:640px;margin:0 auto}.webinar{overflow:hidden;border-radius:20px;background:#fff;border:1px solid #e1eaf1}
+.webinar-image{display:block;width:100%;height:auto}.webinar-copy{padding:22px 26px 24px}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.07em;color:#357598;margin:0 0 8px}
+h1{font-size:25px;line-height:1.55;letter-spacing:.01em;margin:0 0 10px}.lead{font-size:15px;line-height:1.85;margin:0 0 15px;color:var(--fg-sub)}
+.summary{display:flex;flex-wrap:wrap;gap:8px}.summary span{font-size:12px;font-weight:600;background:#eaf4fb;border-radius:6px;padding:5px 10px}
+.entry-card{background:#fff;border:1px solid #e1eaf1;border-radius:20px;margin-top:18px;padding:26px}
+.form-heading h2{font-size:21px;margin:0 0 3px}.form-heading p{color:var(--fg-sub);font-size:13px;margin:0}
+fieldset{border:0;padding:0;margin:24px 0}legend,.field>label{font-size:15px;font-weight:700;margin-bottom:12px;padding:0}
+.step{display:inline-flex;align-items:center;justify-content:center;width:23px;height:23px;margin-right:8px;background:#edf3f8;border-radius:50%;font-size:12px;color:#32506d}
+.sessions{display:grid;gap:10px}.session{display:flex;align-items:center;gap:12px;min-height:84px;margin:0;padding:15px;border:1px solid #bdccd9;border-radius:12px;background:#fff;cursor:pointer}
+.session:hover{background:#f5fafc}.session:has(input:checked){border-color:var(--accent);background:#eef8f4;box-shadow:0 0 0 1px var(--accent)}
+.session:focus-within{outline:3px solid #b3d9ca;outline-offset:3px}.session input{width:20px;height:20px;margin:0;flex-shrink:0;accent-color:var(--accent)}
+.session strong{display:block;font-size:18px;line-height:1.5}.session small{display:block;font-size:12px;font-weight:400;color:var(--fg-sub);margin-top:3px}
+.field{margin-bottom:24px}.field input{min-height:52px;border-color:#bdccd9;border-radius:10px}
+button{background:var(--accent);min-height:54px;border-radius:12px;font-size:16px}button:focus-visible{outline:3px solid #9bd2be;outline-offset:3px}
+.privacy{font-size:11px;line-height:1.7;color:#63748a;margin:13px 0 0;text-align:center}.status{white-space:pre-line}
+.preview{font-size:12px;padding:9px 12px;background:#fff5d4;border-radius:8px;margin-bottom:12px;color:#725617}
+#done{text-align:center;padding:32px 24px}#done h2{font-size:21px;margin:12px 0}#done p{font-size:14px}.done-mark{display:inline-grid;place-items:center;width:48px;height:48px;border-radius:50%;background:#e8f5ed;color:var(--accent);font-size:26px}
+footer{text-align:center;font-size:10px;font-weight:700;letter-spacing:.12em;color:#74849a;margin-top:24px}
+@media(max-width:420px){body{padding:12px 12px 28px}.webinar{border-radius:15px}.webinar-copy{padding:19px 18px}h1{font-size:21px}.entry-card{padding:22px 18px;border-radius:15px}.privacy{text-align:left}}
