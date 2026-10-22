@@ -3,19 +3,81 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>RVSS 現役メンバーと話そう（Zoom・20分）｜お申し込み</title>
-<link rel="stylesheet" href="../assets/common.css">
+<title>RVSS質問会（Zoom・20分）｜お申し込み</title>
 <style>
-  /* 日付ごとに時刻ボタンを並べる。20分刻みで5日先まで（最大100枠ほど）出るので、日付を横に送って選ぶ */
-  .days { display: flex; gap: 8px; overflow-x: auto; padding: 4px 0 10px; -webkit-overflow-scrolling: touch; }
-  .days button { flex: 0 0 auto; width: auto; padding: 10px 14px; margin: 0; font-size: 15px;
-                 background: #fff; color: #333; border: 1px solid #ccc; border-radius: 999px; }
-  .days button.on { background: #06c755; color: #fff; border-color: #06c755; }
+  /* ★2026-10-22 守屋「LP風にしたい」＋入力は日時だけ（メールも取らない）。
+     見た目はオンデマンド視聴ページのLP案（01_採用戦略/LP比較_20261021/v5）の生成りの地・濃紺の文字に揃える。
+     ★2026-10-22 守屋「筆記体が微妙・RVSSは公式のフォントを」→ ロゴは公式の画像（濃紺の帯）、文字は標準のゴシック体（太字700・字間を空けない）、
+       小見出しは参考LP（kubell・SHElikes など）の型でロゴの青の帯に白い字。写真の注記は外した（守屋）。
+     並び＝冒頭（誰と・何分・どうやって・何が聞けるか）→ 聞けることの例 → 申込のあとの流れ → 日時を選ぶ。
+     借りた型と出典＝04_LINE配信/2026-10-22_質問会_差し替え案.md。 */
+  :root { --paper: #f8f6f0; --ink: #182d3b; --sub: #4a5a66; --line: #182d3b1f; --err: #c0362c; --pad: 20px;
+          --band: #0a1227;   /* 公式ロゴを載せる濃紺（liff/assets/kouryu-logo.jpg の帯と同じ色） */
+          --blue: #246fa7; } /* 公式ロゴの青（バーの上端の色） */
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--paper); color: var(--ink);
+         font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic", Meiryo, sans-serif;
+         font-size: 15px; line-height: 1.75; -webkit-font-smoothing: antialiased; }
+  button { font-family: inherit; }
+  /* 改行は意味の切れ目だけで起こす（語の途中で折り返さない） */
+  .ph { display: inline-block; }
+  .wrap { max-width: 520px; margin: 0 auto; }
+
+  /* 公式ロゴ（03_合同説明会/リール/logo/rvss_logo_official.png を余白を詰めて縮小）。「REAL VALUE」が白なので濃紺の帯に置く */
+  .top { display: flex; align-items: center; height: 60px; padding: 0 var(--pad); background: var(--band); }
+  .logo { display: block; height: 40px; width: auto; }
+
+  .kicker { display: inline-block; margin: 0 0 12px; padding: 3px 10px; border-radius: 4px; background: var(--blue); color: #fff;
+            font-size: 12.5px; font-weight: 700; line-height: 1.6; }
+  h1 { margin: 0; font-size: clamp(25px, 7.6vw, 30px); line-height: 1.45; font-weight: 700; }
+  h2 { margin: 0 0 12px; font-size: 21px; line-height: 1.5; font-weight: 700; }
+  .lead { margin: 12px 0 0; color: var(--sub); }
+  .facts { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 0; padding: 0; list-style: none; }
+  .facts li { font-size: 13px; font-weight: 700; padding: 4px 11px; border: 1px solid var(--line); border-radius: 999px; background: #fff; }
+
+  .hero { padding: 24px var(--pad) 26px; }
+  .cta { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; margin: 20px 0 0;
+         min-height: 60px; padding: 12px 18px 12px 20px; background: var(--ink); color: #fff; border: 0; border-radius: 10px;
+         font-size: 16px; font-weight: 700; line-height: 1.4; text-align: left; cursor: pointer; }
+  .cta-arrow { flex: 0 0 34px; height: 34px; display: grid; place-items: center; border: 1px solid #ffffff59; border-radius: 50%; font-weight: 400; }
+  .photo { margin: 0; aspect-ratio: 4 / 3; overflow: hidden; }
+  .photo img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+  .sec { padding: 32px var(--pad); border-top: 1px solid var(--line); }
+  .asks { margin: 0; padding: 0; list-style: none; }
+  .asks li { padding: 11px 0 11px 22px; border-bottom: 1px solid var(--line); position: relative; font-weight: 600; }
+  .asks li::before { content: ""; position: absolute; left: 4px; top: 21px; width: 7px; height: 7px; border-radius: 50%; background: var(--blue); }
+  .hint { margin: 14px 0 0; font-size: 14px; color: var(--sub); }
+  .steps { margin: 0; padding: 0; list-style: none; counter-reset: s; }
+  .steps li { counter-increment: s; display: flex; gap: 12px; padding: 10px 0; }
+  .steps li::before { content: counter(s); flex: 0 0 26px; height: 26px; display: grid; place-items: center; margin-top: 1px;
+                      border-radius: 50%; background: var(--blue); color: #fff; font-size: 13px; font-weight: 700; }
+
+  /* 日時を選ぶ（色面を変えて、ここが申込だと分かるようにする） */
+  .book { padding: 32px var(--pad) 36px; background: #fff; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .days { display: flex; gap: 8px; overflow-x: auto; padding: 2px 0 12px; -webkit-overflow-scrolling: touch; }
+  .days button { flex: 0 0 auto; padding: 9px 14px; font-size: 15px; font-weight: 700; background: #fff; color: var(--ink);
+                 border: 1px solid #c9ced3; border-radius: 999px; cursor: pointer; }
+  .days button.on { background: var(--ink); color: #fff; border-color: var(--ink); }
   .times { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-  .times button { margin: 0; padding: 12px 0; font-size: 16px; background: #fff; color: #333;
-                  border: 1px solid #ccc; border-radius: 10px; }
-  .times button.on { background: #06c755; color: #fff; border-color: #06c755; }
-  .picked { margin-top: 10px; font-weight: bold; }
+  .times button { padding: 12px 0; font-size: 16px; font-weight: 700; background: #fff; color: var(--ink);
+                  border: 1px solid #c9ced3; border-radius: 10px; cursor: pointer; }
+  .times button.on { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .picked { margin: 14px 0 0; padding: 10px 12px; border-radius: 10px; background: #e8f0f7; font-size: 14px; font-weight: 700; }
+  .note { margin: 10px 0 0; font-size: 13px; color: var(--sub); }
+  .submit { margin-top: 18px; justify-content: center; }
+  .submit[disabled] { background: #b9bcc0; cursor: default; }
+  .status { margin: 14px 0 0; padding: 12px 14px; border-radius: 10px; font-size: 14px; background: #f2f3f5; }
+  .status.err { background: #fdecea; color: var(--err); }
+
+  .foot { display: flex; justify-content: center; padding: 22px var(--pad) 28px; background: var(--band); }
+  .loading { text-align: center; color: var(--sub); padding: 48px 0; font-size: 14px; }
+  .done { padding: 40px var(--pad); text-align: center; }
+  .done h2 { margin-bottom: 10px; }
+  .done p { margin: 0; color: var(--sub); font-size: 14px; }
+  .done .kicker { margin-bottom: 12px; color: #fff; font-size: 12.5px; }   /* 上の .done p の色を小見出しに当てない */
+  [hidden] { display: none !important; }
 </style>
 </head>
 <body>
@@ -25,64 +87,68 @@
   <div id="boot-status" class="status" hidden></div>
 
   <div id="form-area" hidden>
-    <!-- ★冒頭に RVSS のロゴ（9/25 守屋「フォームに画像」→「RVSSのロゴとかがいいな」）。
-         画像＝assets/kouryu-logo.jpg（公式ロゴ 03_合同説明会/リール/logo/rvss_logo_official.png を、
-         公式LINE画像と同じ濃紺の帯に載せたもの。ロゴの「REAL VALUE」が白文字なので白背景には直接置けない）。 -->
-    <div class="hero">
-      <img src="../assets/kouryu-logo.jpg"
-           alt="REAL VALUE STUDENTS"
-           width="900" height="300">
-    </div>
+    <header class="top"><img class="logo" src="../assets/rvss-logo-official.png" alt="REAL VALUE STUDENTS" width="480" height="246"></header>
 
-    <h1 id="title">現役メンバーと話そう（Zoom・20分）</h1>
-    <p class="lead">RVSSの現役メンバーと、Zoomで20分話せる場です。RVSSのこと、普段の活動、大学生活や就活のことなど、気になることを何でもどうぞ。ご都合の良い時間帯を選んでください。</p>
+    <!-- 冒頭：誰と・何分・どうやって・何が聞けるか（実例調査で共通していた型） -->
+    <section class="hero">
+      <!-- 「面談はまだ少し早いかも」＝自動文面 ondemand_m3 の冒頭（10/13 守屋 文面OK） -->
+      <p class="kicker"><span class="ph">「面談はまだ少し早いかも」</span><span class="ph">という方へ</span></p>
+      <h1 id="title"><span class="ph">気になることを、</span><span class="ph">現役メンバーに</span><span class="ph">聞けます。</span></h1>
+      <p class="lead"><span class="ph" id="name-line">RVSS質問会</span><span class="ph">では、</span><span class="ph">RVSSの現役メンバーに</span><span class="ph">Zoomで20分、</span><span class="ph">何でも質問できます。</span></p>
+      <ul class="facts"><li>Zoom</li><li>20分</li><li>日時を選ぶだけで申込</li></ul>
+      <button class="cta" type="button" id="go-book"><span>日時を選ぶ</span><span class="cta-arrow" aria-hidden="true">↓</span></button>
+    </section>
+    <figure class="photo"><img src="../assets/kouryu-members.jpg" alt="RVSSのメンバーの集合写真" width="960" height="720"></figure>
 
-    <div class="field">
-      <label>ご希望の日時<span class="req">必須</span></label>
+    <!-- 聞けることの例＝自動文面 teirei_warm（10/18 守屋 OK）と ondemand_m3（10/13 守屋 OK）の箇条から -->
+    <section class="sec" aria-labelledby="asks-title">
+      <p class="kicker">たとえば、こんなこと</p>
+      <h2 id="asks-title"><span class="ph">活動のことも、</span><span class="ph">大学生活や就活のことも。</span></h2>
+      <ul class="asks">
+        <li>普段どんな活動をしているのか</li>
+        <li><span class="ph">メンバーはRVSSを</span><span class="ph">どう活用しているのか</span></li>
+        <li>どんな学生が参加しているのか</li>
+        <li>就活、何から始めればいい？</li>
+        <li>やりたいことがまだ見つからない</li>
+      </ul>
+      <!-- 自動文面 zadan_today の一文 -->
+      <p class="hint"><span class="ph">聞きたいことをひとつ考えておくと、</span><span class="ph">当日がスムーズです。</span></p>
+    </section>
+
+    <!-- 申込のあとの流れ＝確認LINE（申込直後）・前日20時台・開始2時間前のLINE（交流会_20260923.js／配信追加_20260926.js の実装どおり） -->
+    <section class="sec" aria-labelledby="flow-title">
+      <p class="kicker">申し込んだあと</p>
+      <h2 id="flow-title">当日までの流れ</h2>
+      <ol class="steps">
+        <li><span>下で日時を選んで申し込む</span></li>
+        <li><span><span class="ph">LINEに、確認のメッセージと</span><span class="ph">ZoomのURLが届く</span></span></li>
+        <li><span><span class="ph">前日の夜と、開始の2時間前にも</span><span class="ph">LINEでお知らせ</span></span></li>
+        <li><span>当日、Zoomで20分</span></li>
+      </ol>
+    </section>
+
+    <!-- 日時を選ぶ。★入力はこれだけ（2026-10-22 守屋＝氏名・メール・大学学年・話したいことは取らない。氏名は LINE の表示名） -->
+    <section class="book" id="book" aria-labelledby="book-title">
+      <p class="kicker">お申し込み</p>
+      <h2 id="book-title">ご希望の日時を選ぶ</h2>
       <div id="days" class="days"></div>
       <div id="times" class="times"></div>
       <p id="picked" class="picked" hidden></p>
       <p id="noslot" class="note" hidden>いまお選びいただける時間がありません。時間をおいて開き直してください。</p>
-    </div>
+      <button id="submit" class="cta submit" type="button">この日時で申し込む</button>
+      <div id="status" class="status" hidden></div>
+      <!-- 氏名を自動で取るので、その旨を申込の場所に書く。日程変更は自動文面 zadan_confirm の案内どおり -->
+      <p class="note"><span class="ph">お名前は、LINEの表示名で</span><span class="ph">受け付けます。</span><br><span class="ph">日程を変えたいときは、</span><span class="ph">公式LINEへご連絡ください。</span></p>
+    </section>
 
-    <div class="field">
-      <label for="name">お名前<span class="req">必須</span></label>
-      <input type="text" id="name" autocomplete="name" placeholder="山田 太郎">
-    </div>
-
-    <div class="field">
-      <label for="email">メールアドレス<span class="req">必須</span></label>
-      <input type="email" id="email" autocomplete="email" inputmode="email" placeholder="example@gmail.com">
-    </div>
-
-    <div class="field">
-      <label for="school">大学・学年<span class="req">必須</span></label>
-      <input type="text" id="school" placeholder="〇〇大学 〇〇学部 2年">
-    </div>
-
-    <!-- ★2026-10-13 相談会化（守屋 文面OK）｜当日の話の材料。GAS は 交流会申込_LIFF受 の M列（相談したいこと）に入れる。
-         ★2026-10-18 守屋「相談会は上から」→表記を「現役メンバーと話そう」へ。項目名は「話したいこと」、RVSSを先頭に（値は同じ） -->
-    <div class="field">
-      <label for="theme">話したいこと<span class="req">必須</span></label>
-      <select id="theme">
-        <option value="">選んでください</option>
-        <option>RVSSについて聞きたい</option>
-        <option>就活の進め方</option>
-        <option>ガクチカ・自己PR</option>
-        <option>AI・スキルを身につけたい</option>
-        <option>やりたいことが見つからない</option>
-        <option>その他</option>
-      </select>
-    </div>
-
-    <button id="submit" type="button">この日時で申し込む</button>
-    <div id="status" class="status" hidden></div>
+    <footer class="foot"><img class="logo" src="../assets/rvss-logo-official.png" alt="REAL VALUE STUDENTS" width="480" height="246"></footer>
   </div>
 
   <div id="done" class="done" hidden>
+    <p class="kicker">RVSS質問会（Zoom・20分）</p>
     <h2>お申し込みを受け付けました</h2>
     <p id="done-when"></p>
-    <p>確認のメッセージをLINEでお送りします。開始の2時間前にも、参加リンクをLINEでお知らせします。</p>
+    <p><span class="ph">確認のメッセージを</span><span class="ph">LINEでお送りします。</span><br><span class="ph">開始の2時間前にも、</span><span class="ph">参加リンクを</span><span class="ph">LINEでお知らせします。</span></p>
   </div>
 
 </div>
@@ -95,7 +161,7 @@
 <script src="https://rvss-dx-ten.vercel.app/integrations/rvss-action-visits.js"
         integrity="sha384-bF87t8MAX1DVifpxK9/TfKPG757JY76E6FULbuWdrgOYCKdz3I5kXpXhimiy4AQ9"
         crossorigin="anonymous"></script>
-<script src="../config.js?v=20261018.2"></script>
+<script src="../config.js?v=20261022.1"></script>
 <script src="../assets/liff-common.js?v=20261018.2"></script>
 <script>
 (function () {
@@ -105,9 +171,10 @@
   var profile = null, src = 'unknown', sending = false;
   var items = [], picked = null, day = null;
 
-  var NAME = CFG.KOURYU_NAME || '現役メンバーと話そう（Zoom・20分）';
-  document.title = 'RVSS ' + NAME + '｜お申し込み';
-  document.getElementById('title').textContent = NAME;   // ★2026-09-29 「〜話すのお申し込み」にならないよう名前だけ
+  var NAME = CFG.KOURYU_NAME || 'RVSS質問会（Zoom・20分）';
+  document.title = NAME + '｜お申し込み';
+  // 説明文では「Zoomで20分」と書くので、名前の括弧（Zoom・20分）は外して出す
+  document.getElementById('name-line').textContent = NAME.replace(/（[^（]*）$/, '');
 
   /* GAS の doGet（?kind=交流会）から、いま申し込める枠を取る。
      ★枠は守屋のカレンダーの空きから GAS が計算する（開始12時間前まで・1枠に何人でも）。 */
@@ -160,6 +227,18 @@
     });
   }
 
+  // 冒頭の「日時を選ぶ」→ 申込の場所へ送る
+  document.getElementById('go-book').addEventListener('click', function () {
+    document.getElementById('book').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+
+  /* 氏名＝LINE の表示名。★実機の通しは ?src=test で開く＝頭に「テスト」を付け、GAS の kouryu_isTest_ で
+     カレンダー・通知が [テスト] になり、候補者マスターへ入らず、後片付け（kouryu_cleanupTests_）の対象になる。 */
+  function applicantName() {
+    var n = (profile && profile.displayName) || 'LINEユーザー';
+    return (src === 'test' ? 'テスト ' : '') + n;
+  }
+
   /* ---------- 情シスの訪問計測（2026-09-29） ----------
      認証（liff.init）より前に作る＝ログイン画面へ飛ぶ前の ?src= を保持するため。 */
   var rvssVisitTracker = null;
@@ -191,15 +270,7 @@
 
   document.getElementById('submit').addEventListener('click', function () {
     if (sending) return;
-    var name = document.getElementById('name').value.trim();
-    var email = document.getElementById('email').value.trim();
-    var school = document.getElementById('school').value.trim();
     if (!picked) { return RVSS.setStatus('ご希望の日時を選んでください。', 'err'); }
-    if (!name) { return RVSS.setStatus('お名前を入力してください。', 'err'); }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { return RVSS.setStatus('メールアドレスの形式をご確認ください。', 'err'); }
-    if (!school) { return RVSS.setStatus('大学・学年を入力してください。', 'err'); }
-    var theme = document.getElementById('theme').value;
-    if (!theme) { return RVSS.setStatus('話したいことを選んでください。', 'err'); }
 
     sending = true;
     var btn = document.getElementById('submit');
@@ -217,12 +288,10 @@
         return RVSS.setStatus('選んだ時間は締め切られたか、埋まりました。別の時間を選んでください。', 'err');
       }
       RVSS.setStatus('送信しています…（20秒ほどかかることがあります。このままお待ちください）', '');
+      // ★メール・大学学年・話したいことは送らない（2026-10-22 GAS 側で、メール無しは LINE userID で受ける形に直した）
       return RVSS.postToGas({
         kind: 'kouryu',
-        name: name,
-        email: email,
-        school: school,
-        theme: theme,
+        name: applicantName(),
         planDate: picked.value,
         src: src,
         lineUserId: (profile && profile.userId) || '',
@@ -231,6 +300,7 @@
         RVSS.hide('form-area');
         document.getElementById('done-when').textContent = picked.label + '（20分・Zoom）';
         RVSS.show('done');
+        window.scrollTo(0, 0);
       });
     }).catch(function () {
       sending = false;
