@@ -2,24 +2,28 @@
 <html lang="ja"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#f4f8fb">
 <title>RVSS AI分科会｜参加申込</title>
-<link rel="stylesheet" href="../../assets/common.css"><link rel="stylesheet" href="../../assets/bunkakai-entry.css">
-</head><body><main class="wrap">
-<div id="preview-note" class="preview" hidden>確認用の画面です。送信しても実際の申込は行いません。</div>
-<header class="webinar">
-<img class="webinar-image" src="../../assets/bunkakai-webinar-hero-v2.png" width="1774" height="887" alt="RVSS AI分科会。勉強も、レポートも。ChatGPT、使ってみよう。21:00〜21:30。初心者向け・無料版でOK。">
-<div class="webinar-copy"><p class="eyebrow">オンラインで、一緒に試そう。</p>
-<h1>勉強やレポートに役立つ<br>ChatGPTの使い方を体験。</h1>
-<p class="lead">短い課題で、頼み方を試してみる。<br>初めての方も、無料版で参加できます。</p>
-<div class="summary"><span>Zoom開催</span><span>21:00〜21:30</span></div></div></header>
-<div id="loading" class="loading">参加できる日時を確認しています…</div><p id="boot-status" class="status" role="status" hidden></p>
-<section id="form-area" class="entry-card" hidden><div class="form-heading"><h2>参加申し込み</h2><p>日時を選んで、お名前を確認するだけ。</p></div>
-<form id="entry-form">
-<fieldset><legend><span class="step">1</span>参加する日時</legend><div id="sessions" class="sessions"></div></fieldset>
-<div class="field"><label for="name"><span class="step">2</span>お名前</label><input id="name" type="text" name="name" autocomplete="name" maxlength="80" required placeholder="お名前を入力"></div>
-<button id="submit" type="submit">参加を申し込む<span aria-hidden="true"> →</span></button><p id="status" class="status" role="alert" hidden></p>
-<p class="privacy">お名前とLINEの本人情報は、参加受付とご案内に使用します。</p>
-</form></section>
-<section id="done" class="entry-card" hidden><div class="done-mark" aria-hidden="true">✓</div><h2>お申し込みを受け付けました</h2><p id="done-when"></p><p>参加方法は、RVSSの公式LINEでご案内します。</p><p id="receipt" class="note"></p></section>
-<footer>REAL VALUE STUDENTS</footer></main>
-<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script><script src="../../config.js"></script><script src="../../assets/liff-common.js"></script><script src="entry-config.js"></script><script src="../../assets/bunkakai-entry.js?v=20261021-2130"></script>
+<link rel="stylesheet" href="../../assets/common.css"><link rel="stylesheet" href="entry.css?v=20261023">
+</head><body><div class="band"><img class="logo" src="../../assets/rvss-logo-official.png" alt="REAL VALUE STUDENTS" width="480" height="246"></div><main class="wrap">
+<div id="preview-note" class="preview" hidden>確認用の画面です。押しても実際の申込は行いません。</div>
+<header class="intro">
+<h1>AI分科会</h1>
+<p class="lead">オンライン（Zoom）・参加無料。<br>参加する回を選んで、<br>ボタンを押すだけです。</p></header>
+<div id="loading" class="loading">読み込んでいます…</div><p id="boot-status" class="status" role="status" hidden></p>
+<section id="form-area" class="entry-card" hidden>
+<h2 class="pick-title">参加する回を選んでください</h2><p class="pick-note">両日の参加もできます。</p>
+<div id="sessions" class="sessions"></div>
+<button id="join" type="button" class="join" disabled>参加する</button>
+<p class="join-note">押すと、公式LINEに<br>日時とZoomのリンクが届きます。</p>
+<p id="status" class="status" role="alert" hidden></p>
+<p class="privacy">LINEの表示名を、参加受付とご案内に使います。</p>
+</section>
+<section id="done" class="entry-card" hidden><div class="done-mark" aria-hidden="true">✓</div>
+<h2 id="done-title">予約が完了しました</h2><ul id="done-list" class="done-list"></ul>
+<p id="done-line">公式LINEに、<br>日時とZoomのリンクを送りました。</p>
+<div id="fallback" hidden><p id="fallback-text"></p><div id="zoom-buttons"></div>
+<a id="friend-link" class="sub-link" href="https://line.me/R/ti/p/@392huviq" hidden>公式LINEを友だち追加する</a></div>
+<button id="add-more" type="button" class="sub-link" hidden>ほかの回も申し込む</button>
+<p id="receipt" class="note"></p></section>
+</main><footer class="band"><img class="logo" src="../../assets/rvss-logo-official.png" alt="REAL VALUE STUDENTS" width="480" height="246"></footer>
+<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script><script src="../../config.js"></script><script src="../../assets/liff-common.js"></script><script src="entry-config.js"></script><script src="entry.js?v=20261023"></script>
 </body></html>

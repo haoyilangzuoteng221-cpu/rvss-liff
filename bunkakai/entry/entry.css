@@ -1,0 +1,32 @@
+:root{--accent:#087a59;--accent-press:#076449;--fg:#152c48;--fg-sub:#536780}
+body{padding:0;background:#f4f8fb;color:var(--fg)}
+.wrap{max-width:640px;margin:0 auto;padding:22px 16px 30px}
+/* 公式ロゴは白と青の文字なので、質問会ページと同じ濃紺の帯に載せる */
+.band{display:flex;align-items:center;height:60px;padding:0 20px;background:#0a1227}.band .logo{display:block;height:40px;width:auto}
+footer.band{justify-content:center;height:auto;padding:22px 20px 28px}footer.band .logo{height:32px}
+.intro{padding:6px 4px 2px}
+h1{font-size:28px;line-height:1.4;margin:0 0 8px}.lead{font-size:15px;line-height:1.8;margin:0;color:var(--fg-sub)}
+.entry-card{background:#fff;border:1px solid #e1eaf1;border-radius:20px;margin-top:18px;padding:24px}
+.pick-title{font-size:19px;margin:0 0 2px}.pick-note{font-size:13px;color:var(--fg-sub);margin:0 0 16px}
+.sessions{display:grid;gap:12px;margin-bottom:22px}
+.session{display:flex;align-items:flex-start;gap:14px;margin:0;padding:16px;border:1px solid #bdccd9;border-radius:14px;background:#fff;cursor:pointer}
+.session:has(input:checked){border-color:var(--accent);background:#eef8f4;box-shadow:0 0 0 1px var(--accent)}
+.session:focus-within{outline:3px solid #b3d9ca;outline-offset:3px}
+.session input{width:24px;height:24px;margin:3px 0 0;flex-shrink:0;accent-color:var(--accent)}
+.session.is-done{cursor:default;background:#f6f8fa;border-style:dashed}.session.is-done input{visibility:hidden}
+.session-body{display:grid;gap:4px;min-width:0}
+.session-when{font-size:17px;line-height:1.5;white-space:pre-line}
+.session-title{font-size:14px;line-height:1.6;font-weight:600;white-space:pre-line}
+.session-teacher{font-size:12px;color:var(--fg-sub)}
+.badge{justify-self:start;font-style:normal;font-size:12px;font-weight:700;color:var(--accent);background:#e8f5ed;border-radius:6px;padding:2px 8px}
+.join{display:block;width:100%;min-height:64px;border:0;border-radius:14px;background:var(--accent);color:#fff;font-size:20px;font-weight:700;letter-spacing:.06em;cursor:pointer}
+.join:active{background:var(--accent-press)}.join:disabled{opacity:.45;cursor:default}.join:focus-visible{outline:3px solid #9bd2be;outline-offset:3px}
+.join-note{font-size:13px;line-height:1.7;color:var(--fg-sub);text-align:center;margin:12px 0 0}
+.privacy{font-size:11px;line-height:1.7;color:#63748a;margin:14px 0 0;text-align:center}.status{white-space:pre-line}
+.preview{font-size:12px;padding:9px 12px;background:#fff5d4;border-radius:8px;margin-bottom:12px;color:#725617}
+#done{text-align:center;padding:32px 24px}#done h2{font-size:21px;margin:12px 0 10px}#done p{font-size:14px;line-height:1.8}
+.done-list{list-style:none;padding:0;margin:0 0 12px;display:grid;gap:8px}.done-list li{font-size:17px;font-weight:700;line-height:1.6;white-space:pre-line}
+#fallback p{white-space:pre-line}.zoom-open{font-size:17px;min-height:56px;margin-top:10px}
+.sub-link{display:block;width:100%;margin-top:12px;padding:13px 0;border:1px solid #bdccd9;border-radius:12px;background:#fff;color:var(--fg);font-size:15px;font-weight:700;text-decoration:none;cursor:pointer}
+.done-mark{display:inline-grid;place-items:center;width:48px;height:48px;border-radius:50%;background:#e8f5ed;color:var(--accent);font-size:26px}
+@media(max-width:420px){.wrap{padding:18px 14px 26px}.entry-card{padding:20px 16px;border-radius:15px}}
