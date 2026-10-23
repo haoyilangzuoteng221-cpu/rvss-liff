@@ -57,7 +57,14 @@
   function boxes() { return [].slice.call(document.querySelectorAll('#sessions input:not(:disabled)')); }
   function chosen() { return boxes().filter(function (b) { return b.checked; }).map(function (b) { return b.value; }); }
   // 押せるのはLINEの本人確認（liff.init）が済んでから。カードはそれより先に出す。
-  function update() { var n = chosen().length; join.disabled = sending || !n || !liffReady; join.textContent = n > 1 ? '両日に参加する' : '参加する'; }
+  function update() { var n = chosen().length; join.disabled = sending || !n || !liffReady; join.textContent = !liffReady ? '読み込み中…' : n > 1 ? '両日に参加する' : '参加する'; }
+  /** 前回この端末で取れた回の一覧（公開の日時・題だけ）。開いた瞬間に出し、届いた最新で差し替える。
+   * 置き場はGASの開催設定の1か所のまま（ここは控え）。6時間より古い控えは使わない。保存できない端末では何もしない。 */
+  var CACHE_KEY = 'rvssBunkakaiSlots', CACHE_MS = 6 * 3600000;
+  function loadCache() { try { var c = JSON.parse(global.localStorage.getItem(CACHE_KEY) || 'null'); return c && Date.now() - c.at < CACHE_MS && c.slots && c.slots.length ? c.slots : null; } catch (_) { return null; } }
+  function saveCache(list) {
+    try { global.localStorage.setItem(CACHE_KEY, JSON.stringify({at:Date.now(), slots:list.map(function (s) { return {id:s.id, label:s.label, title:s.title || '', teacher:s.teacher || ''}; })})); } catch (_) {}
+  }
   function renderForm() {
     var box = document.getElementById('sessions'), keep = chosen(); box.textContent = '';
     slots.forEach(function (s) {
@@ -110,6 +117,7 @@
   }
   /** ①回の一覧を先に取る（GASの公開口・JSONP）。本人確認なしで出せる日時・題だけで、申込済みかどうかは②で重ねる。 */
   function early() {
+    if (global.RVSS_BE_EARLY) return global.RVSS_BE_EARLY;   // ページの先頭（early.js）で始めた問い合わせがあれば、それを使う
     if (preview) return new Promise(function (resolve) { setTimeout(function () { resolve((mock({action:'bootstrap'}).slots || []).map(function (s) { return {id:s.id, label:s.label, title:s.title, teacher:s.teacher}; })); }, 150); });
     return new Promise(function (resolve, reject) {
       if (!/^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec$/.test(ENDPOINT)) { reject(new Error('not_ready')); return; }
@@ -130,7 +138,8 @@
     post({action:'bootstrap', accessToken:token()}).then(function (r) {
       confirmed = true;
       if (!document.getElementById('done').hidden) return;   // 先に出したカードから申し込み終えていたら、完了画面のままにする
-      slots = r.slots || []; if (!slots.length) throw new Error('not_ready');
+      slots = r.slots || []; if (!slots.length) { try { global.localStorage.removeItem(CACHE_KEY); } catch (_) {} throw new Error('not_ready'); }
+      saveCache(slots.filter(function (s) { return !s.closed; }));
       global.RVSS.hide('loading');
       var open = slots.filter(function (s) { return !s.closed; });
       if (open.length && open.every(function (s) { return s.registered; })) {
@@ -158,11 +167,16 @@
       global.RVSS.setBootStatus('読み込みに失敗しました（' + (err && err.message ? err.message : 'unknown') + '）。LINEアプリから開き直してください。', 'err');
     });
   }
+  function showEarly(list) {
+    if (confirmed || !list || !list.length || !document.getElementById('done').hidden) return;
+    slots = list.map(function (s) { return Object.assign({closed:false, registered:false}, s); });
+    global.RVSS.hide('loading'); renderForm();
+  }
   function boot() {
+    showEarly(loadCache());   // ⓪前回の控えがあれば、すぐ出す
     early().then(function (list) {
-      if (confirmed || !list.length) return;   // 本人確認つきの結果が先に来たら、そちらを使う。準備中・終了の判定も②に任せる
-      slots = list.map(function (s) { return Object.assign({closed:false, registered:false}, s); });
-      global.RVSS.hide('loading'); renderForm();
+      if (list.length) saveCache(list);
+      showEarly(list);   // ①最新の一覧で差し替える。準備中・終了の判定は②（本人確認つき）に任せる
     }).catch(function () {});
     startLiff();
   }
