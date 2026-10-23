@@ -48,7 +48,7 @@
       try { f.submit(); } catch (e) { clean(); reject(e); }
     });
   }
-  function errorText(code) { return ({not_ready:['参加申込は準備中です。', '公式LINEのご案内を', 'お待ちください。'].join('\n'), login_required:'LINEから開き直して、もう一度お試しください。', closed:'選んだ回の受付は終了しました。ページを開き直してください。', invalid_input:'ページを開き直して、もう一度お試しください。', no_response:'予約の確認ができませんでした。もう一度押すと、同じ内容で確かめ直します。', busy:'ただいま混み合っています。少し待ってから、もう一度押してください。'})[code] || '予約を保存できませんでした。もう一度押してください。'; }
+  function errorText(code) { return ({not_ready:['参加申込は準備中です。', '公式LINEのご案内を', 'お待ちください。'].join('\n'), login_required:'LINEから開き直して、もう一度お試しください。', closed:'選んだ回の受付は終了しました。ページを開き直してください。', invalid_input:'ページを開き直して、もう一度お試しください。', no_response:['うまく受け付けられませんでした。', 'もう一度押してください。'].join('\n'), busy:'ただいま混み合っています。少し待ってから、もう一度押してください。'})[code] || '予約を保存できませんでした。もう一度押してください。'; }
   function token() { if (preview) return ''; var t = global.liff.getAccessToken(); if (!t) throw new Error('login_required'); return t; }
   /** スマホ幅で語が泣き別れしないよう、意味の切れ目で改行する（pre-line）。 */
   function dateLines(label) { return String(label).replace('）', '）\n'); }
