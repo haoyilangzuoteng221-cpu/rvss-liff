@@ -9,6 +9,8 @@
   var params = new URLSearchParams(global.location.search);
   var preview = /^(localhost|127\.0\.0\.1)$/.test(global.location.hostname) && params.get('preview') === '1';
   var source = global.RVSS.readSrc(), sending = false, slots = [], friend = '';
+  // 表示を速くするため、回の一覧（本人確認なしで出せる日時・題）を先に出し、LINEの本人確認と申込済みの確認は後から重ねる。
+  var liffReady = false, confirmed = false, friendP = Promise.resolve('');
   var join = document.getElementById('join');
   function randomId() { var b = new Uint8Array(16); global.crypto.getRandomValues(b); return Array.from(b).map(function (n) { return n.toString(16).padStart(2, '0'); }).join(''); }
   /** 確認用（?preview=1）。&case=registered（10/30申込済み）／all（両日申込済み）／nofriend／failed／none（全回が準備中）／one（10/30だけ公開）。保存も送信もしない。 */
@@ -54,13 +56,15 @@
   function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
   function boxes() { return [].slice.call(document.querySelectorAll('#sessions input:not(:disabled)')); }
   function chosen() { return boxes().filter(function (b) { return b.checked; }).map(function (b) { return b.value; }); }
-  function update() { var n = chosen().length; join.disabled = sending || !n; join.textContent = n > 1 ? '両日に参加する' : '参加する'; }
+  // 押せるのはLINEの本人確認（liff.init）が済んでから。カードはそれより先に出す。
+  function update() { var n = chosen().length; join.disabled = sending || !n || !liffReady; join.textContent = n > 1 ? '両日に参加する' : '参加する'; }
   function renderForm() {
-    var box = document.getElementById('sessions'); box.textContent = '';
+    var box = document.getElementById('sessions'), keep = chosen(); box.textContent = '';
     slots.forEach(function (s) {
       if (s.closed && !s.registered) return;
       var label = el('label', 'session' + (s.registered ? ' is-done' : '')), input = el('input'), body = el('span', 'session-body');
       input.type = 'checkbox'; input.value = s.id; input.disabled = !!(s.registered || s.closed);
+      input.checked = !input.disabled && keep.indexOf(s.id) >= 0;   // 先に出したカードで選んだものは、申込済みの確認が届いても外さない
       body.appendChild(el('strong', 'session-when', dateLines(s.label)));
       if (s.title) body.appendChild(el('span', 'session-title', titleLines(s.title)));
       if (s.teacher) body.appendChild(el('small', 'session-teacher', '講師：' + s.teacher));
@@ -104,8 +108,28 @@
     try { if (global.liff && global.liff.isInClient && global.liff.isInClient()) { global.liff.openWindow({url:url, external:true}); return; } } catch (_) {}
     global.location.href = url;
   }
-  function boot() {
+  /** ①回の一覧を先に取る（GASの公開口・JSONP）。本人確認なしで出せる日時・題だけで、申込済みかどうかは②で重ねる。 */
+  function early() {
+    if (preview) return new Promise(function (resolve) { setTimeout(function () { resolve((mock({action:'bootstrap'}).slots || []).map(function (s) { return {id:s.id, label:s.label, title:s.title, teacher:s.teacher}; })); }, 150); });
+    return new Promise(function (resolve, reject) {
+      if (!/^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec$/.test(ENDPOINT)) { reject(new Error('not_ready')); return; }
+      var cb = '__rvssBe' + randomId().slice(0, 12), s = document.createElement('script'), timer = setTimeout(function () { done(); reject(new Error('timeout')); }, 15000);
+      function done() { clearTimeout(timer); try { delete global[cb]; } catch (_) { global[cb] = undefined; } s.remove(); }
+      global[cb] = function (j) { done(); resolve((j && j.ready && j.slots) || []); };
+      s.onerror = function () { done(); reject(new Error('network')); };
+      s.src = ENDPOINT + '?callback=' + cb; document.head.appendChild(s);
+    });
+  }
+  /** ②LINEの本人確認が済んだら、友だちかどうかと申込済みかどうかを同時に確かめる（プロフィールは使わないので取らない）。 */
+  function afterLiff() {
+    liffReady = true; update();
+    friendP = preview ? Promise.resolve(friend) : Promise.resolve().then(function () { return global.liff.getFriendship(); })
+      .then(function (f) { return f && f.friendFlag ? '1' : '0'; }, function () { return ''; });
+    // 友だちでない人には確認LINEが届かない。分かれば送らずに画面へ参加用のリンクを出す。読めなければ送る側に倒す。
+    friendP.then(function (f) { friend = f; });
     post({action:'bootstrap', accessToken:token()}).then(function (r) {
+      confirmed = true;
+      if (!document.getElementById('done').hidden) return;   // 先に出したカードから申し込み終えていたら、完了画面のままにする
       slots = r.slots || []; if (!slots.length) throw new Error('not_ready');
       global.RVSS.hide('loading');
       var open = slots.filter(function (s) { return !s.closed; });
@@ -113,13 +137,40 @@
         var mine = slots.filter(function (s) { return s.registered; });
         showDone(mine, mine.every(function (s) { return s.notified; }), true, mine.map(function (s) { return s.responseId; }).join(','));
       } else renderForm();
-    }).catch(function (e) { global.RVSS.hide('loading'); global.RVSS.setBootStatus(errorText(e.message), e.message === 'not_ready' ? '' : 'err'); });
+    }).catch(function (e) {
+      confirmed = true;
+      if (!document.getElementById('done').hidden) return;
+      global.RVSS.hide('loading'); global.RVSS.hide('form-area');
+      global.RVSS.setBootStatus(errorText(e.message), e.message === 'not_ready' ? '' : 'err');
+    });
+  }
+  /** LIFFの初期化（共通の RVSS.boot と同じ手順・同じ文言。違いはプロフィールを取らないことだけ）。 */
+  function startLiff() {
+    if (preview) { setTimeout(afterLiff, 300); return; }
+    var liffId = ((global.RVSS_CONFIG || {}).LIFF_IDS || {}).bunkakai || '';
+    if (!liffId) { global.RVSS.hide('loading'); global.RVSS.setBootStatus('このページはまだ準備中です（LIFF ID が未設定）。担当者へお知らせください。', 'err'); return; }
+    if (typeof global.liff === 'undefined') { global.RVSS.hide('loading'); global.RVSS.setBootStatus('LINEアプリの読み込みに失敗しました。通信環境を確かめて開き直してください。', 'err'); return; }
+    global.liff.init({liffId:liffId}).then(function () {
+      if (!global.liff.isLoggedIn()) { global.liff.login({redirectUri:global.location.origin + global.location.pathname + '?src=' + encodeURIComponent(source)}); return; }
+      afterLiff();
+    }).catch(function (err) {
+      global.RVSS.hide('loading'); global.RVSS.hide('form-area');
+      global.RVSS.setBootStatus('読み込みに失敗しました（' + (err && err.message ? err.message : 'unknown') + '）。LINEアプリから開き直してください。', 'err');
+    });
+  }
+  function boot() {
+    early().then(function (list) {
+      if (confirmed || !list.length) return;   // 本人確認つきの結果が先に来たら、そちらを使う。準備中・終了の判定も②に任せる
+      slots = list.map(function (s) { return Object.assign({closed:false, registered:false}, s); });
+      global.RVSS.hide('loading'); renderForm();
+    }).catch(function () {});
+    startLiff();
   }
   join.addEventListener('click', function () {
-    var ids = chosen(); if (sending || !ids.length) return;
+    var ids = chosen(); if (sending || !ids.length || !liffReady) return;
     var access; try { access = token(); } catch (err) { global.RVSS.setStatus(errorText(err.message), 'err'); return; }
     sending = true; update(); join.textContent = '予約しています…'; global.RVSS.setStatus('', '');
-    post({action:'submit', accessToken:access, slotIds:ids.join(','), src:source, friend:friend}).then(function (r) {
+    friendP.then(function (f) { friend = f; return post({action:'submit', accessToken:access, slotIds:ids.join(','), src:source, friend:f}); }).then(function (r) {
       var items = r.items || [];
       items.forEach(function (it) { slots.forEach(function (s) { if (s.id === it.id) { s.registered = true; s.notified = r.notified; } }); });
       showDone(items, r.notified, !!r.dedup, r.responseId);
@@ -129,10 +180,5 @@
   document.getElementById('add-more').addEventListener('click', renderForm);
   if (preview) { global.RVSS.show('preview-note'); friend = params.get('case') === 'nofriend' ? '0' : '1'; boot(); }
   else if (!ENDPOINT) { global.RVSS.hide('loading'); global.RVSS.setBootStatus(errorText('not_ready'), ''); }
-  else global.RVSS.boot({liffKey:'bunkakai', loginRedirectUri:global.location.origin + global.location.pathname + '?src=' + encodeURIComponent(source), onReady:function () {
-    // 友だちでない人には確認LINEが届かない。分かれば送らずに画面へ参加用のリンクを出す。読めなければ送る側に倒す。
-    Promise.resolve().then(function () { return global.liff.getFriendship(); })
-      .then(function (f) { friend = f && f.friendFlag ? '1' : '0'; }, function () { friend = ''; })
-      .then(boot);
-  }});
+  else boot();
 })(window);

@@ -4,6 +4,9 @@ body{padding:0;background:#f4f8fb;color:var(--fg)}
 /* 公式ロゴは白と青の文字なので、質問会ページと同じ濃紺の帯に載せる */
 .band{display:flex;align-items:center;height:60px;padding:0 20px;background:#0a1227}.band .logo{display:block;height:40px;width:auto}
 footer.band{justify-content:center;height:auto;padding:22px 20px 28px}footer.band .logo{height:32px}
+/* 告知画像はロゴの帯のすぐ下に、画面の横幅いっぱいで置く（width・height の指定で高さを先に確保） */
+.hero{margin:-22px -16px 18px}.hero img{display:block;width:100%;height:auto;background:#e8eef4}
+@media(max-width:420px){.hero{margin:-18px -14px 16px}}
 .intro{padding:6px 4px 2px}
 h1{font-size:28px;line-height:1.4;margin:0 0 8px}.lead{font-size:15px;line-height:1.8;margin:0;color:var(--fg-sub)}
 .entry-card{background:#fff;border:1px solid #e1eaf1;border-radius:20px;margin-top:18px;padding:24px}
