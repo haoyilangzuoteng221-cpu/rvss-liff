@@ -3,64 +3,226 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>RVSS 説明動画</title>
-<link rel="stylesheet" href="../assets/common.css">
-<style>
-  /* ★2026-09-26 守屋「画面下からって書いてあるのに、画面下にそもそもフォームがない」
-     → 申込ボタンは最初から動画のすぐ下に置く。終盤（CTA が「すぐ下のボタン」と言う所）で光らせて画面内へ寄せる。 */
-  .cta-under { margin: 12px 0 18px; }
-  .cta-under .hint { font-size: 13px; color: var(--fg-sub); margin: 8px 2px 0; text-align: center; }
-  .cta-under.on button { animation: rvssPulse 1.6s ease-in-out infinite; }
-  @keyframes rvssPulse {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(6, 199, 85, .55); }
-    50%      { box-shadow: 0 0 0 10px rgba(6, 199, 85, 0); }
-  }
-</style>
+<meta name="theme-color" content="#182d3b">
+<title>RVSS 紹介動画</title>
+<!-- ★2026-10-23 LP化（v8・守屋 10/22「v8で進める」）。見た目は lp.css、写真は lp/。
+     計測と処理（LIFF認証・視聴の記録・面談ボタンの記録・予約済み経路・期限切れ・情シスの訪問計測）は 10/13 版の本番からそのまま移した。
+     違い＝動画は表紙を押してからプレーヤーを作る（YouTube の API はページを開いた時点で読み込んでおく）。 -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800&display=swap">
+<link rel="stylesheet" href="lp.css?v=20261023.1">
 </head>
 <body>
-<div class="wrap">
 
-  <div id="loading" class="loading">読み込んでいます…</div>
-  <div id="boot-status" class="status" hidden></div>
+<header class="top">
+  <img class="logo-img" src="lp/rvss-logo.png" alt="REAL VALUE STUDENTS" width="128" height="64">
+</header>
 
-  <!-- 動画IDが未設定のとき -->
-  <div id="notready" class="done" hidden>
-    <h2>ただいま準備中です</h2>
-    <p>動画の公開までもう少しお待ちください。<br>準備ができ次第、LINEでお知らせします。</p>
+<main>
+<!-- 1画面目：活動写真を組んだ一枚絵に見出しの紙片を重ね、すぐ下に紹介動画、動画のすぐ下に面談の申込（動画の最後の「すぐ下のボタン」を守る） -->
+<section class="hero" aria-labelledby="hero-title">
+  <div class="mosaic">
+    <figure class="m m1"><img src="lp/hero-work.jpg" alt="机を囲み、パソコンとタブレットで一緒に作業するメンバー"></figure>
+    <figure class="m m2"><img src="lp/hero-expo.jpg" alt="学生団体の合同イベントで、展示ボードの前で笑顔を見せるメンバー"><img class="alt" src="lp/hero-stage.jpg" alt="" aria-hidden="true"></figure>
   </div>
-
-  <!-- 視聴期限切れ -->
-  <div id="expired" hidden>
-    <h1>視聴期限が過ぎました</h1>
-    <p class="lead">下のボタンを押すと、もう一度48時間だけご覧いただけます。</p>
-    <button id="reissue" type="button">もう一度見る</button>
+  <div class="hero-copy">
+    <h1 id="hero-title"><span class="ph">大学の外で、</span><span class="ph"><span class="mark">仲間と挑戦する。</span></span></h1>
   </div>
+  <div class="hero-body">
+    <h2 class="video-title"><span class="ph">約6分でわかる、</span><span class="ph">RVSSのこと</span></h2>
 
-  <!-- 本編 -->
-  <div id="watch-area" hidden>
-    <h1>RVSSってどんな団体？</h1>
-    <p class="lead">動画のすぐ下のボタンから、カジュアル面談を申し込めます。</p>
-
-    <div class="countdown" id="countdown">
-      <span class="label">視聴期限まで</span>
-      <span class="value" id="cd-value">--:--:--</span>
+    <!-- 動画の枠：認証が終わるまで「読み込んでいます」。準備中・期限切れはこの枠の中で出す（ページの他の部分は出したまま） -->
+    <div id="loading" class="video-state">読み込んでいます…</div>
+    <div id="boot-status" class="status" hidden></div>
+    <div id="notready" class="video-state" hidden>
+      <b>ただいま準備中です</b>
+      <span>動画の公開までもう少しお待ちください。準備ができ次第、LINEでお知らせします。</span>
+    </div>
+    <div id="expired" class="video-state" hidden>
+      <b>視聴期限が過ぎました</b>
+      <span>下のボタンを押すと、もう一度48時間だけご覧いただけます。</span>
+      <button id="reissue" type="button" class="btn-reissue">もう一度見る</button>
     </div>
 
-    <div class="player"><div id="player"></div></div>
+    <div id="watch-area" hidden>
+      <!-- 表紙（公開中の動画の 3:03 の場面・字幕の帯は切り落とし）＋大きな再生ボタン。押したらプレーヤーを作って再生する -->
+      <div class="player facade" id="player-box">
+        <img class="poster" src="lp/video-poster.jpg" alt="紹介動画の一場面。活動写真が並んでいる">
+        <button type="button" class="play-btn" aria-label="紹介動画を再生する（約6分）"><span class="tri" aria-hidden="true"></span></button>
+        <span class="play-label" aria-hidden="true">タップで再生（5:49）</span>
+        <span class="deadline" id="countdown">視聴期限 <b id="cd-value">--:--:--</b></span>
+        <div id="player"></div>
+      </div>
+      <div class="bar" aria-hidden="true"><i id="bar-fill"></i></div>
+      <ol class="chapters" aria-label="この動画でわかること（押すとその場面から再生）">
+        <li><button type="button" data-start="73"><b>1:13</b>RVSSとは</button></li>
+        <li><button type="button" data-start="95"><b>1:35</b>なぜ、いま「挑戦者」なのか</button></li>
+        <li><button type="button" data-start="155"><b>2:35</b>得られる価値</button></li>
+        <li><button type="button" data-start="215"><b>3:35</b>参加のかたち</button></li>
+        <li><button type="button" data-start="241"><b>4:01</b>求める人物像</button></li>
+      </ol>
+      <div id="status" class="status" hidden></div>
+    </div>
 
     <!-- 動画のすぐ下＝動画の最後の CTA「この動画のすぐ下のボタンから申し込めます」が指す場所。最初から出しておく -->
-    <div id="cta" class="cta-under">
-      <button id="go-interview" type="button">カジュアル面談を申し込む</button>
-      <p class="hint" id="cta-hint">約30分・Zoomで話せます。入力は3つだけ（氏名・メール・日程）で、日時はその場で選べます。</p>
+    <div id="cta" class="cta-group">
+      <p class="bubble interview-only"><span class="ph">入会を希望する方へ</span><span class="ph">（Zoomで約30分）</span></p>
+      <a class="btn-primary interview-only" href="#" data-cta="hero"><span>カジュアル面談を申し込む</span><span class="arrow" aria-hidden="true">→</span></a>
+      <p class="cta-note" id="cta-hint"><span class="ph">日時は次の画面で選べます。</span><span class="ph">動画を見る前でも申し込めます。</span></p>
+      <a class="btn-secondary" href="#" data-kouryu="hero"><span><small>入会を迷っている方は</small>RVSS質問会（Zoom・20分）</span><span class="arrow" aria-hidden="true">→</span></a>
     </div>
-
-    <div class="bar"><i id="bar-fill"></i></div>
-    <p class="note" id="progress-text">再生すると、ここに進み具合が出ます。</p>
-
-    <div id="status" class="status" hidden></div>
   </div>
+</section>
 
-</div>
+<!-- 冒頭の直後：紹介動画 v9 の冒頭の問いかけ（守屋が公開を承認した字幕の言葉） -->
+<section class="hook" aria-labelledby="hook-title">
+  <p class="kicker" id="hook-title"><span class="ph">ひとつでも当てはまるなら、</span><span class="ph">RVSSへ</span></p>
+  <ul class="checks">
+    <li><span class="ph">何か始めたいけど、</span><span class="ph">一歩目をどうしたらいいか</span><span class="ph">分からない</span></li>
+    <li><span class="ph">視座の高い経営者や</span><span class="ph">ビジネスパーソンと、</span><span class="ph">本気でぶつかり合いたい</span></li>
+    <li><span class="ph">今の大学生活に、</span><span class="ph">物足りなさを感じている</span></li>
+  </ul>
+</section>
+
+<!-- RVSSってどんな団体か。写真から入る -->
+<section class="about" aria-labelledby="about-title">
+  <figure class="about-main">
+    <img src="lp/discuss.jpg" alt="スクリーンを見ながら話し合うRVSSのメンバー" loading="lazy">
+  </figure>
+  <div class="about-text">
+    <p class="kicker">RVSSってどんな団体？</p>
+    <h2 id="about-title"><span class="ph">AIをはじめとする</span><span class="ph">実践スキルと、</span><span class="ph">つながりを手に入れる</span><span class="ph">学生コミュニティです。</span></h2>
+    <p><span class="ph">活動のメインテーマは</span><span class="ph">「学びとつながり」。</span><span class="ph">大学や学年を越えて</span><span class="ph">集まったメンバーが、</span><span class="ph">定例ミーティングやイベント、</span><span class="ph">分科会で活動しています。</span></p>
+  </div>
+  <div class="about-pair">
+    <figure><img src="lp/outdoor.jpg" alt="屋外のイベントで集まるメンバー" loading="lazy"><figcaption>屋外のイベント</figcaption></figure>
+    <figure><img src="lp/hall.jpg" alt="イベント会場に集まった学生たち" loading="lazy"><figcaption>イベントの会場</figcaption></figure>
+  </div>
+</section>
+
+<!-- RVSSで得られること：紹介動画 v9 の「03 RVSSで得られる価値」と「04 参加のかたち」の承認済みの言葉から。番号つきのカードを横にめくる -->
+<section class="scenes values" aria-labelledby="scenes-title">
+  <div class="section-head">
+    <p class="kicker">RVSSで得られること</p>
+    <h2 id="scenes-title"><span class="ph">学びと、</span><span class="ph">つながり。</span></h2>
+    <ol class="value-index" aria-label="4つの項目">
+      <li><a href="#scene-1"><b>01</b>経営者の話</a></li>
+      <li><a href="#scene-2"><b>02</b>全国の仲間</a></li>
+      <li><a href="#scene-3"><b>03</b>実践スキル</a></li>
+      <li><a href="#scene-4"><b>04</b>組織づくり</a></li>
+    </ol>
+  </div>
+  <div class="scene-track" role="region" aria-roledescription="カルーセル" aria-label="RVSSで得られること（横にめくって見られます）" tabindex="0">
+    <article class="scene s1" id="scene-1" aria-label="1枚目／4枚中">
+      <figure><span class="photo"><img src="lp/learn.jpg" alt="教室でスクリーンを見ながら話を聞くメンバー" loading="lazy"></span><span class="scene-num" aria-hidden="true">01</span></figure>
+      <div class="scene-text">
+        <h3><span class="ph">経営者の話を、</span><span class="ph">直接聞ける</span></h3>
+        <p><span class="ph">毎週土曜の朝の</span><span class="ph">定例ミーティングには、</span><span class="ph">全員が顔を出します。</span><span class="ph">経営者の方が</span><span class="ph">直接話してくださる</span><span class="ph">時間もあります。</span></p>
+      </div>
+    </article>
+    <article class="scene s2" id="scene-2" aria-label="2枚目／4枚中">
+      <figure><span class="photo"><img src="lp/meet.jpg" alt="イベント会場で笑顔で写真に収まるメンバー" loading="lazy"></span><span class="scene-num" aria-hidden="true">02</span></figure>
+      <div class="scene-text">
+        <h3><span class="ph">全国の大学の</span><span class="ph">仲間とつながる</span></h3>
+        <p><span class="ph">関東にも関西にも、</span><span class="ph">中部や東北にも、</span><span class="ph">本気で動く仲間がいます。</span><span class="ph">遊ぶときは、</span><span class="ph">全力で遊びます。</span></p>
+        <p class="uni"><span class="ph">東京大学・京都大学・</span><span class="ph">早稲田大学・慶應義塾大学・</span><span class="ph">立命館大学・同志社大学</span><span class="ph">などの学生が在籍しています。</span></p>
+      </div>
+    </article>
+    <article class="scene s3" id="scene-3" aria-label="3枚目／4枚中">
+      <figure><span class="photo"><img src="lp/laptops.jpg" alt="教室でパソコンを開き、一緒に作業するメンバー" loading="lazy"></span><span class="scene-num" aria-hidden="true">03</span></figure>
+      <div class="scene-text">
+        <h3><span class="ph">AIや営業を、</span><span class="ph">分科会で学ぶ</span></h3>
+        <p><span class="ph">AI・営業・就活など、</span><span class="ph">テーマごとに</span><span class="ph">分科会があります。</span></p>
+      </div>
+    </article>
+    <article class="scene s4" id="scene-4" aria-label="4枚目／4枚中">
+      <figure><span class="photo"><img src="lp/run.jpg" alt="イベントの司会をマイクを持って務めるメンバー" loading="lazy"></span><span class="scene-num" aria-hidden="true">04</span></figure>
+      <div class="scene-text">
+        <h3><span class="ph">組織を、</span><span class="ph">自分たちでつくる</span></h3>
+        <p><span class="ph">イベントの企画や広報、</span><span class="ph">採用まで、</span><span class="ph">運営はメンバーが担っています。</span></p>
+      </div>
+    </article>
+  </div>
+  <div class="scene-nav">
+    <span class="dots" aria-hidden="true"><i class="on"></i><i></i><i></i><i></i></span>
+    <span class="count" aria-live="polite"><b>01</b> / 04</span>
+    <span class="arrows">
+      <button type="button" class="prev" aria-label="前の項目">←</button>
+      <button type="button" class="next" aria-label="次の項目">→</button>
+    </span>
+  </div>
+</section>
+
+<!-- 求める人物像：紹介動画 v9 の「05 求める人物像」の承認済みの言葉 -->
+<section class="people" aria-labelledby="people-title">
+  <p class="kicker">こんな人を待っています</p>
+  <h2 id="people-title"><span class="badge">学歴不問</span><span class="ph">挑戦する想いを、</span><span class="ph">何よりも歓迎しています。</span></h2>
+  <ul class="checks">
+    <li><span class="ph">一歩目の踏み出し方は</span><span class="ph">分からないけど、</span><span class="ph">頑張りたい人</span></li>
+    <li><span class="ph">本気の同世代と、</span><span class="ph">切磋琢磨したい人</span></li>
+    <li><span class="ph">将来、社会を動かす事業を</span><span class="ph">つくりたい人</span></li>
+    <li><span class="ph">ギバーとして、</span><span class="ph">場に貢献する人</span></li>
+  </ul>
+</section>
+
+<!-- 中盤：質問会。迷っている人の受け皿。面談とは色面を変えて別の場だと分かるようにする -->
+<section class="qa-band" id="qa" aria-labelledby="qa-title">
+  <p class="kicker">入会を迷っている方へ</p>
+  <h2 id="qa-title"><span class="ph">気になることは、</span><span class="ph">先に聞けます。</span></h2>
+  <p><span class="ph">RVSS質問会では、</span><span class="ph">活動の内容や雰囲気を、</span><span class="ph">現役メンバーにZoomで</span><span class="ph">質問できます。</span></p>
+  <ul class="facts"><li>Zoom・20分</li><li>日時を選ぶだけで申込</li></ul>
+  <a class="btn-secondary on-dark" href="#" data-kouryu="qa"><span>RVSS質問会の日時を選ぶ</span><span class="arrow" aria-hidden="true">→</span></a>
+</section>
+
+<!-- 面談の案内。入会を希望する人の本線（予約済みの経路では出さない） -->
+<section class="interview interview-only" id="interview" aria-labelledby="interview-title">
+  <p class="kicker">入会を希望する方へ</p>
+  <h2 id="interview-title"><span class="ph">カジュアル面談で、</span><span class="ph">お話ししましょう。</span></h2>
+  <p><span class="ph">これまで取り組んできたことや、</span><span class="ph">RVSSでやってみたいことを</span><span class="ph">伺います。</span></p>
+  <ol class="flow" aria-label="申込の流れ">
+    <li><span class="step">1</span><div><b>日時を選んで予約</b><span class="ph">このページのボタンから。</span><span class="ph">動画を見る前でも大丈夫です。</span></div></li>
+    <li><span class="step">2</span><div><b>LINEで確認が届く</b><span class="ph">ZoomのURLも届きます。</span><span class="ph">前日と当日にも</span><span class="ph">お知らせします。</span></div></li>
+    <li><span class="step">3</span><div><b>当日、Zoomで約30分</b><span class="ph">時間になったら、</span><span class="ph">届いたリンクから</span><span class="ph">入ってください。</span></div></li>
+  </ol>
+  <div class="cta-group">
+    <p class="bubble"><span class="ph">Zoomで約30分。</span><span class="ph">日時は次の画面で選べます</span></p>
+    <a class="btn-primary" href="#" data-cta="interview"><span>カジュアル面談を申し込む</span><span class="arrow" aria-hidden="true">→</span></a>
+  </div>
+</section>
+
+<!-- よくある質問：申込の直前に、事実で不安を外す -->
+<section class="faq" aria-labelledby="faq-title">
+  <p class="kicker">よくある質問</p>
+  <h2 id="faq-title">申し込む前に</h2>
+  <details class="interview-only"><summary><span class="ph">動画を見る前でも</span><span class="ph">申し込めますか？</span></summary><p><span class="ph">はい。</span><span class="ph">動画を見ていなくても、</span><span class="ph">このページから申し込めます。</span></p></details>
+  <details><summary><span class="ph">カジュアル面談と</span><span class="ph">RVSS質問会の違いは？</span></summary><p><span class="ph">カジュアル面談は、</span><span class="ph">入会を希望する方向けの</span><span class="ph">Zoomで約30分の場です。</span><span class="ph">RVSS質問会は、</span><span class="ph">入会を迷っている方向けの</span><span class="ph">20分の場。</span><br><span class="ph">活動の内容や雰囲気を</span><span class="ph">質問できて、</span><span class="ph">申込は日時を選ぶだけです。</span></p></details>
+  <details><summary><span class="ph">予約したあとは、</span><span class="ph">どうなりますか？</span></summary><p><span class="ph">LINEで確認のメッセージが届き、</span><span class="ph">ZoomのURLも</span><span class="ph">そこでお送りします。</span><span class="ph">前日と当日にも</span><span class="ph">LINEでお知らせします。</span></p></details>
+  <details><summary>都合が悪くなったときは？</summary><p><span class="ph">届いたLINEに</span><span class="ph">返信してください。</span></p></details>
+</section>
+
+<!-- 末尾：集合写真で締め、2つの入口をもう一度 -->
+<section class="closing" aria-labelledby="closing-title">
+  <figure><img src="lp/community.jpg" alt="活動の会場に集まって写真を撮るRVSSのメンバー" loading="lazy"></figure>
+  <div class="closing-text">
+    <h2 id="closing-title"><span class="ph">続きは、</span><span class="ph">Zoomで。</span></h2>
+    <div class="cta-group">
+      <a class="btn-primary interview-only" href="#" data-cta="closing"><span>カジュアル面談を申し込む</span><span class="arrow" aria-hidden="true">→</span></a>
+      <a class="btn-secondary" href="#" data-kouryu="closing"><span><small>入会を迷っている方は</small>RVSS質問会（Zoom・20分）</span><span class="arrow" aria-hidden="true">→</span></a>
+    </div>
+  </div>
+</section>
+
+<footer class="foot">
+  <img class="logo-img" src="lp/rvss-logo.png" alt="REAL VALUE STUDENTS" width="128" height="64">
+</footer>
+</main>
+
+<!-- 冒頭の申込ボタンが画面から消えたら下に出し、面談の案内・末尾の申込が見えている間は引っ込める（予約済みの経路では出さない） -->
+<aside class="dock interview-only" aria-label="申込" hidden>
+  <a class="dock-sub" href="#" data-kouryu="dock">質問会</a>
+  <a class="dock-main" href="#" data-cta="dock">カジュアル面談を申し込む</a>
+</aside>
 
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 <!-- ★2026-09-24 情シス（井上さん）の訪問計測。#114「土曜定例 体験入会 一斉配信」スレッドの手順どおり。
@@ -83,17 +245,18 @@
   var player = null, duration = 0, maxPct = 0, ticker = null;
   var sentMarks = {};          // 25/50/75/100 の節目を1回ずつだけ送る
   var LS_KEY = 'rvss_watch_started_at';
+  var ready = false;           // 認証と期限の確認が終わったか（終わる前は表紙を押しても再生しない）
 
   /* ★2026-09-30｜REAL ROOKIES で面談を予約済みの人（翌日20時台の自動LINE rookies_od から ?src=rr1017_od で来る）。
-     動画はそのまま。申込ボタンを出さず、最後は「面談でお会いできるのを楽しみに」にする（守屋 9/30「ページだけ変える」）。 */
+     動画はそのまま。申込ボタンを出さず、最後は「面談でお会いできるのを楽しみに」にする（守屋 9/30「ページだけ変える」）。
+     ★2026-10-23 LP化：面談のボタンは4か所（冒頭・面談の案内・末尾・下の追従バー）。予約済みの経路では .interview-only をまとめて隠す。 */
   var entrySrc = journey.source();
   var RR_BOOKED = /^rr1017/i.test(entrySrc);
   // 直面談の前日案内から来る人も予約済み。再予約の導線と完了後のM1を出さない。
   var MEETING_BOOKED = RR_BOOKED || entrySrc === 'direct_interview_od';
   journey.record('page_visible', { stage: 'entry', bookedEntry: MEETING_BOOKED });
   if (MEETING_BOOKED) {
-    document.querySelector('#watch-area .lead').textContent = '面談の前に、RVSSがどんな団体かをご覧ください。';
-    document.getElementById('go-interview').hidden = true;
+    document.body.classList.add('booked');
     document.getElementById('cta-hint').textContent = '面談でお会いできるのを楽しみにしています。';
   }
 
@@ -114,10 +277,12 @@
     var s = startedAt();
     return s > 0 && Date.now() > deadline();
   }
+  // ★LP化：期限は表紙の札に出す。再生を始めると表紙ごと消えるので、札が無ければ何もしない。
   function renderCountdown() {
-    var left = deadline() - Date.now();
     var el = document.getElementById('cd-value');
     var box = document.getElementById('countdown');
+    if (!el || !box) return;
+    var left = deadline() - Date.now();
     if (left <= 0) { el.textContent = '00:00:00'; box.classList.add('expired'); return; }
     var h = Math.floor(left / 3600000);
     var m = Math.floor((left % 3600000) / 60000);
@@ -140,8 +305,10 @@
   }
 
   /* ---------- YouTube ---------- */
+  var ytPromise = null;
   function loadYouTube() {
-    return new Promise(function (resolve) {
+    if (ytPromise) return ytPromise;
+    ytPromise = new Promise(function (resolve) {
       if (window.YT && window.YT.Player) return resolve();
       var timer = setTimeout(function () { journey.record('video_error', { stage: 'video', errorCode: 1000 }); }, 20000);
       window.onYouTubeIframeAPIReady = function () { clearTimeout(timer); resolve(); };
@@ -150,6 +317,7 @@
       s.onerror = function () { clearTimeout(timer); journey.record('video_error', { stage: 'video', errorCode: 1001 }); };
       document.head.appendChild(s);
     });
+    return ytPromise;
   }
 
   function onProgressTick() {
@@ -161,8 +329,6 @@
     journey.state({ pct: maxPct, positionSec: t, durationSec: duration });
 
     document.getElementById('bar-fill').style.width = maxPct + '%';
-    document.getElementById('progress-text').textContent =
-      maxPct >= 100 ? '最後までご覧いただきました。' : '進み具合 ' + maxPct + '%';
 
     [25, 50, 75].forEach(function (mark) {
       if (maxPct >= mark && !sentMarks[mark]) { sentMarks[mark] = true; report('progress', mark); }
@@ -190,14 +356,19 @@
     try { box.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) { box.scrollIntoView(); }
   }
 
-  function buildPlayer() {
+  // ★LP化：プレーヤーは表紙を押してから作る（本番 10/13 版はページを開いた時点で作っていた）。
+  //   onReady・onStateChange・節目の記録は本番と同じ。start＝目次から入ったときの開始秒。
+  function buildPlayer(start) {
+    var box = document.getElementById('player-box');
+    box.classList.remove('facade');
     player = new YT.Player('player', {
       videoId: CFG.YOUTUBE_ID,
-      playerVars: { playsinline: 1, rel: 0, modestbranding: 1 },
+      playerVars: { playsinline: 1, rel: 0, modestbranding: 1, autoplay: 1, start: start || 0 },
       events: {
         onReady: function () {
           try { duration = player.getDuration() || 0; } catch (e) { duration = 0; }
           journey.record('video_ready', { stage: 'video', durationSec: duration });
+          try { player.playVideo(); } catch (e) {}
         },
         onError: function (ev) { journey.record('video_error', { stage: 'video', errorCode: ev.data }); },
         onStateChange: function (ev) {
@@ -216,6 +387,24 @@
       }
     });
   }
+
+  function play(start) {
+    if (!ready) return;
+    if (player && player.seekTo) {
+      try { player.seekTo(start || 0, true); player.playVideo(); } catch (e) {}
+      return;
+    }
+    loadYouTube().then(function () { if (!player) buildPlayer(start); });
+  }
+  document.getElementById('player-box').addEventListener('click', function () {
+    if (this.classList.contains('facade')) play(0);
+  });
+  document.querySelectorAll('.chapters button').forEach(function (b) {
+    b.addEventListener('click', function () {
+      play(Number(b.dataset.start));
+      try { document.getElementById('player-box').scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) {}
+    });
+  });
 
   /* ---------- 離脱時に途中の進捗を1回だけ送る ---------- */
   function flushOnLeave() {
@@ -272,8 +461,10 @@
       RVSS.show('watch-area');
       renderCountdown();
       setInterval(renderCountdown, 1000);
+      ready = true;
 
-      loadYouTube().then(buildPlayer);
+      // YouTube の API だけ先に読み込んでおく（表紙を押したらすぐプレーヤーを作れるように）。読み込み失敗の記録は本番と同じ
+      loadYouTube();
     }
   });
 
@@ -287,24 +478,99 @@
      行き先は面接LIFF（interview）のまま＝中身は選考の面接枠（予定タブの種別＝面接）。
      ★2026-09-18 Daichi＝オンデマンドの後に投げるのは「面接」。
      面談フォームは短縮ルート（組織説明を挟んでいない人）の入口なので、ここからは出さない。
-     ⚠ 9/18 まで mendan を指していた。面談LIFFは枠0件なので、踏んでも選べない状態だった。 */
-  document.getElementById('go-interview').addEventListener('click', function () {
+     ⚠ 9/18 まで mendan を指していた。面談LIFFは枠0件なので、踏んでも選べない状態だった。
+     ★2026-10-23 LP化：面談のボタン4か所を同じ処理につなぐ（記録は本番と同じ cta／cta_click。どのボタンかは今の記録では区別しない）。 */
+  function goInterview(e) {
+    e.preventDefault();
+    var btn = this;
     var id = (CFG.LIFF_IDS || {}).interview;
     if (!id) { journey.record('cta_unavailable', { stage: 'cta', result: 'missing_id' }); RVSS.setStatus('カジュアル面談の申し込み口がまだ準備中です。LINEでご連絡ください。', 'err'); return; }
     // ★2026-09-26｜ボタンを押したことを記録してから移る（「押したのに予約しなかった」を数えるため）。
     //   記録は非表示のフォーム送信なので、すぐ移ると送信が途中で切れる。0.7秒だけ待つ（記録が落ちても移動はする）。
-    if (this.dataset.going) return;
-    this.dataset.going = '1';
+    if (document.body.dataset.going) return;
+    document.body.dataset.going = '1';
+    btn.classList.add('tapped');
     // ★2026-09-29｜押した瞬間の再生位置を送る（守屋 9/29 改善案②。旧＝maxPct＝それまでに一番先まで見た位置）。
     //   GAS の分析は cta の pct を「最大到達」の更新にも使うが、max は下がらないので影響しない。位置は視聴ログ E列に残る。
     var nowPct = maxPct;
-    try { if (player && duration) nowPct = Math.min(100, Math.round((player.getCurrentTime() || 0) / duration * 100)); } catch (e) {}
+    try { if (player && duration) nowPct = Math.min(100, Math.round((player.getCurrentTime() || 0) / duration * 100)); } catch (e2) {}
     report('cta', nowPct);
     journey.record('cta_click', { stage: 'cta', pct: nowPct }); journey.flush(true);
     // 流入元を引き継ぐ（どの経路の人が面接まで来たかを最後まで追う）
     var to = 'https://liff.line.me/' + id + '?src=' + encodeURIComponent(src);
     setTimeout(function () { location.href = to; }, 700);
+  }
+  document.querySelectorAll('[data-cta]').forEach(function (a) { a.addEventListener('click', goInterview); });
+
+  /* ★2026-10-23 LP化：RVSS質問会（交流会LIFF）への入口。流入元はそのまま引き継ぐ。
+     ⚠ 今の操作記録（journey）と GAS は「質問会のボタンを押した」を受け取る項目を持たないので、ここでは記録しない（数えるなら GAS 側に項目を足す）。 */
+  document.querySelectorAll('[data-kouryu]').forEach(function (a) {
+    a.addEventListener('click', function (e) {
+      e.preventDefault();
+      var id = (CFG.LIFF_IDS || {}).kouryu;
+      if (!id) return;
+      location.href = 'https://liff.line.me/' + id + '?src=' + encodeURIComponent(src);
+    });
   });
+
+  /* ---------- 下の追従バー：冒頭の申込が画面から消えたら出し、面談の案内・末尾の申込が見えている間は引っ込める ---------- */
+  (function () {
+    var dock = document.querySelector('.dock');
+    if (!dock || MEETING_BOOKED || !('IntersectionObserver' in window)) return;
+    var heroCta = document.querySelector('.hero .btn-primary');
+    var heroGone = false, coverCount = 0;
+    function render() { dock.hidden = !(heroGone && coverCount === 0); }
+    new IntersectionObserver(function (es) {
+      es.forEach(function (e) { heroGone = !e.isIntersecting && e.boundingClientRect.top < 0; });
+      render();
+    }).observe(heroCta);
+    var cover = new IntersectionObserver(function (es) {
+      es.forEach(function (e) {
+        var was = e.target.dataset.seen === '1';
+        if (e.isIntersecting && !was) { coverCount++; e.target.dataset.seen = '1'; }
+        if (!e.isIntersecting && was) { coverCount--; e.target.dataset.seen = ''; }
+      });
+      render();
+    });
+    document.querySelectorAll('.interview .btn-primary, .closing .cta-group').forEach(function (el) { cover.observe(el); });
+  })();
+
+  /* ---------- RVSSで得られること：めくった位置を数字と点に映し、矢印・目次でも送れるようにする ---------- */
+  (function () {
+    var track = document.querySelector('.scene-track');
+    if (!track) return;
+    var cards = track.querySelectorAll('.scene');
+    var dots = document.querySelectorAll('.scene-nav .dots i');
+    var count = document.querySelector('.scene-nav .count b');
+    var prev = document.querySelector('.scene-nav .prev'), next = document.querySelector('.scene-nav .next');
+    function current() {
+      var step = cards[1].offsetLeft - cards[0].offsetLeft;
+      return Math.max(0, Math.min(cards.length - 1, Math.round(track.scrollLeft / step)));
+    }
+    function render() {
+      var i = current();
+      dots.forEach(function (d, k) { d.classList.toggle('on', k === i); });
+      count.textContent = '0' + (i + 1);
+      prev.disabled = i === 0; next.disabled = i === cards.length - 1;
+    }
+    function go(i) { track.scrollTo({ left: cards[i].offsetLeft - cards[0].offsetLeft, behavior: 'smooth' }); }
+    prev.addEventListener('click', function () { go(Math.max(0, current() - 1)); });
+    next.addEventListener('click', function () { go(Math.min(cards.length - 1, current() + 1)); });
+    track.addEventListener('scroll', function () { window.requestAnimationFrame(render); }, { passive: true });
+    document.querySelectorAll('.value-index a').forEach(function (a, k) {
+      a.addEventListener('click', function (e) { e.preventDefault(); go(k); track.scrollIntoView({ behavior: 'smooth', block: 'center' }); });
+    });
+    render();
+  })();
+
+  /* 活動の場面は、画面に入ったときに少しずらして出す（動きを減らす設定では出さない） */
+  (function () {
+    var sec = document.querySelector('.scenes');
+    if (!sec || !('IntersectionObserver' in window)) { if (sec) sec.classList.add('in'); return; }
+    new IntersectionObserver(function (es, ob) {
+      es.forEach(function (e) { if (e.isIntersecting) { sec.classList.add('in'); ob.disconnect(); } });
+    }, { threshold: 0.2 }).observe(sec);
+  })();
 })();
 </script>
 </body>

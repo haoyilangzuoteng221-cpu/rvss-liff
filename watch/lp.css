@@ -1,0 +1,379 @@
+/* v5：見出しも本文もゴシック1書体に揃え、文字の大小差を2倍程度に収める。冒頭は動画まで詰めて、写真は次の画面の頭から見せる。
+   並び＝動画と面談の申込 → 団体の説明 → 活動の場面 → 質問会（中盤・色面を変える） → 面談の案内 → 末尾。 */
+:root{
+  --paper:#f8f6f0; --ink:#182d3b; --sub:#4a5a66; --gold:#b8892f; --line:#182d3b1f;
+  --pad:20px;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font-family:"Noto Sans JP","Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;
+  font-size:15px;line-height:1.75;letter-spacing:.02em;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none;-webkit-tap-highlight-color:transparent}
+img{display:block;width:100%;height:100%;object-fit:cover}
+figure{margin:0}
+/* 改行は意味の切れ目だけで起こす（語の途中で折り返さない） */
+.ph{display:inline-block}
+
+.preview-note{display:none;margin:0;padding:5px 12px;font-size:10px;line-height:1.6;text-align:center;letter-spacing:.04em;background:#e6e4dc;color:var(--sub)}
+
+.top{display:flex;align-items:center;height:48px;padding:0 var(--pad);border-bottom:1px solid var(--line)}
+.logo{font:900 22px/1 Arial,"Noto Sans JP",sans-serif;letter-spacing:-.06em;display:flex;align-items:baseline;gap:9px}
+.logo small{font:700 8px/1 Arial,sans-serif;letter-spacing:.06em}
+
+/* 1画面目 */
+.hero{padding:22px var(--pad) 28px}
+.hero h1{margin:0;font-size:clamp(26px,8vw,32px);line-height:1.38;font-weight:800;letter-spacing:.01em}
+.lead{margin:10px 0 0;font-size:15px;line-height:1.75;color:var(--sub)}
+
+.meta{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin:18px 0 8px;font-size:12px;line-height:1.5;color:var(--sub)}
+.meta b{font-size:13px;color:var(--ink);font-variant-numeric:tabular-nums;letter-spacing:.04em}
+.player{position:relative;aspect-ratio:16/9;background:#0b1b28;border-radius:10px;overflow:hidden}
+.player iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.bar{height:3px;margin:8px 0 0;background:#182d3b14;border-radius:3px;overflow:hidden}
+.bar i{display:block;width:0;height:100%;background:var(--gold)}
+
+.cta{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:14px;min-height:64px;padding:12px 18px 12px 20px;
+  background:var(--ink);color:#fff;border-radius:10px;font-size:16px;font-weight:700;line-height:1.4;transition:transform .15s}
+.cta small{display:block;margin-bottom:3px;font-size:12px;font-weight:500;color:#d6dee2;letter-spacing:.04em}
+.cta-arrow{flex:0 0 36px;height:36px;display:grid;place-items:center;border:1px solid #ffffff59;border-radius:50%;font-size:18px;font-weight:400}
+.cta-note{margin:8px 2px 0;font-size:13px;line-height:1.7;color:var(--sub)}
+
+.sub-link{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:16px;padding:14px 4px 4px;border-top:1px solid var(--line);
+  font-size:14px;font-weight:500;line-height:1.6}
+.sub-link>span:last-child{flex:0 0 auto;font-size:16px}
+.tapped{transform:scale(.98);opacity:.85}
+
+/* 2画面目 */
+.about{padding:0 0 40px;border-top:1px solid var(--line)}
+.about-main{aspect-ratio:3/2;overflow:hidden}
+.about-main img{object-position:45% 50%}
+.about-text{padding:24px var(--pad) 0}
+.kicker{margin:0 0 8px;font-size:13px;font-weight:700;color:var(--gold);letter-spacing:.06em}
+.about h2{margin:0;font-size:clamp(21px,6.4vw,25px);line-height:1.5;font-weight:800;letter-spacing:.01em}
+.about-text p:not(.kicker){margin:12px 0 0;font-size:15px;line-height:1.85;color:var(--ink)}
+.about-pair{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:22px var(--pad) 0}
+.about-pair img{aspect-ratio:4/3;border-radius:6px}
+.about-pair figcaption{margin-top:6px;font-size:12px;line-height:1.6;color:var(--sub)}
+.about-pair figure:first-child img{object-position:60% 50%}
+
+/* 活動の場面 */
+.scenes{padding:44px 0 8px;border-top:1px solid var(--line)}
+.section-head{padding:0 var(--pad)}
+.scenes h2,.qa-band h2,.interview h2,.closing h2{margin:0;font-size:clamp(21px,6.4vw,25px);line-height:1.5;font-weight:800;letter-spacing:.01em}
+.scene{margin-top:28px}
+.scene figure{aspect-ratio:16/10;overflow:hidden}
+.scene:nth-of-type(even) figure{margin-left:var(--pad)}
+.scene:nth-of-type(odd) figure{margin-right:var(--pad)}
+.scene figure img[src*="outreach"]{object-position:50% 30%}
+.scene-text{padding:16px var(--pad) 0}
+.scene-no{display:flex;align-items:baseline;gap:10px;margin:0 0 4px;font-size:13px;font-weight:700;color:var(--gold);letter-spacing:.06em}
+.scene-no span{font:700 12px/1 Arial,sans-serif;letter-spacing:.08em;color:var(--sub)}
+.scene h3{margin:0;font-size:19px;line-height:1.5;font-weight:700}
+.scene-text p:not(.scene-no){margin:6px 0 0;font-size:15px;line-height:1.8}
+.photo-note{margin:18px var(--pad) 0;font-size:12px;color:var(--sub)}
+
+/* 中盤：質問会（色面を変えて、面談とは別の場だと見分けられるように） */
+.qa-band{margin-top:40px;padding:36px var(--pad) 40px;background:var(--ink);color:#fff}
+.qa-band .kicker{color:#d9b56a}
+.qa-band>p:not(.kicker){margin:12px 0 0;font-size:15px;line-height:1.85;color:#e3e9ec}
+.facts{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 0;padding:0;list-style:none}
+.facts li{padding:4px 12px;border:1px solid var(--line);border-radius:999px;font-size:13px;line-height:1.6}
+.qa-band .facts li{border-color:#ffffff40}
+.btn-light{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:20px;min-height:58px;padding:12px 20px;
+  background:var(--paper);color:var(--ink);border-radius:10px;font-size:16px;font-weight:700;transition:transform .15s}
+
+/* 面談の案内 */
+.interview{padding:44px var(--pad) 44px}
+.interview>p:not(.kicker):not(.cta-note){margin:12px 0 0;font-size:15px;line-height:1.85}
+.interview .cta{margin-top:20px}
+
+/* 末尾 */
+.closing{border-top:1px solid var(--line)}
+.closing figure{aspect-ratio:4/3;overflow:hidden}
+.closing figure img{object-position:50% 40%}
+.closing-text{padding:28px var(--pad) 44px}
+.closing .cta{margin-top:18px}
+
+.foot{padding:28px var(--pad) 120px;border-top:1px solid var(--line)}
+.foot p{margin:12px 0 0;font-size:12px;color:var(--sub)}
+
+/* 下に出る申込バー */
+.dock{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:20;display:flex;align-items:center;gap:12px;
+  padding:8px 8px 8px 16px;background:#f8f6f0f5;border:1px solid #182d3b26;border-radius:14px;box-shadow:0 6px 24px #10293524;backdrop-filter:blur(8px)}
+.dock[hidden]{display:none}
+.dock-text{font-size:12px;font-weight:700;line-height:1.5;white-space:nowrap}
+.dock-text small{display:block;font-size:12px;font-weight:400;color:var(--sub)}
+.dock a{flex:1;display:grid;place-items:center;min-height:48px;padding:0 12px;background:var(--ink);color:#fff;border-radius:10px;font-size:14px;font-weight:700;text-align:center;line-height:1.4}
+
+@media(max-width:340px){
+  :root{--pad:16px}
+  .lead{font-size:14px}
+  .cta{font-size:15px;padding-left:16px}
+  .cta-note,.sub-link{font-size:13px}
+  .about-text p:not(.kicker){font-size:14px}
+  .scene-text p:not(.scene-no),.qa-band>p:not(.kicker),.interview>p:not(.kicker):not(.cta-note){font-size:14px}
+  .btn-light{font-size:15px}
+  .dock{gap:8px;padding-left:12px}
+  .dock a{font-size:13px;padding:0 8px}
+}
+
+/* ===== v6：冒頭と活動の場面だけをクリエイティブ優先で作り直す（書体・文字の大きさ・並びは v5 のまま） ===== */
+:root{--gold-light:#ead39a}
+
+/* 冒頭：3枚の写真を組んだ一枚絵に、見出しの紙片を重ねる */
+.hero{padding:0 0 28px}
+.mosaic{display:grid;grid-template-columns:60fr 40fr;gap:3px;height:clamp(172px,53vw,214px);background:var(--paper)}
+.m{position:relative;margin:0;overflow:hidden;background:#d9d5ca}
+.m img{position:absolute;inset:0}
+.m .alt{opacity:0}
+.m1 img{object-position:46% 40%}
+.m2 img{object-position:72% 30%}
+.m2 .alt{object-position:50% 68%}
+.hero-copy{position:relative;z-index:2;margin:-46px 48px 0 0;padding:16px var(--pad) 0;background:var(--paper)}
+.hero-copy::before{content:"";position:absolute;left:var(--pad);top:0;width:36px;height:3px;background:var(--gold)}
+.mark{background:linear-gradient(transparent 64%,var(--gold-light) 64%,var(--gold-light) 94%,transparent 94%)}
+.hero-body{padding:0 var(--pad)}
+.hero-body .lead{margin-top:10px}
+.about-main img{object-position:50% 82%}
+
+/* 活動の場面：縦長の写真＋大きな番号のカードを横にめくる */
+.scenes{padding:44px 0 8px}
+.scene-track{display:flex;gap:16px;margin-top:22px;padding:6px var(--pad) 14px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-inline:var(--pad);scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.scene-track::-webkit-scrollbar{display:none}
+/* 最後のカードも左端にそろえて止まるよう、右に余白を足す（前のカードの文字が左に残らないように） */
+.scene-track::after{content:"";flex:0 0 calc(22% - 16px)}
+.scene-track:focus-visible{outline:3px solid var(--gold);outline-offset:-3px}
+.scene{flex:0 0 78%;margin:0;scroll-snap-align:start;position:relative}
+.scene figure{position:relative;margin:0 10px 0 0;aspect-ratio:4/5}
+.scene:nth-of-type(odd) figure,.scene:nth-of-type(even) figure{margin-left:0;margin-right:10px;overflow:visible}
+.scene figure::before{content:"";position:absolute;inset:10px -10px -10px 10px;border-radius:4px}
+.s1 figure::before{background:var(--gold-light)}
+.s2 figure::before{background:var(--ink)}
+.s3 figure::before{background:var(--gold)}
+.scene .photo{position:absolute;inset:0;overflow:hidden;border-radius:4px}
+.s1 .photo img{object-position:30% 50%}
+.s2 .photo img{object-position:92% 50%}
+.s3 .photo img{object-position:30% 50%}
+.scene-num{position:absolute;left:-2px;bottom:-30px;z-index:2;font:900 68px/1 Arial,"Noto Sans JP",sans-serif;letter-spacing:-.04em;color:var(--paper);-webkit-text-stroke:2px var(--ink);paint-order:stroke fill}
+.scene-text{padding:40px 4px 0 0}
+.scene-no{display:block;margin:0 0 4px}
+.scene-nav{display:flex;align-items:center;gap:14px;margin:6px var(--pad) 0}
+.dots{display:flex;gap:6px;flex:1}
+.dots i{display:block;height:3px;flex:1;max-width:48px;background:#182d3b26;border-radius:2px;transition:background .3s}
+.dots i.on{background:var(--ink)}
+.count{font:700 13px/1 Arial,sans-serif;color:var(--sub);letter-spacing:.06em}
+.count b{color:var(--ink)}
+.arrows{display:flex;gap:8px}
+.arrows button{width:42px;height:42px;display:grid;place-items:center;border:1px solid #182d3b40;border-radius:50%;background:transparent;color:var(--ink);font-size:17px;cursor:pointer}
+.arrows button:disabled{opacity:.3;cursor:default}
+.arrows button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.photo-note{margin-top:16px}
+
+/* 動き（動きを減らす設定の端末では止める） */
+@media (prefers-reduced-motion:no-preference){
+  .m{animation:tile-in .9s cubic-bezier(.2,.7,.2,1) both}
+  .m2{animation-delay:.14s}
+  .m img:not(.alt){animation:slow-zoom 14s ease-in-out infinite alternate}
+  .m .alt{animation:swap 15s ease-in-out infinite;animation-delay:4s}
+  .hero-copy{animation:rise .8s cubic-bezier(.2,.7,.2,1) .3s both}
+  .scenes .scene{opacity:0;transform:translateX(28px);transition:opacity .7s,transform .7s cubic-bezier(.2,.7,.2,1)}
+  .scenes.in .scene{opacity:1;transform:none}
+  .scenes.in .s2{transition-delay:.12s}.scenes.in .s3{transition-delay:.24s}
+}
+@keyframes tile-in{from{clip-path:inset(100% 0 0 0)}to{clip-path:inset(0)}}
+@keyframes slow-zoom{from{transform:scale(1)}to{transform:scale(1.07)}}
+@keyframes swap{0%,38%{opacity:0}46%,88%{opacity:1}96%,100%{opacity:0}}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+@media(max-width:340px){
+  .hero-copy{margin-right:28px}
+  .scene{flex-basis:84%}
+  .scene-track::after{flex-basis:calc(16% - 16px)}
+  .scene-num{font-size:58px;bottom:-26px}
+  .scene-text{padding-top:34px}
+}
+
+/* 10/22 守屋：RVSS は公式ロゴを使う。ロゴの「REAL VALUE」が白文字なので、ヘッダーとフッターは濃紺の帯に載せる。写真の注記は入れない */
+.top{height:56px;background:var(--ink);border-bottom:0}
+.logo-img{display:block;width:auto;height:36px;object-fit:contain}
+.foot{padding:28px var(--pad) 120px;background:var(--ink);border-top:0}
+.foot .logo-img{height:44px}
+
+/* ===== v7：申込ボタンを分かりやすく・余白を詰めて中身を足す（LPナレッジと予約型LPの実物に合わせる） ===== */
+:root{--action:#cf4410;--action-press:#b23a0d;--action-shadow:#8f2f0a;--band:#efe9dd}
+body{font-size:16px}
+
+/* 主の申込＝朱色で塗った1行の大きなボタン（白文字との差 4.68:1）。押せる見た目に下の影を付ける */
+.cta-group{margin-top:16px}
+.btn-primary{position:relative;display:flex;align-items:center;justify-content:center;gap:10px;min-height:60px;padding:14px 52px;
+  background:var(--action);color:#fff;border-radius:999px;font-size:18px;font-weight:800;letter-spacing:.04em;line-height:1.3;text-align:center;
+  box-shadow:0 4px 0 var(--action-shadow);transition:transform .1s,box-shadow .1s}
+.btn-primary .arrow{position:absolute;right:20px;top:50%;transform:translateY(-50%);font-size:20px;font-weight:700}
+.btn-primary:active,.btn-primary.tapped{transform:translateY(3px);box-shadow:0 1px 0 var(--action-shadow);background:var(--action-press)}
+.btn-primary:focus-visible,.btn-secondary:focus-visible,.dock a:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+
+/* 補足はボタンの外に吹き出しで（ボタンの中に小さい字を詰めない） */
+.bubble{position:relative;width:fit-content;max-width:100%;margin:0 auto 10px;padding:4px 14px;border:1.5px solid var(--action);border-radius:999px;background:#fff;
+  color:var(--action);font-size:13px;font-weight:700;line-height:1.6;text-align:center}
+.bubble::after{content:"";position:absolute;left:50%;bottom:-6px;width:10px;height:10px;background:#fff;border-right:1.5px solid var(--action);border-bottom:1.5px solid var(--action);transform:translateX(-50%) rotate(45deg)}
+.cta-note{margin:10px 0 0;text-align:center;font-size:13px}
+
+/* 副の申込（質問会）＝枠線のボタン。押せる見た目は保ち、主より一段控えめに */
+.btn-secondary{position:relative;display:flex;align-items:center;justify-content:center;margin-top:14px;min-height:56px;padding:10px 48px;
+  background:#fff;color:var(--ink);border:2px solid var(--ink);border-radius:999px;font-size:15px;font-weight:700;line-height:1.35;text-align:center}
+.btn-secondary small{display:block;font-size:12px;font-weight:500;color:var(--sub)}
+.btn-secondary .arrow{position:absolute;right:20px;top:50%;transform:translateY(-50%);font-size:18px}
+.btn-secondary.on-dark{background:transparent;color:#fff;border-color:#fff}
+.sub-link,.cta,.btn-light{display:none}
+
+/* 冒頭：説明と動画の間を詰める */
+.hero{padding-bottom:24px}
+.hero-body .lead{font-size:16px;margin-top:8px}
+.meta{margin:14px 0 6px}
+
+/* 余白を詰め、帯の色で区切る */
+.about{padding-bottom:32px}
+.about-text{padding-top:20px}
+.about-text p:not(.kicker){font-size:16px}
+.about-pair{padding-top:16px}
+.scenes{padding:32px 0 24px;background:var(--band);border-top:0}
+.scene-track{margin-top:16px}
+.scene-text p:not(.scene-no){font-size:16px}
+.qa-band{margin-top:0;padding:32px var(--pad)}
+.qa-band>p:not(.kicker){font-size:16px}
+.interview{padding:32px var(--pad)}
+.interview>p:not(.kicker){font-size:16px;line-height:1.85}
+
+/* 申込の流れ（3段） */
+.flow{list-style:none;margin:20px 0 0;padding:0;counter-reset:none}
+.flow li{position:relative;display:flex;gap:14px;padding:12px 14px;background:#fff;border:1px solid var(--line);border-radius:10px}
+.flow li+li{margin-top:12px}
+.flow li+li::before{content:"";position:absolute;left:31px;top:-13px;width:2px;height:12px;background:var(--gold)}
+.flow .step{flex:0 0 34px;height:34px;display:grid;place-items:center;border-radius:50%;background:var(--ink);color:#fff;font:700 15px/1 Arial,sans-serif}
+.flow b{display:block;font-size:16px;line-height:1.5}
+.flow div{font-size:14px;line-height:1.7;color:var(--sub)}
+.interview .cta-group{margin-top:24px}
+
+/* よくある質問 */
+.faq{padding:32px var(--pad);background:var(--band)}
+.faq h2{margin:0 0 12px;font-size:clamp(21px,6.4vw,25px);line-height:1.5;font-weight:800}
+.faq details{background:#fff;border:1px solid var(--line);border-radius:10px}
+.faq details+details{margin-top:8px}
+.faq summary{position:relative;list-style:none;padding:14px 44px 14px 16px;font-size:15px;font-weight:700;line-height:1.6;cursor:pointer}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"＋";position:absolute;right:16px;top:50%;transform:translateY(-50%);font-weight:400;color:var(--sub)}
+.faq details[open] summary::after{content:"－"}
+.faq details p{margin:0;padding:0 16px 16px;font-size:15px;line-height:1.8}
+
+.closing-text{padding:24px var(--pad) 32px}
+.closing .cta-group{margin-top:16px}
+
+/* 画面下の追従バー：横幅いっぱい・白地。主（面談）を大きく、副（質問会）を小さく */
+.dock{left:0;right:0;bottom:0;gap:8px;padding:10px 12px calc(10px + env(safe-area-inset-bottom));border:0;border-top:1px solid var(--line);border-radius:0;background:#fffffff2;box-shadow:0 -4px 16px #10293514}
+.dock a{min-height:50px;border-radius:999px;font-size:15px;font-weight:800}
+.dock .dock-main{flex:1;background:var(--action);color:#fff;box-shadow:0 3px 0 var(--action-shadow)}
+.dock .dock-sub{flex:0 0 auto;padding:0 16px;background:#fff;color:var(--ink);border:2px solid var(--ink);font-size:14px}
+.dock-text{display:none}
+.foot{padding-bottom:110px}
+
+@media(max-width:340px){
+  .btn-primary{font-size:16px;padding:14px 36px;letter-spacing:.02em}
+  .btn-primary .arrow{right:14px}
+  .btn-secondary{padding:10px 40px;font-size:14px}
+  .bubble{font-size:12px;padding:4px 10px}
+  .scene-text p:not(.scene-no),.qa-band>p:not(.kicker),.interview>p:not(.kicker),.about-text p:not(.kicker){font-size:15px}
+  .dock .dock-main{font-size:14px}
+  .dock .dock-sub{padding:0 12px;font-size:13px}
+}
+
+/* 申込ボタンを最初の画面（LINE内で約750px）に収める */
+.mosaic{height:clamp(160px,48vw,200px)}
+.meta{margin:12px 0 6px}
+
+/* ===== v8：下半分で「なぜRVSSか」まで届ける（紹介動画 v9 の承認済みの言葉）＋動画の再生を目立たせる ===== */
+
+/* こんな気持ち、ありませんか？（冒頭の直後） */
+.hook{padding:28px var(--pad) 28px;background:var(--band)}
+.hook .kicker{margin-bottom:12px}
+.checks{list-style:none;margin:0;padding:0}
+.checks li{position:relative;padding:12px 14px 12px 44px;background:#fff;border:1px solid var(--line);border-radius:10px;font-size:16px;font-weight:700;line-height:1.6}
+.checks li+li{margin-top:8px}
+.checks li::before{content:"";position:absolute;left:14px;top:50%;width:20px;height:20px;margin-top:-10px;border-radius:50%;background:var(--ink)}
+.checks li::after{content:"";position:absolute;left:21px;top:50%;width:6px;height:10px;margin-top:-7px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg)}
+
+/* RVSSで得られること：4枚＋目次 */
+.value-index{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:16px 0 0;padding:0;list-style:none}
+.value-index a{display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 2px;background:#fff;border:1px solid var(--line);border-radius:8px;font-size:12px;font-weight:700;line-height:1.4;text-align:center;color:var(--ink)}
+.value-index b{font:800 15px/1 Arial,sans-serif;color:var(--gold)}
+.values .scene-text h3{margin-top:0}
+.s4 figure::before{background:var(--ink)}
+.s2 figure::before{background:var(--gold-light)}
+.s1 .photo img{object-position:40% 50%}
+.s2 .photo img{object-position:62% 35%}
+.s3 .photo img{object-position:60% 70%}
+.s4 .photo img{object-position:92% 50%}
+
+/* こんな人を待っています */
+.people{padding:32px var(--pad)}
+.people h2{margin:0 0 16px;font-size:clamp(21px,6.4vw,25px);line-height:1.5;font-weight:800}
+.badge{display:inline-block;margin:0 10px 6px 0;padding:2px 12px;border:2px solid var(--gold);border-radius:6px;color:var(--ink);background:#fff;font-size:15px;font-weight:800;vertical-align:4px}
+.people .checks li{font-weight:500}
+.people .checks li::before{background:var(--gold)}
+
+@media(max-width:340px){
+  .checks li{font-size:15px;padding-left:40px}
+  .value-index a{padding:8px 0}
+}
+
+/* 紹介動画を目立たせる：見出し・表紙・大きな再生ボタン・目次 */
+.video-head{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin:14px 0 8px}
+.video-title{margin:0;font-size:18px;font-weight:800;line-height:1.4}
+.video-title::before{content:"";display:inline-block;width:0;height:0;margin-right:8px;border-left:11px solid var(--action);border-top:7px solid transparent;border-bottom:7px solid transparent;vertical-align:1px}
+.deadline{margin:0;flex:0 0 auto;font-size:12px;color:var(--sub);line-height:1.5}
+.deadline b{font-size:13px;color:var(--ink);font-variant-numeric:tabular-nums}
+.player.facade{cursor:pointer}
+.player .poster{position:absolute;inset:0;filter:brightness(.82)}
+.play-btn{position:absolute;left:50%;top:50%;width:76px;height:76px;margin:-38px 0 0 -38px;display:grid;place-items:center;border:0;border-radius:50%;background:var(--action);box-shadow:0 0 0 6px #ffffff40,0 8px 22px #0007;cursor:pointer}
+.play-btn .tri{display:block;width:0;height:0;margin-left:6px;border-left:24px solid #fff;border-top:15px solid transparent;border-bottom:15px solid transparent}
+.play-btn:focus-visible{outline:3px solid var(--gold);outline-offset:4px}
+.play-label{position:absolute;left:10px;bottom:10px;padding:3px 10px;border-radius:999px;background:#0b1b28d9;color:#fff;font-size:12px;font-weight:700;line-height:1.6}
+@media (prefers-reduced-motion:no-preference){
+  .player.facade .play-btn::after{content:"";position:absolute;inset:-6px;border-radius:50%;border:3px solid #ffffffb3;animation:ring 2s ease-out infinite}
+  @keyframes ring{from{transform:scale(1);opacity:1}to{transform:scale(1.45);opacity:0}}
+}
+.chapters{display:flex;gap:6px;margin:8px calc(var(--pad) * -1) 0;padding:0 var(--pad) 2px;overflow-x:auto;list-style:none;scrollbar-width:none}
+.chapters::-webkit-scrollbar{display:none}
+.chapters li{flex:0 0 auto}
+.chapters button{display:flex;align-items:baseline;gap:6px;padding:6px 12px;border:1px solid var(--line);border-radius:999px;background:#fff;color:var(--ink);font:500 13px/1.5 "Noto Sans JP",sans-serif;white-space:nowrap;cursor:pointer}
+.chapters b{font:700 12px/1 Arial,sans-serif;color:var(--action)}
+.hero-copy{padding-bottom:0}
+.uni{margin:8px 0 0;padding:8px 10px;background:#fff;border-radius:8px;font-size:13px!important;line-height:1.7!important;color:var(--sub)!important}
+
+/* 見出しを1行に・視聴期限は表紙の右下の札に（再生を始めたら表紙ごと消える）。冒頭の写真を少し低く */
+.video-title{margin:14px 0 8px}
+.player .deadline{position:absolute;right:10px;bottom:10px;padding:3px 10px;border-radius:999px;background:#0b1b28d9;color:#fff;font-size:12px;line-height:1.6}
+.player .deadline b{color:#fff;font-size:12px}
+.mosaic{height:clamp(150px,44vw,190px)}
+
+
+/* ===== 本番用（2026-10-23）：本番 watch の計測と状態をのせる ===== */
+/* 再生を始めたら表紙と札を隠し、YouTube のプレーヤーを枠いっぱいに */
+.player #player{position:absolute;inset:0;width:100%;height:100%}
+.player:not(.facade) .poster,.player:not(.facade) .play-btn,.player:not(.facade) .play-label,.player:not(.facade) .deadline{display:none}
+.player .deadline.expired b{color:#ffb4a0}
+/* 動画の枠の中に出す状態（読み込み中・準備中・期限切れ） */
+.video-state{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:150px;padding:20px;border-radius:10px;background:#fff;border:1px solid var(--line);text-align:center;font-size:14px;line-height:1.7;color:var(--sub)}
+.video-state[hidden]{display:none}
+.video-state b{font-size:16px;color:var(--ink)}
+.btn-reissue{margin-top:8px;min-height:48px;padding:0 28px;border:0;border-radius:999px;background:var(--ink);color:#fff;font:700 15px/1 "Noto Sans JP",sans-serif;cursor:pointer}
+.status{margin:12px 0 0;padding:12px 14px;border-radius:10px;font-size:14px;line-height:1.6;background:#f2f3f5}
+.status.err{background:#fdecea;color:#c0362c}
+.status.ok{background:#e8f5ec;color:#1a7f37}
+/* 動画の終盤：申込ボタンを光らせる（本番の .cta-under.on と同じ役割） */
+@media (prefers-reduced-motion:no-preference){
+  #cta.on .btn-primary{animation:ctaPulse 1.6s ease-in-out infinite}
+  @keyframes ctaPulse{0%,100%{box-shadow:0 4px 0 var(--action-shadow),0 0 0 0 #cf441088}50%{box-shadow:0 4px 0 var(--action-shadow),0 0 0 12px #cf441000}}
+}
+/* 予約済みの経路（?src=rr1017… / direct_interview_od）：面談の申込をまとめて隠す */
+.booked .interview-only{display:none!important}
