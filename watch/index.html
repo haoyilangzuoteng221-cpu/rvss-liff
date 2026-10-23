@@ -7,11 +7,11 @@
 <title>RVSS 紹介動画</title>
 <!-- ★2026-10-23 LP化（v8・守屋 10/22「v8で進める」）。見た目は lp.css、写真は lp/。
      計測と処理（LIFF認証・視聴の記録・面談ボタンの記録・予約済み経路・期限切れ・情シスの訪問計測）は 10/13 版の本番からそのまま移した。
-     違い＝動画は表紙を押してからプレーヤーを作る（YouTube の API はページを開いた時点で読み込んでおく）。 -->
+     違い＝プレーヤーは表紙の下に作っておき、表紙を押した操作の中で再生する（10/23 iPhone で再生が始まらなかったため直した）。 -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800&display=swap">
-<link rel="stylesheet" href="lp.css?v=20261023.1">
+<link rel="stylesheet" href="lp.css?v=20261023.2">
 </head>
 <body>
 
@@ -46,7 +46,8 @@
     </div>
 
     <div id="watch-area" hidden>
-      <!-- 表紙（公開中の動画の 3:03 の場面・字幕の帯は切り落とし）＋大きな再生ボタン。押したらプレーヤーを作って再生する -->
+      <!-- 表紙（公開中の動画の 3:03 の場面・字幕の帯は切り落とし）＋大きな再生ボタン。
+           プレーヤーはページを開いた時点で表紙の下に作っておき、表紙を押した操作の中で再生する（iPhone は押した操作の中でないと再生させない・10/23 守屋の実機で確認） -->
       <div class="player facade" id="player-box">
         <img class="poster" src="lp/video-poster.jpg" alt="紹介動画の一場面。活動写真が並んでいる">
         <button type="button" class="play-btn" aria-label="紹介動画を再生する（約6分）"><span class="tri" aria-hidden="true"></span></button>
@@ -54,6 +55,7 @@
         <span class="deadline" id="countdown">視聴期限 <b id="cd-value">--:--:--</b></span>
         <div id="player"></div>
       </div>
+      <p class="play-hint" id="play-hint" hidden>▶ をもう一度押してください</p>
       <div class="bar" aria-hidden="true"><i id="bar-fill"></i></div>
       <ol class="chapters" aria-label="この動画でわかること（押すとその場面から再生）">
         <li><button type="button" data-start="73"><b>1:13</b>RVSSとは</button></li>
@@ -356,24 +358,47 @@
     try { box.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) { box.scrollIntoView(); }
   }
 
-  // ★LP化：プレーヤーは表紙を押してから作る（本番 10/13 版はページを開いた時点で作っていた）。
-  //   onReady・onStateChange・節目の記録は本番と同じ。start＝目次から入ったときの開始秒。
-  function buildPlayer(start) {
-    var box = document.getElementById('player-box');
-    box.classList.remove('facade');
+  // ★2026-10-23｜プレーヤーはページを開いた時点で表紙の下に作る（本番 10/13 版と同じ時点）。
+  //   iPhone の LINE は、表紙を押した操作の中で playVideo() を呼ばないと再生を止める（10/23 守屋の実機で「まだ始まっていない」のまま0秒）。
+  //   onReady・onStateChange・節目の記録は本番と同じ。
+  var playerReady = false, pendingStart = null, revealTimer = null;
+  function reveal(needTap) {
+    document.getElementById('player-box').classList.remove('facade');
+    document.getElementById('play-hint').hidden = !needTap;
+  }
+  // 押した操作の中で呼ぶ。1.2 秒たっても再生（または読み込み）にならなければ、表紙を外して YouTube の ▶ を見せる
+  function startPlayback(start) {
+    try {
+      if (start) player.seekTo(start, true);
+      player.playVideo();
+    } catch (e) {}
+    clearTimeout(revealTimer);
+    revealTimer = setTimeout(function () {
+      var st = -1;
+      try { st = player.getPlayerState(); } catch (e) {}
+      reveal(st !== YT.PlayerState.PLAYING && st !== YT.PlayerState.BUFFERING);
+    }, 1200);
+  }
+  function buildPlayer() {
     player = new YT.Player('player', {
       videoId: CFG.YOUTUBE_ID,
-      playerVars: { playsinline: 1, rel: 0, modestbranding: 1, autoplay: 1, start: start || 0 },
+      playerVars: { playsinline: 1, rel: 0, modestbranding: 1 },
       events: {
         onReady: function () {
           try { duration = player.getDuration() || 0; } catch (e) { duration = 0; }
           journey.record('video_ready', { stage: 'video', durationSec: duration });
-          try { player.playVideo(); } catch (e) {}
+          playerReady = true;
+          // 読み込み前に表紙が押されていたとき（押した操作の外なので、iPhone では ▶ の案内に回ることがある）
+          if (pendingStart !== null) { var s = pendingStart; pendingStart = null; startPlayback(s); }
         },
         onError: function (ev) { journey.record('video_error', { stage: 'video', errorCode: ev.data }); },
         onStateChange: function (ev) {
           journey.record('video_state', { stage: 'video', playerState: ev.data, pct: maxPct });
           if (!duration) { try { duration = player.getDuration() || 0; } catch (e) {} }
+          if (ev.data === YT.PlayerState.PLAYING || ev.data === YT.PlayerState.BUFFERING) {
+            clearTimeout(revealTimer);
+            reveal(false);
+          }
           if (ev.data === YT.PlayerState.PLAYING) {
             if (!ticker) ticker = setInterval(onProgressTick, 3000);
           } else {
@@ -390,11 +415,9 @@
 
   function play(start) {
     if (!ready) return;
-    if (player && player.seekTo) {
-      try { player.seekTo(start || 0, true); player.playVideo(); } catch (e) {}
-      return;
-    }
-    loadYouTube().then(function () { if (!player) buildPlayer(start); });
+    if (player && playerReady) { startPlayback(start || 0); return; }
+    pendingStart = start || 0;
+    loadYouTube().then(function () { if (!player) buildPlayer(); });
   }
   document.getElementById('player-box').addEventListener('click', function () {
     if (this.classList.contains('facade')) play(0);
@@ -463,8 +486,8 @@
       setInterval(renderCountdown, 1000);
       ready = true;
 
-      // YouTube の API だけ先に読み込んでおく（表紙を押したらすぐプレーヤーを作れるように）。読み込み失敗の記録は本番と同じ
-      loadYouTube();
+      // プレーヤーを表紙の下に作っておく（表紙を押した操作の中で再生するため）。読み込み失敗の記録は本番と同じ
+      loadYouTube().then(function () { if (!player) buildPlayer(); });
     }
   });
 
