@@ -1,5 +1,5 @@
 /** 外部向けAI分科会の申込（10/30・11/2を選べる。両日も可。押すのはボタン1つ）。
- * 回ごとの日時・題・講師・Zoomは専用GASの 開催設定.js だけが持ち、この画面は応答をそのまま出す（画面に日時を書かない）。
+ * 回ごとの日時・題・講師・参加リンクは専用GASの 開催設定.js だけが持ち、この画面は応答をそのまま出す（画面に日時を書かない）。
  * 名前は入力させず、サーバーが検証したLINEの表示名で記録する。
  */
 (function (global) {
@@ -11,19 +11,20 @@
   var source = global.RVSS.readSrc(), sending = false, slots = [], friend = '';
   var join = document.getElementById('join');
   function randomId() { var b = new Uint8Array(16); global.crypto.getRandomValues(b); return Array.from(b).map(function (n) { return n.toString(16).padStart(2, '0'); }).join(''); }
-  /** 確認用（?preview=1）。&case=registered（10/30申込済み）／all（両日申込済み）／nofriend／failed／none（全回が準備中）。保存も送信もしない。 */
+  /** 確認用（?preview=1）。&case=registered（10/30申込済み）／all（両日申込済み）／nofriend／failed／none（全回が準備中）／one（10/30だけ公開）。保存も送信もしない。 */
   function mock(data) {
     var c = params.get('case') || '';
     if (c === 'none' && data.action === 'bootstrap') return {ok:true, action:'bootstrap', slots:[]};
-    var s = [{id:'ai_20261030', label:'10月30日（金）22:00〜22:30', title:'“いい感じ”をカタチにする！ChatGPT画像生成とデザインの基本', teacher:'ゆいな（日本大学芸術学部）'},
-      {id:'ai_20261102', label:'11月2日（月）〔確認用〕', title:'', teacher:''}];
+    var s = [{id:'ai_20261030', label:'10月30日（金）22:00〜22:30', title:'“いい感じ”をカタチにする！ChatGPT画像生成とデザインの基本', teacher:''},
+      {id:'ai_20261102', label:'11月2日（月）22:00〜22:30', title:'意外と知らない、ChatGPTでできること3選', teacher:''}];
+    if (c === 'one') s = s.slice(0, 1);
     if (data.action === 'bootstrap') return {ok:true, action:'bootstrap', slots:s.map(function (x, i) {
       var reg = c === 'all' || (c === 'registered' && i === 0);
-      return Object.assign({}, x, {closed:false, registered:reg, notified:reg, responseId:reg ? '確認用' : '', zoom:''});
+      return Object.assign({}, x, {closed:false, registered:reg, notified:reg, responseId:reg ? '確認用' : '', url:''});
     })};
     var sent = c !== 'nofriend' && c !== 'failed';
     return {ok:true, action:'submit', responseId:'確認用・保存なし', notified:sent, items:s.filter(function (x) { return data.slotIds.split(',').indexOf(x.id) >= 0; })
-      .map(function (x) { return {id:x.id, label:x.label, responseId:'確認用', zoom:sent ? '' : 'https://example.invalid/zoom/' + x.id}; })};
+      .map(function (x) { return {id:x.id, label:x.label, responseId:'確認用', url:sent ? '' : 'https://example.invalid/join/' + x.id}; })};
   }
   function post(data) {
     if (preview) return new Promise(function (resolve) { setTimeout(function () { resolve(mock(data)); }, 400); });
@@ -49,7 +50,7 @@
   function token() { if (preview) return ''; var t = global.liff.getAccessToken(); if (!t) throw new Error('login_required'); return t; }
   /** スマホ幅で語が泣き別れしないよう、意味の切れ目で改行する（pre-line）。 */
   function dateLines(label) { return String(label).replace('）', '）\n'); }
-  function titleLines(title) { return String(title).replace(/！(?=.)/, '！\n'); }
+  function titleLines(title) { var t = String(title); return /！(?=.)/.test(t) ? t.replace(/！(?=.)/, '！\n') : t.replace(/、(?=.)/, '、\n'); }
   function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
   function boxes() { return [].slice.call(document.querySelectorAll('#sessions input:not(:disabled)')); }
   function chosen() { return boxes().filter(function (b) { return b.checked; }).map(function (b) { return b.value; }); }
@@ -67,12 +68,16 @@
       label.appendChild(input); label.appendChild(body); box.appendChild(label);
       input.addEventListener('change', update);
     });
+    // 公開中の回が1つだけなら「選んでください／両日の参加もできます」を出さない（10/23 守屋）
+    var shown = box.querySelectorAll('.session').length;
+    document.getElementById('pick-title').textContent = shown > 1 ? '参加する回を選んでください' : '参加する回';
+    document.getElementById('pick-note').hidden = shown < 2;
     // 選べる回が1つだけなら最初から選んでおく（押すのはボタン1つ）
     var free = boxes(); if (free.length === 1) free[0].checked = true;
     update();
     global.RVSS.hide('done'); global.RVSS.show('form-area');
   }
-  /** done＝{id,label,zoom}の並び。notified＝公式LINEに届いたか。 */
+  /** done＝{id,label,url}の並び。notified＝公式LINEに届いたか。 */
   function showDone(done, notified, already, receipt) {
     global.RVSS.hide('form-area'); global.RVSS.show('done');
     document.getElementById('done-title').textContent = already ? 'お申し込み済みです' : '予約が完了しました';
@@ -81,21 +86,21 @@
     // 受付番号はUUID。2回分並ぶと長いので、照合に足りる先頭8文字だけ出す。
     document.getElementById('receipt').textContent = receipt ? '受付番号：' + String(receipt).split(',').map(function (x) { return x.slice(0, 8); }).join('・') : '';
     var zoomBox = document.getElementById('zoom-buttons'); zoomBox.textContent = '';
-    var withZoom = notified ? [] : done.filter(function (d) { return d.zoom; });
+    var withZoom = notified ? [] : done.filter(function (d) { return d.url; });
     withZoom.forEach(function (d) {
-      var b = el('button', 'join zoom-open', (done.length > 1 ? d.label.split('）')[0] + '）の' : '') + 'Zoomを開く'); b.type = 'button';
-      b.addEventListener('click', function () { openZoom(d.zoom); }); zoomBox.appendChild(b);
+      var b = el('button', 'join zoom-open', done.length > 1 ? d.label.split('）')[0] + '）の\n参加用リンクを開く' : '参加用のリンクを開く'); b.type = 'button';
+      b.addEventListener('click', function () { openLink(d.url); }); zoomBox.appendChild(b);
     });
     document.getElementById('done-line').hidden = !notified;
     document.getElementById('fallback').hidden = !withZoom.length;
     document.getElementById('friend-link').hidden = friend !== '0';
     document.getElementById('fallback-text').textContent = friend === '0'
-      ? '公式LINEの友だちではないため、\nLINEのお知らせが届きません。\n当日は、下のボタンから\nZoomに入れます。'
-      : '公式LINEへのお知らせを\n送れませんでした。\n当日は、下のボタンから\nZoomに入れます。';
+      ? '公式LINEの友だちではないため、\nLINEのお知らせが届きません。\n当日は、下のボタンから\n参加できます。'
+      : '公式LINEへのお知らせを\n送れませんでした。\n当日は、下のボタンから\n参加できます。';
     document.getElementById('add-more').hidden = !slots.some(function (s) { return !s.registered && !s.closed; });
   }
-  /** Zoom はLINE内ブラウザでなく外で開く（会員用 /bunkakai/ と同じ）。 */
-  function openZoom(url) {
+  /** 参加リンクはLINE内ブラウザでなく外で開く（Zoom・Google Meet のアプリに渡すため。会員用 /bunkakai/ と同じ）。 */
+  function openLink(url) {
     try { if (global.liff && global.liff.isInClient && global.liff.isInClient()) { global.liff.openWindow({url:url, external:true}); return; } } catch (_) {}
     global.location.href = url;
   }
@@ -125,7 +130,7 @@
   if (preview) { global.RVSS.show('preview-note'); friend = params.get('case') === 'nofriend' ? '0' : '1'; boot(); }
   else if (!ENDPOINT) { global.RVSS.hide('loading'); global.RVSS.setBootStatus(errorText('not_ready'), ''); }
   else global.RVSS.boot({liffKey:'bunkakai', loginRedirectUri:global.location.origin + global.location.pathname + '?src=' + encodeURIComponent(source), onReady:function () {
-    // 友だちでない人には確認LINEが届かない。分かれば送らずに画面へZoomを出す。読めなければ送る側に倒す。
+    // 友だちでない人には確認LINEが届かない。分かれば送らずに画面へ参加用のリンクを出す。読めなければ送る側に倒す。
     Promise.resolve().then(function () { return global.liff.getFriendship(); })
       .then(function (f) { friend = f && f.friendFlag ? '1' : '0'; }, function () { friend = ''; })
       .then(boot);
