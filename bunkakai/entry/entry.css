@@ -44,7 +44,7 @@ h1{font-size:28px;line-height:1.4;margin:0 0 8px}.lead{font-size:15px;line-heigh
 .preview{font-size:12px;padding:9px 12px;background:#fff5d4;border-radius:8px;margin-bottom:12px;color:#725617}
 #done{text-align:center;padding:32px 24px}#done h2{font-size:21px;margin:12px 0 10px}#done p{font-size:14px;line-height:1.8}
 .done-list{list-style:none;padding:0;margin:0 0 12px;display:grid;gap:8px}.done-list li{font-size:17px;font-weight:700;line-height:1.6;white-space:pre-line}
-#fallback p{white-space:pre-line}.zoom-open{font-size:17px;min-height:56px;margin-top:10px;white-space:pre-line;line-height:1.5;padding:8px 0}
+#fallback p{white-space:pre-line}.later-note{margin:10px 0 0;font-weight:700;line-height:1.6}.zoom-open{font-size:17px;min-height:56px;margin-top:10px;white-space:pre-line;line-height:1.5;padding:8px 0}
 .sub-link{display:block;width:100%;margin-top:12px;padding:13px 0;border:1px solid #bdccd9;border-radius:12px;background:#fff;color:var(--fg);font-size:15px;font-weight:700;text-decoration:none;cursor:pointer}
 .done-mark{display:inline-grid;place-items:center;width:48px;height:48px;border-radius:50%;background:#e8f5ed;color:var(--accent);font-size:26px}
 @media(max-width:420px){.wrap{padding:18px 14px 26px}.entry-card{padding:20px 16px;border-radius:15px}}

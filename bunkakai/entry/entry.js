@@ -26,7 +26,7 @@
     })};
     var sent = c !== 'nofriend' && c !== 'failed';
     return {ok:true, action:'submit', responseId:'確認用・保存なし', notified:sent, items:s.filter(function (x) { return data.slotIds.split(',').indexOf(x.id) >= 0; })
-      .map(function (x) { return {id:x.id, label:x.label, responseId:'確認用', url:sent ? '' : 'https://example.invalid/join/' + x.id}; })};
+      .map(function (x) { return {id:x.id, label:x.label, responseId:'確認用', url:sent || x.id === 'ai_20261102' ? '' : 'https://example.invalid/join/' + x.id}; })};   // 11/2はリンクが後日（本番と同じ）
   }
   function post(data) {
     if (preview) return new Promise(function (resolve) { setTimeout(function () { resolve(mock(data)); }, 400); });
@@ -98,16 +98,20 @@
     document.getElementById('receipt').textContent = receipt ? '受付番号：' + String(receipt).split(',').map(function (x) { return x.slice(0, 8); }).join('・') : '';
     var zoomBox = document.getElementById('zoom-buttons'); zoomBox.textContent = '';
     var withZoom = notified ? [] : done.filter(function (d) { return d.url; });
-    withZoom.forEach(function (d) {
+    var later = notified ? [] : done.filter(function (d) { return !d.url; });   // リンクが後日の回（11/2・守屋 10/23）
+    done.forEach(function (d) {
+      if (notified) return;
+      if (!d.url) { zoomBox.appendChild(el('p', 'later-note', (done.length > 1 ? d.label.split('）')[0] + '）の' : '') + '参加用リンクは、\n後日公式LINEでお送りします。')); return; }
       var b = el('button', 'join zoom-open', done.length > 1 ? d.label.split('）')[0] + '）の\n参加用リンクを開く' : '参加用のリンクを開く'); b.type = 'button';
       b.addEventListener('click', function () { openLink(d.url); }); zoomBox.appendChild(b);
     });
     document.getElementById('done-line').hidden = !notified;
-    document.getElementById('fallback').hidden = !withZoom.length;
+    document.getElementById('fallback').hidden = !withZoom.length && !later.length;
     document.getElementById('friend-link').hidden = friend !== '0';
-    document.getElementById('fallback-text').textContent = friend === '0'
-      ? '公式LINEの友だちではないため、\nLINEのお知らせが届きません。\n当日は、下のボタンから\n参加できます。'
-      : '公式LINEへのお知らせを\n送れませんでした。\n当日は、下のボタンから\n参加できます。';
+    // ボタンが無い（11/2だけ）ときは「下のボタンから」を出さない
+    document.getElementById('fallback-text').textContent = (friend === '0'
+      ? '公式LINEの友だちではないため、\nLINEのお知らせが届きません。'
+      : '公式LINEへのお知らせを\n送れませんでした。') + (withZoom.length ? '\n当日は、下のボタンから\n参加できます。' : '');
     document.getElementById('add-more').hidden = !slots.some(function (s) { return !s.registered && !s.closed; });
   }
   /** 参加リンクはLINE内ブラウザでなく外で開く（Zoom・Google Meet のアプリに渡すため。会員用 /bunkakai/ と同じ）。 */
