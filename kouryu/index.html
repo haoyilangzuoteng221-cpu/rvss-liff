@@ -4,6 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>RVSS質問会（Zoom・20分）｜お申し込み</title>
+<!-- ★2026-10-23 守屋「なるべく表示スピード速くして」＝枠の問い合わせ先（GAS）と LINE の部品の接続を先に張っておく -->
+<link rel="preconnect" href="https://script.google.com">
+<link rel="preconnect" href="https://script.googleusercontent.com">
+<link rel="preconnect" href="https://static.line-scdn.net">
+<link rel="preconnect" href="https://api.line.me">
 <style>
   /* ★2026-10-22 守屋「LP風にしたい」＋入力は日時だけ（メールも取らない）。
      見た目はオンデマンド視聴ページのLP案（01_採用戦略/LP比較_20261021/v5）の生成りの地・濃紺の文字に揃える。
@@ -37,10 +42,33 @@
   .facts li { font-size: 13px; font-weight: 700; padding: 4px 11px; border: 1px solid var(--line); border-radius: 999px; background: #fff; }
 
   .hero { padding: 24px var(--pad) 26px; }
+  /* ★2026-10-23 守屋「申込ボタンめだたせて（分科会と質問会の両方）」＝分科会の申込ページ（bunkakai/entry/entry.css の .join）と同じ形。
+     色だけロゴの青に置き換えた（分科会は緑 #087a59）。塗りつぶし・全幅・高さ64px・角丸14px・下に影・押すと沈む */
   .cta { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; margin: 20px 0 0;
-         min-height: 60px; padding: 12px 18px 12px 20px; background: var(--ink); color: #fff; border: 0; border-radius: 10px;
-         font-size: 16px; font-weight: 700; line-height: 1.4; text-align: left; cursor: pointer; }
-  .cta-arrow { flex: 0 0 34px; height: 34px; display: grid; place-items: center; border: 1px solid #ffffff59; border-radius: 50%; font-weight: 400; }
+         min-height: 64px; padding: 12px 18px 12px 22px; border: 0; border-radius: 14px; color: #fff; background: #1f6fb2;
+         box-shadow: 0 4px 0 #154f80, 0 10px 20px rgba(31, 111, 178, .28);
+         font-size: 21px; font-weight: 700; letter-spacing: .06em; line-height: 1.4; text-align: left; cursor: pointer;
+         -webkit-tap-highlight-color: transparent; transition: transform .08s, box-shadow .08s, background .08s; }
+  .cta:active { background: #1a5f99; transform: translateY(3px); box-shadow: 0 1px 0 #154f80, 0 4px 10px rgba(31, 111, 178, .25); }
+  /* 日時を選ぶ前は、押せない見た目（押すと日時の場所へ送る） */
+  .cta.is-off, .cta.is-off:active { background: #b7c4cf; box-shadow: none; transform: none; }
+  /* 申込ボタンは画面の下に固定（ページが長くても押せる）。帯に隠れないよう、ページの下に余白を取る */
+  .join-bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 10; background: #fff; border-top: 1px solid #e1eaf1;
+              box-shadow: 0 -6px 16px rgba(21, 44, 72, .08); padding: 12px 16px calc(10px + env(safe-area-inset-bottom)); }
+  .join-inner { max-width: 520px; margin: 0 auto; }
+  .join-bar .cta { margin: 0; justify-content: center; text-align: center; }
+  .join-note { margin: 6px 0 0; font-size: 12px; line-height: 1.5; color: var(--sub); text-align: center; }
+  .join-bar .status { margin: 0 0 10px; }
+  .wrap { padding-bottom: 130px; }
+  .cta-arrow { flex: 0 0 34px; height: 34px; display: grid; place-items: center; border: 1px solid #ffffff73; border-radius: 50%; font-weight: 400; }
+  /* 日時の枠が出るまでの「読み込み中」 */
+  .slot-loading { display: flex; align-items: center; gap: 12px; padding: 16px; border-radius: 12px; background: #eef3f8;
+                  color: var(--sub); font-size: 14px; line-height: 1.6; }
+  .spinner { flex: 0 0 34px; width: 34px; height: 34px; border-radius: 50%; border: 4px solid #d6e3ec; border-top-color: #1f6fb2;
+             animation: spin .8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .spinner { animation-duration: 2.4s; } }
+  .timing { margin: 10px 0 0; font: 11px/1.5 ui-monospace, Menlo, Consolas, monospace; color: #7d8a95; }
   .photo { margin: 0; aspect-ratio: 4 / 3; overflow: hidden; }
   .photo img { display: block; width: 100%; height: 100%; object-fit: cover; }
 
@@ -66,8 +94,9 @@
   .times button.on { background: var(--ink); color: #fff; border-color: var(--ink); }
   .picked { margin: 14px 0 0; padding: 10px 12px; border-radius: 10px; background: #e8f0f7; font-size: 14px; font-weight: 700; }
   .note { margin: 10px 0 0; font-size: 13px; color: var(--sub); }
-  .submit { margin-top: 18px; justify-content: center; }
-  .submit[disabled] { background: #b9bcc0; cursor: default; }
+  .submit[disabled] { background: #b7c4cf; box-shadow: none; transform: none; cursor: default; }
+  /* 小見出しの帯をやめた所の、冒頭の一行（文はそのまま） */
+  .pre { margin: 0 0 8px; font-size: 14px; font-weight: 700; color: var(--sub); }
   .status { margin: 14px 0 0; padding: 12px 14px; border-radius: 10px; font-size: 14px; background: #f2f3f5; }
   .status.err { background: #fdecea; color: var(--err); }
 
@@ -76,34 +105,32 @@
   .done { padding: 40px var(--pad); text-align: center; }
   .done h2 { margin-bottom: 10px; }
   .done p { margin: 0; color: var(--sub); font-size: 14px; }
-  .done .kicker { margin-bottom: 12px; color: #fff; font-size: 12.5px; }   /* 上の .done p の色を小見出しに当てない */
+  .done .pre { margin-bottom: 8px; }
   [hidden] { display: none !important; }
 </style>
 </head>
 <body>
 <div class="wrap">
 
-  <div id="loading" class="loading">読み込んでいます…</div>
+  <!-- ★2026-10-23 LINE の読み込みを待たずに中身を出す（枠の場所だけ「読み込み中」を出す）。LINE の読み込みの失敗はここに出る -->
   <div id="boot-status" class="status" hidden></div>
 
-  <div id="form-area" hidden>
+  <div id="form-area">
     <header class="top"><img class="logo" src="../assets/rvss-logo-official.png" alt="REAL VALUE STUDENTS" width="480" height="246"></header>
 
     <!-- 冒頭：誰と・何分・どうやって・何が聞けるか（実例調査で共通していた型） -->
     <section class="hero">
       <!-- 「面談はまだ少し早いかも」＝自動文面 ondemand_m3 の冒頭（10/13 守屋 文面OK） -->
-      <p class="kicker"><span class="ph">「面談はまだ少し早いかも」</span><span class="ph">という方へ</span></p>
+      <p class="pre"><span class="ph">「面談はまだ少し早いかも」</span><span class="ph">という方へ</span></p>
       <h1 id="title"><span class="ph">気になることを、</span><span class="ph">現役メンバーに</span><span class="ph">聞けます。</span></h1>
-      <p class="lead"><span class="ph" id="name-line">RVSS質問会</span><span class="ph">では、</span><span class="ph">RVSSの現役メンバーに</span><span class="ph">Zoomで20分、</span><span class="ph">何でも質問できます。</span></p>
-      <ul class="facts"><li>Zoom</li><li>20分</li><li>日時を選ぶだけで申込</li></ul>
+      <p class="lead"><span class="ph" id="name-line">RVSS質問会</span><span class="ph">では、</span><span class="ph">現役メンバーに</span><span class="ph">Zoomで20分、</span><span class="ph">何でも質問できます。</span></p>
       <button class="cta" type="button" id="go-book"><span>日時を選ぶ</span><span class="cta-arrow" aria-hidden="true">↓</span></button>
     </section>
     <figure class="photo"><img src="../assets/kouryu-members.jpg" alt="RVSSのメンバーの集合写真" width="960" height="720"></figure>
 
     <!-- 聞けることの例＝自動文面 teirei_warm（10/18 守屋 OK）と ondemand_m3（10/13 守屋 OK）の箇条から -->
     <section class="sec" aria-labelledby="asks-title">
-      <p class="kicker">たとえば、こんなこと</p>
-      <h2 id="asks-title"><span class="ph">活動のことも、</span><span class="ph">大学生活や就活のことも。</span></h2>
+      <h2 id="asks-title">質問会で聞けること</h2>
       <ul class="asks">
         <li>普段どんな活動をしているのか</li>
         <li><span class="ph">メンバーはRVSSを</span><span class="ph">どう活用しているのか</span></li>
@@ -117,42 +144,77 @@
 
     <!-- 申込のあとの流れ＝確認LINE（申込直後）・前日20時台・開始2時間前のLINE（交流会_20260923.js／配信追加_20260926.js の実装どおり） -->
     <section class="sec" aria-labelledby="flow-title">
-      <p class="kicker">申し込んだあと</p>
-      <h2 id="flow-title">当日までの流れ</h2>
+      <h2 id="flow-title">申し込んだあとの流れ</h2>
       <ol class="steps">
         <li><span>下で日時を選んで申し込む</span></li>
-        <li><span><span class="ph">LINEに、確認のメッセージと</span><span class="ph">ZoomのURLが届く</span></span></li>
-        <li><span><span class="ph">前日の夜と、開始の2時間前にも</span><span class="ph">LINEでお知らせ</span></span></li>
-        <li><span>当日、Zoomで20分</span></li>
+        <li><span><span class="ph">すぐにLINEで、確認のメッセージと</span><span class="ph">ZoomのURLが届きます</span></span></li>
+        <li><span><span class="ph">前日の20時ごろと開始2時間前にも、</span><span class="ph">LINEでお知らせします</span></span></li>
+        <li><span>当日はZoomで20分</span></li>
       </ol>
     </section>
 
     <!-- 日時を選ぶ。★入力はこれだけ（2026-10-22 守屋＝氏名・メール・大学学年・話したいことは取らない。氏名は LINE の表示名） -->
     <section class="book" id="book" aria-labelledby="book-title">
-      <p class="kicker">お申し込み</p>
-      <h2 id="book-title">ご希望の日時を選ぶ</h2>
+      <h2 id="book-title"><span class="ph">ご希望の日時を</span><span class="ph">選んでください</span></h2>
+      <div id="slot-loading" class="slot-loading" role="status" aria-live="polite">
+        <span class="spinner" aria-hidden="true"></span>
+        <span>日程を読み込んでいます。<br>少々お待ちください。</span>
+      </div>
       <div id="days" class="days"></div>
       <div id="times" class="times"></div>
       <p id="picked" class="picked" hidden></p>
       <p id="noslot" class="note" hidden>いまお選びいただける時間がありません。時間をおいて開き直してください。</p>
-      <button id="submit" class="cta submit" type="button">この日時で申し込む</button>
-      <div id="status" class="status" hidden></div>
       <!-- 氏名を自動で取るので、その旨を申込の場所に書く。日程変更は自動文面 zadan_confirm の案内どおり -->
       <p class="note"><span class="ph">お名前は、LINEの表示名で</span><span class="ph">受け付けます。</span><br><span class="ph">日程を変えたいときは、</span><span class="ph">公式LINEへご連絡ください。</span></p>
+      <p id="timing" class="timing" hidden></p>
     </section>
 
     <footer class="foot"><img class="logo" src="../assets/rvss-logo-official.png" alt="REAL VALUE STUDENTS" width="480" height="246"></footer>
+
+    <!-- 申込ボタン（画面の下に固定）。日時を選ぶ前は押せない見た目で、押すと日時の場所へ送る -->
+    <div class="join-bar" id="join-bar">
+      <div class="join-inner">
+        <div id="status" class="status" hidden></div>
+        <button id="submit" class="cta submit is-off" type="button">日時を選んでください</button>
+        <p class="join-note"><span class="ph">押すと、公式LINEに</span><span class="ph">確認のメッセージとZoomのURLが届きます。</span></p>
+      </div>
+    </div>
   </div>
 
   <div id="done" class="done" hidden>
-    <p class="kicker">RVSS質問会（Zoom・20分）</p>
+    <p class="pre">RVSS質問会（Zoom・20分）</p>
     <h2>お申し込みを受け付けました</h2>
     <p id="done-when"></p>
-    <p><span class="ph">確認のメッセージを</span><span class="ph">LINEでお送りします。</span><br><span class="ph">開始の2時間前にも、</span><span class="ph">参加リンクを</span><span class="ph">LINEでお知らせします。</span></p>
+    <p><span class="ph">確認のメッセージを</span><span class="ph">LINEでお送りします。</span><br><span class="ph">前日の20時ごろと開始2時間前にも、</span><span class="ph">LINEでお知らせします。</span></p>
   </div>
 
 </div>
 
+<script src="../config.js?v=20261022.1"></script>
+<script>
+/* ★2026-10-23 守屋「時間がすぐに表示されない」「なるべく表示スピード速く」。
+   10/23 実測＝枠の問い合わせ（GAS の doGet）が1回 3.5〜5.3秒。何もしない問い合わせでも 3.7秒＝大半は GAS の起動。
+   ∴ LINE の部品の読み込み・ログイン・プロフィール取得を待たず、ページを開いた瞬間に枠を問い合わせる（並べて走らせる）。 */
+(function () {
+  var CFG = window.RVSS_CONFIG || {};
+  var T = window.__kouryuT = { start: (window.performance && performance.now) ? performance.now() : 0 };
+  window.__kouryuFetch = function () {
+    return new Promise(function (resolve, reject) {
+      var cb = '__rvssKouryu' + Date.now() + Math.floor(Math.random() * 1000);
+      var s = document.createElement('script');
+      var timer = setTimeout(function () { done(); reject(new Error('timeout')); }, 15000);
+      function done() { clearTimeout(timer); try { delete window[cb]; } catch (e) { window[cb] = undefined; } if (s.parentNode) s.parentNode.removeChild(s); }
+      window[cb] = function (j) { done(); resolve((j && j.items) || []); };
+      s.src = CFG.GAS_ENDPOINT + '?callback=' + cb + '&kind=' + encodeURIComponent('交流会');
+      s.onerror = function () { done(); reject(new Error('network')); };
+      document.head.appendChild(s);
+    });
+  };
+  window.__kouryuFirst = window.__kouryuFetch().then(function (list) {
+    T.slots = performance.now(); return list;
+  });
+})();
+</script>
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 <!-- ★2026-09-29 情シス（井上さん）の訪問計測。#335 スレッドの手順どおり（watch の rvss-ondemand-visits と同じ型）。
      認証後のページ訪問を LINE userID で記録する。失敗しても申込・予約は止まらない。
@@ -161,40 +223,43 @@
 <script src="https://rvss-dx-ten.vercel.app/integrations/rvss-action-visits.js"
         integrity="sha384-bF87t8MAX1DVifpxK9/TfKPG757JY76E6FULbuWdrgOYCKdz3I5kXpXhimiy4AQ9"
         crossorigin="anonymous"></script>
-<script src="../config.js?v=20261022.1"></script>
 <script src="../assets/liff-common.js?v=20261018.2"></script>
 <script>
 (function () {
   'use strict';
   var CFG = window.RVSS_CONFIG;
-  var KIND = '交流会';
-  var profile = null, src = 'unknown', sending = false;
+  var T = window.__kouryuT || {};
+  T.sdk = performance.now();   // LINE の部品・計測・共通処理を読み終えた時刻
+  var profile = null, src = RVSS.readSrc(), sending = false;
   var items = [], picked = null, day = null;
+  var resolveProfile, profileReady = new Promise(function (r) { resolveProfile = r; });
+  // ★前回の枠を端末に覚えておき、次に開いたときは先に出す（30分以内のものだけ）。最新の枠が届いたら差し替える。
+  //   覚えた枠が締め切られていても、送る直前に枠を取り直して確かめる（下の送信処理）ので、間違った枠では申し込まれない。
+  var CACHE_KEY = 'rvss_kouryu_slots_v1', CACHE_MS = 30 * 60 * 1000;
+  function readCache() {
+    try { var c = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null'); return (c && c.items && Date.now() - c.at < CACHE_MS) ? c.items : null; } catch (e) { return null; }
+  }
+  function writeCache(list) { try { localStorage.setItem(CACHE_KEY, JSON.stringify({ at: Date.now(), items: list })); } catch (e) {} }
+  function clearCache() { try { localStorage.removeItem(CACHE_KEY); } catch (e) {} }
 
   var NAME = CFG.KOURYU_NAME || 'RVSS質問会（Zoom・20分）';
   document.title = NAME + '｜お申し込み';
   // 説明文では「Zoomで20分」と書くので、名前の括弧（Zoom・20分）は外して出す
   document.getElementById('name-line').textContent = NAME.replace(/（[^（]*）$/, '');
 
-  /* GAS の doGet（?kind=交流会）から、いま申し込める枠を取る。
+  /* GAS の doGet（?kind=交流会）から、いま申し込める枠を取る（取り方は上の先読みと同じ）。
      ★枠は守屋のカレンダーの空きから GAS が計算する（開始12時間前まで・1枠に何人でも）。 */
-  function load() {
-    return new Promise(function (resolve, reject) {
-      var cb = '__rvssKouryu' + Date.now();
-      var s = document.createElement('script');
-      var timer = setTimeout(function () { done(); reject(new Error('timeout')); }, 15000);
-      function done() { clearTimeout(timer); try { delete window[cb]; } catch (e) {} if (s.parentNode) s.parentNode.removeChild(s); }
-      window[cb] = function (j) { done(); resolve((j && j.items) || []); };
-      s.src = CFG.GAS_ENDPOINT + '?callback=' + cb + '&kind=' + encodeURIComponent(KIND);
-      s.onerror = function () { done(); reject(new Error('network')); };
-      document.head.appendChild(s);
-    });
-  }
+  function load() { return window.__kouryuFetch(); }
 
   function render() {
     var daysEl = document.getElementById('days');
     var timesEl = document.getElementById('times');
     daysEl.innerHTML = ''; timesEl.innerHTML = '';
+    // 選んでいた枠が最新の枠から消えていたら、選び直してもらう
+    if (picked && !items.some(function (it) { return it.value === picked.value; })) {
+      picked = null; document.getElementById('picked').hidden = true;
+    }
+    updateSubmit();
     if (!items.length) { RVSS.show('noslot'); return; }
     RVSS.hide('noslot');
 
@@ -228,9 +293,16 @@
   }
 
   // 冒頭の「日時を選ぶ」→ 申込の場所へ送る
-  document.getElementById('go-book').addEventListener('click', function () {
-    document.getElementById('book').scrollIntoView({ behavior: 'smooth', block: 'start' });
-  });
+  function goBook() { document.getElementById('book').scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+  document.getElementById('go-book').addEventListener('click', goBook);
+
+  // 下の申込ボタン：日時を選ぶ前は押せない見た目・選んだら「この日時で申し込む」
+  function updateSubmit() {
+    if (sending) return;
+    var btn = document.getElementById('submit');
+    btn.classList.toggle('is-off', !picked);
+    btn.textContent = picked ? 'この日時で申し込む' : '日時を選んでください';
+  }
 
   /* 氏名＝LINE の表示名。★実機の通しは ?src=test で開く＝頭に「テスト」を付け、GAS の kouryu_isTest_ で
      カレンダー・通知が [テスト] になり、候補者マスターへ入らず、後片付け（kouryu_cleanupTests_）の対象になる。 */
@@ -250,10 +322,31 @@
   } catch (_) {
     console.warn('RVSS訪問計測を初期化できませんでした');
   }
+  // 枠：覚えておいた分を先に出し、先読みの結果が届いたら差し替える（LINE の読み込みとは並べて走らせる）
+  var cached = readCache();
+  if (cached) { items = cached; RVSS.hide('slot-loading'); render(); }
+  window.__kouryuFirst.then(function (list) {
+    items = list; writeCache(list); RVSS.hide('slot-loading'); render(); showTiming();
+  }).catch(function () {
+    RVSS.hide('slot-loading');
+    if (!cached) RVSS.setStatus('日時の読み込みに失敗しました。LINEアプリから開き直してください。', 'err');
+  });
+
+  /* 確かめ用（?src=test か #timing のときだけ）：開いてから何に何秒かかったかを画面の下に出す */
+  function showTiming() {
+    if (!(src === 'test' || /timing/.test(location.hash)) || !T.slots || !T.ready) return;
+    var f = function (ms) { return (ms / 1000).toFixed(1) + '秒'; };
+    var el = document.getElementById('timing');
+    el.textContent = '計測：枠 ' + f(T.slots - T.start) + '／LINEの部品 ' + f(T.sdk - T.start)
+      + '／LINEのログイン・プロフィール ' + f(T.ready - T.sdk) + (cached ? '（覚えた枠を先に表示）' : '');
+    el.hidden = false;
+  }
+
   RVSS.boot({
     liffKey: 'kouryu',
     onReady: function (p, s) {
       profile = p; src = s;
+      T.ready = performance.now(); resolveProfile(p); showTiming();
       // 認証・プロフィール取得の直後に訪問を記録（情シスの訪問計測・画面表示や申込を待たせない）
       if (rvssVisitTracker) {
         rvssVisitTracker.record(window.liff)
@@ -263,27 +356,28 @@
           .catch(function () { console.warn('RVSS訪問計測に失敗しました'); });
       }
       RVSS.show('form-area');
-      load().then(function (list) { items = list; render(); })
-        .catch(function () { RVSS.setStatus('日時の読み込みに失敗しました。LINEアプリから開き直してください。', 'err'); });
     }
   });
 
   document.getElementById('submit').addEventListener('click', function () {
     if (sending) return;
-    if (!picked) { return RVSS.setStatus('ご希望の日時を選んでください。', 'err'); }
+    if (!picked) { goBook(); return RVSS.setStatus('ご希望の日時を選んでください。', 'err'); }
+    RVSS.setStatus('', '');
 
     sending = true;
     var btn = document.getElementById('submit');
     btn.disabled = true; btn.textContent = '送信しています…';
-    RVSS.setStatus('空きを確認しています…', '');
+    RVSS.setStatus(profile ? '空きを確認しています…' : 'LINEの読み込みを待っています…', '');
 
     // ★送信の結果は画面から読めない（GAS は CORS を返さない＝liff-common.js の決めごと1）。
     //   ∴ 送る直前にもう一度枠を取り直し、選んだ枠がまだあるかをこちらで確かめる。
-    load().then(function (list) {
+    //   LINE の読み込み（プロフィール）が済んでいなければ、それも待つ（ページは先に出しているため）。
+    var waitProfile = Promise.race([profileReady, new Promise(function (_, rej) { setTimeout(function () { rej(new Error('profile')); }, 20000); })]);
+    Promise.all([waitProfile, load()]).then(function (r) { return r[1]; }).then(function (list) {
       items = list;
       var still = list.some(function (it) { return it.value === picked.value; });
       if (!still) {
-        sending = false; btn.disabled = false; btn.textContent = 'この日時で申し込む';
+        sending = false; btn.disabled = false;
         picked = null; document.getElementById('picked').hidden = true; render();
         return RVSS.setStatus('選んだ時間は締め切られたか、埋まりました。別の時間を選んでください。', 'err');
       }
@@ -297,7 +391,8 @@
         lineUserId: (profile && profile.userId) || '',
         lineDisplayName: (profile && profile.displayName) || ''
       }, 45000).then(function () {
-        RVSS.hide('form-area');
+        clearCache();   // 申し込んだ枠の人数が変わるので、覚えた枠は捨てる
+        RVSS.hide('form-area'); RVSS.hide('join-bar');
         document.getElementById('done-when').textContent = picked.label + '（20分・Zoom）';
         RVSS.show('done');
         window.scrollTo(0, 0);
