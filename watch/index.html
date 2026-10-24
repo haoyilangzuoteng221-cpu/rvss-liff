@@ -520,7 +520,8 @@
     report('cta', nowPct);
     journey.record('cta_click', { stage: 'cta', pct: nowPct }); journey.flush(true);
     // 流入元を引き継ぐ（どの経路の人が面接まで来たかを最後まで追う）
-    var to = 'https://liff.line.me/' + id + '?src=' + encodeURIComponent(src);
+    // ★2026-10-25｜via=od＝視聴ページから来た印。面談ページは、この印がある人には動画の入口を出さない（もう見ている）
+    var to = 'https://liff.line.me/' + id + '?src=' + encodeURIComponent(src) + '&via=od';
     setTimeout(function () { location.href = to; }, 700);
   }
   document.querySelectorAll('[data-cta]').forEach(function (a) { a.addEventListener('click', goInterview); });

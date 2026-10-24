@@ -3,37 +3,113 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>RVSS カジュアル面談の日程調整</title>
+<title>RVSS カジュアル面談の予約</title>
 <link rel="stylesheet" href="../assets/common.css">
+<!-- ★2026-10-25 LP化（守屋さん 10/24「面談フォームだけ寂しいのでLP風に」・構成B＝動画は下、視聴ページから来た人には出さない・Adness f1faaa62）。
+     見た目は視聴ページの lp.css をそのまま使う（2つのページの色・ボタン・流れ・よくある質問をそろえる）。文は視聴ページで確かめ済みのものだけ。 -->
+<link rel="stylesheet" href="../watch/lp.css?v=20261025.1">
+<style>
+body{padding:0}
+.gk-hero{padding:0 0 28px}
+.gk-photo{aspect-ratio:16/10;overflow:hidden}
+.gk-photo img{object-position:50% 45%}
+.gk-hero h1{margin:0;font-size:clamp(26px,8vw,32px);line-height:1.38;font-weight:800;letter-spacing:.01em}
+.gk-book{padding:32px var(--pad) 36px;scroll-margin-top:12px}
+.gk-book h2,.gk-video h2{margin:0 0 16px;font-size:clamp(21px,6.4vw,25px);line-height:1.5;font-weight:800}
+.gk-book .field{margin-bottom:18px}
+.gk-book label{font-size:15px;font-weight:700}
+.gk-book input,.gk-book select{background:#fff;border-color:var(--line);font-size:16px}
+#submit{display:block;width:100%;min-height:60px;margin-top:8px;border:0;border-radius:999px;background:var(--action);color:#fff;font-size:18px;font-weight:800;letter-spacing:.04em;box-shadow:0 4px 0 var(--action-shadow)}
+#submit:active{transform:translateY(3px);box-shadow:0 1px 0 var(--action-shadow)}
+#submit:disabled{opacity:.6}
+.gk-video{padding:32px var(--pad) 36px;border-top:1px solid var(--line)}
+.gk-video p:not(.kicker){margin:0 0 14px;font-size:15px;line-height:1.8;color:var(--sub)}
+.gk-video .player{display:block}
+.gk-video .btn-secondary{margin-top:14px}
+.foot{padding-bottom:40px}
+.faq .sub-link{display:inline-block;margin-top:6px;font-weight:700;text-decoration:underline}
+.done{padding:40px var(--pad)}
+.loading{padding:40px var(--pad)}
+</style>
 </head>
 <body>
-<div class="wrap">
+<div class="wrap" style="max-width:none">
 
   <div id="loading" class="loading">読み込んでいます…</div>
   <div id="boot-status" class="status" hidden></div>
 
   <div id="form-area" hidden>
-    <h1>カジュアル面談の日程調整</h1>
-    <p class="lead">ご都合のよい日時をお選びください。</p>
+    <header class="top"><img class="logo-img" src="../watch/lp/rvss-logo.png" alt="REAL VALUE STUDENTS" width="128" height="64"></header>
+    <main>
+      <!-- 1画面目：誰向けか・何をするか・時間と形式・予約ボタン（下のフォームへ） -->
+      <section class="gk-hero" aria-labelledby="title">
+        <figure class="gk-photo"><img src="../watch/lp/discuss.jpg" alt="スクリーンを見ながら話し合うRVSSのメンバー"></figure>
+        <div class="hero-copy">
+          <p class="kicker">入会を希望する方へ</p>
+          <h1 id="title"><span class="ph">カジュアル面談の</span><span class="ph">予約</span></h1>
+        </div>
+        <div class="hero-body">
+          <p class="lead" id="lead"><span class="ph">これまで取り組んできたことや、</span><span class="ph">RVSSでやってみたいことを</span><span class="ph">伺います。</span></p>
+          <ul class="facts"><li>Zoom・約30分</li><li>ZoomのURLはLINEで届きます</li></ul>
+          <div class="cta-group">
+            <a class="btn-primary" href="#book" data-jump="hero"><span>日時を選ぶ</span><span class="arrow" aria-hidden="true">↓</span></a>
+          </div>
+        </div>
+      </section>
 
-    <div class="field">
-      <label for="name">氏名（ふりがな）<span class="req">必須</span></label>
-      <input type="text" id="name" autocomplete="name" placeholder="やまだ たろう">
-    </div>
+      <!-- 予約から当日まで（視聴ページの面談の案内と同じ3段） -->
+      <section class="interview" aria-labelledby="flow-title">
+        <p class="kicker">予約から当日まで</p>
+        <h2 id="flow-title">面談までの流れ</h2>
+        <ol class="flow" aria-label="面談までの流れ">
+          <li><span class="step">1</span><div><b>日時を選んで予約</b><span class="ph">このページの下で、</span><span class="ph">お名前・メール・日時を</span><span class="ph">入れるだけです。</span></div></li>
+          <li><span class="step">2</span><div><b>LINEで確認が届く</b><span class="ph">ZoomのURLも届きます。</span><span class="ph">前日と当日にも</span><span class="ph">お知らせします。</span></div></li>
+          <li><span class="step">3</span><div><b>当日、Zoomで約30分</b><span class="ph">時間になったら、</span><span class="ph">届いたリンクから</span><span class="ph">入ってください。</span></div></li>
+        </ol>
+      </section>
 
-    <div class="field">
-      <label for="email">連絡先メールアドレス<span class="req">必須</span></label>
-      <input type="email" id="email" autocomplete="email" inputmode="email" placeholder="example@gmail.com">
-    </div>
+      <!-- よくある質問：予約の直前に、事実で不安を外す（視聴ページと同じ答え） -->
+      <section class="faq" aria-labelledby="faq-title">
+        <p class="kicker">よくある質問</p>
+        <h2 id="faq-title">予約する前に</h2>
+        <details class="gk-not-watched"><summary><span class="ph">動画を見ていなくても</span><span class="ph">予約できますか？</span></summary><p><span class="ph">はい。</span><span class="ph">このページから予約できます。</span><span class="ph">RVSSの活動を約6分にまとめた動画は、</span><span class="ph">このページのいちばん下から見られます。</span></p></details>
+        <details><summary><span class="ph">予約したあとは、</span><span class="ph">どうなりますか？</span></summary><p><span class="ph">LINEで確認のメッセージが届き、</span><span class="ph">ZoomのURLも</span><span class="ph">そこでお送りします。</span><span class="ph">前日と当日にも</span><span class="ph">LINEでお知らせします。</span></p></details>
+        <details><summary>都合が悪くなったときは？</summary><p><span class="ph">届いたLINEに</span><span class="ph">返信してください。</span></p></details>
+        <details><summary><span class="ph">カジュアル面談と</span><span class="ph">RVSS質問会の違いは？</span></summary><p><span class="ph">カジュアル面談は、</span><span class="ph">入会を希望する方向けの</span><span class="ph">Zoomで約30分の場です。</span><span class="ph">RVSS質問会は、</span><span class="ph">入会を迷っている方向けの</span><span class="ph">20分の場。</span><br><span class="ph">活動の内容や雰囲気を</span><span class="ph">質問できて、</span><span class="ph">申込は日時を選ぶだけです。</span><br><a class="sub-link" href="#" data-kouryu="faq">RVSS質問会の日時を選ぶ</a></p></details>
+      </section>
 
-    <div class="field">
-      <label for="planDate">面談のご希望日程<span class="req">必須</span></label>
-      <select id="planDate"><option value="">読み込んでいます…</option></select>
-      <p class="note">面談は約30分です。オンライン（Zoom）で行います。</p>
-    </div>
+      <!-- 予約フォーム（項目は今までどおり3つ。id は変えない＝記録と送信の処理がそのまま動く） -->
+      <section class="gk-book" id="book" aria-labelledby="book-title">
+        <p class="kicker">予約</p>
+        <h2 id="book-title">日時を選んで予約</h2>
+        <div class="field">
+          <label for="name">氏名（ふりがな）<span class="req">必須</span></label>
+          <input type="text" id="name" autocomplete="name" placeholder="やまだ たろう">
+        </div>
+        <div class="field">
+          <label for="email">連絡先メールアドレス<span class="req">必須</span></label>
+          <input type="email" id="email" autocomplete="email" inputmode="email" placeholder="example@gmail.com">
+        </div>
+        <div class="field">
+          <label for="planDate">面談のご希望日程<span class="req">必須</span></label>
+          <select id="planDate"><option value="">読み込んでいます…</option></select>
+          <p class="note">面談は約30分です。オンライン（Zoom）で行います。</p>
+        </div>
+        <button id="submit" type="button">この日程で予約する</button>
+        <div id="status" class="status" hidden></div>
+      </section>
 
-    <button id="submit" type="button">この日程で予約する</button>
-    <div id="status" class="status" hidden></div>
+      <!-- 動画はいちばん下。視聴ページのボタンから来た人（via=od）には出さない（もう見ている） -->
+      <section class="gk-video gk-not-watched" aria-labelledby="video-title">
+        <p class="kicker">予約の前に見たい方へ</p>
+        <h2 id="video-title">RVSSの紹介動画（約6分）</h2>
+        <p><span class="ph">どんな団体で、</span><span class="ph">どんな活動をしているかを</span><span class="ph">まとめた動画です。</span></p>
+        <a class="player facade" href="#" data-watch="poster" aria-label="紹介動画を見る"><img class="poster" src="../watch/lp/video-poster.jpg" alt="紹介動画の一場面。活動写真が並んでいる" loading="lazy"><span class="play-btn" aria-hidden="true"><span class="tri"></span></span><span class="play-label">約6分</span></a>
+        <a class="btn-secondary" href="#" data-watch="button"><span>動画を見る</span><span class="arrow" aria-hidden="true">→</span></a>
+      </section>
+
+      <footer class="foot"><img class="logo-img" src="../watch/lp/rvss-logo.png" alt="REAL VALUE STUDENTS" width="128" height="64"></footer>
+    </main>
   </div>
 
   <div id="done" class="done" hidden>
@@ -91,6 +167,34 @@
     document.querySelector('#form-area .lead').innerHTML = '本日の1on1の続きを、担当者との面談でお話しします。<br>この場で日程をお選びください。';
   }
 
+  /* ---------- 2026-10-25 LP化：視聴ページのボタンから来た人（via=od）には動画の入口と「動画を見ていなくても」を出さない ----------
+     via は src と同じく liff.state に畳まれて届くことがあるので、同じ読み方をする。 */
+  function readParam(name) {
+    var q = new URLSearchParams(window.location.search), state = q.get('liff.state');
+    if (state) { try { var inner = new URLSearchParams(state.indexOf('?') >= 0 ? state.slice(state.indexOf('?')) : ''); if (inner.get(name)) return inner.get(name); } catch (e) {} }
+    return q.get(name) || '';
+  }
+  var VIA = readParam('via') === 'od' ? 'od' : '';
+  var PREVIEW = readParam('preview') === '1';
+  // od_m1〜（オンデマンド後のLINE）と rr1017_od は、動画を見終えた人へ送るリンク
+  if (VIA || /^od_|_od$/i.test(entrySrc)) document.querySelectorAll('.gk-not-watched').forEach(function (el) { el.hidden = true; });
+  // 「日時を選ぶ」は下の予約フォームへ送る
+  document.querySelectorAll('[data-jump]').forEach(function (a) {
+    a.addEventListener('click', function (e) {
+      e.preventDefault();
+      document.getElementById('book').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+  // 動画の入口（視聴ページ）と質問会の入口。流入元はそのまま引き継ぐ。押した記録は取らない（journey の許可リストに無い＝数えるなら足す）
+  function goLiff(key, e) {
+    e.preventDefault();
+    var id = ((window.RVSS_CONFIG || {}).LIFF_IDS || {})[key];
+    if (!id || PREVIEW) return;
+    location.href = 'https://liff.line.me/' + id + '?src=' + encodeURIComponent(src === 'unknown' ? entrySrc : src);
+  }
+  document.querySelectorAll('[data-watch]').forEach(function (a) { a.addEventListener('click', function (e) { goLiff('watch', e); }); });
+  document.querySelectorAll('[data-kouryu]').forEach(function (a) { a.addEventListener('click', function (e) { goLiff('kouryu', e); }); });
+
   /* ---------- 情シスの訪問計測（2026-09-29） ----------
      認証（liff.init）より前に作る＝ログイン画面へ飛ぶ前の ?src= を保持するため。 */
   var rvssVisitTracker = null;
@@ -102,13 +206,19 @@
   } catch (_) {
     console.warn('RVSS訪問計測を初期化できませんでした');
   }
-  RVSS.boot({
+  /* 確認用（?preview=1）：LINEにつながず、見本の日程で画面だけ出す。送信もしない */
+  if (PREVIEW) {
+    RVSS.hide('loading'); RVSS.show('form-area');
+    var sel = document.getElementById('planDate');
+    sel.innerHTML = '<option value="">日程を選んでください</option><option>10/26(月) 22:00〜22:30</option><option>10/29(木) 22:00〜22:30</option>';
+    RVSS.lastSchedule = { items: [] };
+  } else RVSS.boot({
     liffKey: 'interview',
     analytics: journey,
     entrySrc: entrySrc,
     // 外部ブラウザの初回ログインは、戻り先未指定だとsrcが消える。
     // 許可済みのsrcだけを同じ予約ページへ引き継ぐ。認証情報はURLへ転記しない。
-    loginRedirectUri: window.location.origin + window.location.pathname + '?src=' + encodeURIComponent(entrySrc),
+    loginRedirectUri: window.location.origin + window.location.pathname + '?src=' + encodeURIComponent(entrySrc) + (VIA ? '&via=' + VIA : ''),
     onReady: function (p, s) {
       profile = p; src = s;
       journey.identify(p);
@@ -191,6 +301,7 @@
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { journey.record('validation_error', Object.assign({ stage: 'input', field: 'email', result: !email ? 'required' : 'format' }, state)); return RVSS.setStatus('メールアドレスの形式をご確認ください。', 'err'); }
     if (!planDate) { journey.record('validation_error', Object.assign({ stage: 'input', field: 'planDate', result: 'required' }, state)); return RVSS.setStatus('ご希望の日程を選んでください。', 'err'); }
 
+    if (PREVIEW) { RVSS.hide('form-area'); document.getElementById('done-when').textContent = planDate + '（オンライン・Zoom）'; RVSS.show('done'); return; }
     sending = true;
     var btn = document.getElementById('submit');
     btn.disabled = true; btn.textContent = '送信しています…';
