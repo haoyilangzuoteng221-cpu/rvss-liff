@@ -40,13 +40,13 @@
     <h2>カジュアル面談の<br>ご予約を受け付けました</h2>
     <p id="done-when"></p>
     <!-- ★2026-09-25 守屋＝申込が終わったら「カレンダー追加」と「Zoom」の2つのリンクを出す（合説の申込後と同じ形）。
-         Zoom の URL は公開リポジトリに置かず、日程と一緒に GAS（doGet kind=面接 の zoom）から受け取る。
-         取れなかったときはボタンごと出さず、下の一文で LINE の案内に寄せる（押せないボタンを見せない）。 -->
+         ★2026-10-24 セキュリティ点検①｜GAS は Zoom を返さなくなった（日程の窓口は誰でも呼べるため）。
+         Zoom は予約直後の確認LINEで本人にだけ届く。Zoom のボタンは出ず、下の一文で LINE の案内に寄せる。 -->
     <div class="done-links">
-      <a id="cal-link" href="#" hidden>📅 Googleカレンダーに追加する<small>日時とZoomのURLが予定に入ります</small></a>
+      <a id="cal-link" href="#" hidden>📅 Googleカレンダーに追加する<small>日時が予定に入ります</small></a>
       <a id="zoom-link" href="#" hidden>💻 当日のZoomを開く<small>時間になったらここから入ってください</small></a>
     </div>
-    <p id="done-note">当日のZoomリンクは、前日までにLINEでお送りします。<br>このページは閉じていただいて大丈夫です。</p>
+    <p id="done-note">ZoomのURLは、このあとLINEでお送りします。<br>このページは閉じていただいて大丈夫です。</p>
   </div>
 
 </div>
@@ -60,7 +60,7 @@
         integrity="sha384-bF87t8MAX1DVifpxK9/TfKPG757JY76E6FULbuWdrgOYCKdz3I5kXpXhimiy4AQ9"
         crossorigin="anonymous"></script>
 <script src="../config.js?v=20261018.1"></script>
-<script src="../assets/liff-common.js?v=20261018.1"></script>
+<script src="../assets/liff-common.js?v=20261024.1"></script>
 <script src="../assets/journey-analytics.js?v=20261013.4"></script>
 <script>
 (function () {

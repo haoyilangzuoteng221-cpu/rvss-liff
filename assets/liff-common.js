@@ -19,6 +19,7 @@
   'use strict';
 
   var CFG = global.RVSS_CONFIG || {};
+  var AUTH_KINDS = /^(interview|mendan|watch|rookies|kouryu)$/;   // GAS の本人確認_20261024.js の RVSS_AUTH.KINDS と揃える
   var ALLOWED_SRC = /^[a-z0-9_\-]{1,40}$/i;
 
   /** クエリから流入元を取る。無い・不正なら 'unknown'（SNSへ寄せない）。 */
@@ -132,7 +133,7 @@
    */
   function fillDates(sel, kindFilter) {
     return fetchSchedule(kindFilter).then(function (j) {
-      global.RVSS.lastSchedule = j;       // 完了画面が選んだ枠の日付や Zoom を引けるように残す（2026-09-25）
+      global.RVSS.lastSchedule = j;       // 完了画面が選んだ枠の日付を引けるように残す（2026-09-25。Zoom は 2026-10-24 から返らない）
       var items = j.items || [];
       // items が空でも dates（表示文字列だけ）があれば使う（旧レスポンス互換）
       if (!items.length && !kindFilter && (j.dates || []).length) {
@@ -176,6 +177,15 @@
 
       var payload = Object.assign({}, data);
       if (CFG.LIFF_TOKEN) payload.token = CFG.LIFF_TOKEN;
+      // ★2026-10-24 セキュリティ点検①｜GAS が送り主を LINE で確かめられるよう、LINE のアクセストークンを添える。
+      //   GAS はこれで本人の userID を引き直し、画面から来た lineUserId は信じない。トークンは GAS で保存しない。
+      //   body の POST で送る（決めごと2＝URL に載せない）。取れないとき（未ログイン）は付けずに送り、GAS が断る。
+      //   GAS が確かめる5種だけに付ける（journey の計測は5秒おきに送るので、トークンを無駄に流さない）。
+      try {
+        var at = AUTH_KINDS.test(String(payload.kind || '')) && global.liff && typeof global.liff.getAccessToken === 'function'
+          ? global.liff.getAccessToken() : '';
+        if (at) payload.accessToken = at;
+      } catch (e) { /* 取れなければ付けない */ }
       Object.keys(payload).forEach(function (k) {
         var input = document.createElement('input');
         input.type = 'hidden'; input.name = k;
