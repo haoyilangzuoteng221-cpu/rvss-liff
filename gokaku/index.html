@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="ja"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#f4f8fb">
+<title>RVSS｜入会の手続き</title>
+<link rel="preconnect" href="https://script.google.com"><link rel="preconnect" href="https://script.googleusercontent.com"><link rel="preconnect" href="https://static.line-scdn.net"><link rel="preconnect" href="https://api.line.me">
+<link rel="stylesheet" href="../assets/common.css"><link rel="stylesheet" href="gokaku.css?v=20261024a">
+<script src="gokaku-config.js?v=20261024a"></script>
+</head><body><div class="band"><img class="logo" src="../assets/rvss-logo-official.png" alt="REAL VALUE STUDENTS" width="480" height="246"></div><main class="wrap">
+<div id="preview-note" class="preview" hidden>確認用の画面です。送っても保存はしません。</div>
+<header class="intro">
+<h1 id="title">合格おめでとうございます</h1>
+<p class="lead" id="lead">入会の手続きに必要な情報と、<br>入会説明会に出る日を教えてください。</p></header>
+<div id="loading" class="wait"><span class="spinner" aria-hidden="true"></span><p>読み込んでいます。<br>少々お待ちください。</p></div><p id="boot-status" class="status" role="status" hidden></p>
+
+<form id="form-area" class="entry-card" hidden novalidate>
+<p id="saved-note" class="saved-note" hidden>前に送った内容です。<br>直すところがあれば直して、<br>もう一度送ってください。</p>
+<div class="field"><label for="name">氏名（フルネーム）<span class="req">必須</span></label><input id="name" type="text" autocomplete="name" maxlength="50" placeholder="例）山田 太郎"></div>
+<div class="field"><label for="birth">生年月日<span class="req">必須</span></label><input id="birth" type="date" min="1980-01-01" max="2012-12-31"></div>
+<div class="field"><label for="mail">個人のメールアドレス<span class="req">必須</span></label><input id="mail" type="email" autocomplete="email" inputmode="email" maxlength="100" placeholder="例）name@gmail.com"></div>
+<div class="field"><label for="univ">大学名<span class="req">必須</span></label><input id="univ" type="text" maxlength="60" placeholder="例）東京理科大学"></div>
+<div class="field"><label for="faculty">学部<span class="req">必須</span></label><input id="faculty" type="text" maxlength="60" placeholder="例）理学部"></div>
+<div class="field"><label for="grade">学年<span class="req">必須</span></label><select id="grade"><option value="">選んでください</option></select></div>
+<div class="field"><label for="area">大学のエリア<span class="req">必須</span></label><select id="area"><option value="">選んでください</option></select><p class="note">通っている大学がある地域を選んでください。</p></div>
+
+<fieldset class="field dates-field"><legend>入会説明会に出る日<span class="req">必須</span></legend>
+<p class="note">毎週土曜、Zoomで行います。</p>
+<div id="dates" class="dates"></div></fieldset>
+
+<div class="join-bar"><p id="status" class="status" role="alert" hidden></p>
+<button id="send" type="submit" class="join" disabled>送信する</button></div>
+</form>
+
+<section id="done" class="entry-card" hidden><div class="done-mark" aria-hidden="true"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+<h2 id="done-title">受け付けました</h2>
+<p id="done-date" class="done-date"></p>
+<p id="done-text"></p>
+<button id="edit" type="button" class="sub-link">入力した内容を直す</button></section>
+</main><footer class="band"><img class="logo" src="../assets/rvss-logo-official.png" alt="REAL VALUE STUDENTS" width="480" height="246"></footer>
+<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script><script src="../config.js"></script><script src="../assets/liff-common.js"></script><script src="gokaku.js?v=20261024a"></script>
+</body></html>
