@@ -62,7 +62,7 @@ body{padding:0}
         <p class="kicker">予約から当日まで</p>
         <h2 id="flow-title">面談までの流れ</h2>
         <ol class="flow" aria-label="面談までの流れ">
-          <li><span class="step">1</span><div><b>日時を選んで予約</b><span class="ph">このページの下で、</span><span class="ph">お名前・メール・日時を</span><span class="ph">入れるだけです。</span></div></li>
+          <li><span class="step">1</span><div><b>日時を選んで予約</b><span class="ph">このページの下で、</span><span class="ph">お名前と日時を</span><span class="ph">入れるだけです。</span></div></li>
           <li><span class="step">2</span><div><b>LINEで確認が届く</b><span class="ph">ZoomのURLも届きます。</span><span class="ph">前日と当日にも</span><span class="ph">お知らせします。</span></div></li>
           <li><span class="step">3</span><div><b>当日、Zoomで約30分</b><span class="ph">時間になったら、</span><span class="ph">届いたリンクから</span><span class="ph">入ってください。</span></div></li>
         </ol>
@@ -78,17 +78,14 @@ body{padding:0}
         <details><summary><span class="ph">カジュアル面談と</span><span class="ph">RVSS質問会の違いは？</span></summary><p><span class="ph">カジュアル面談は、</span><span class="ph">入会を希望する方向けの</span><span class="ph">Zoomで約30分の場です。</span><span class="ph">RVSS質問会は、</span><span class="ph">入会を迷っている方向けの</span><span class="ph">20分の場。</span><br><span class="ph">活動の内容や雰囲気を</span><span class="ph">質問できて、</span><span class="ph">申込は日時を選ぶだけです。</span><br><a class="sub-link" href="#" data-kouryu="faq">RVSS質問会の日時を選ぶ</a></p></details>
       </section>
 
-      <!-- 予約フォーム（項目は今までどおり3つ。id は変えない＝記録と送信の処理がそのまま動く） -->
+      <!-- 予約フォーム（★2026-10-25 メールを外して2つ＝氏名と日程。守屋「いらないなら消した方がいい」。
+           Zoom と前日・当日の案内は LINE で届くのでメールは使っていなかった。本人の特定は LINE userID。id は変えない） -->
       <section class="gk-book" id="book" aria-labelledby="book-title">
         <p class="kicker">予約</p>
         <h2 id="book-title">日時を選んで予約</h2>
         <div class="field">
           <label for="name">氏名（ふりがな）<span class="req">必須</span></label>
           <input type="text" id="name" autocomplete="name" placeholder="やまだ たろう">
-        </div>
-        <div class="field">
-          <label for="email">連絡先メールアドレス<span class="req">必須</span></label>
-          <input type="email" id="email" autocomplete="email" inputmode="email" placeholder="example@gmail.com">
         </div>
         <div class="field">
           <label for="planDate">面談のご希望日程<span class="req">必須</span></label>
@@ -145,11 +142,10 @@ body{padding:0}
   var journey = window.RVSSJourney ? window.RVSSJourney.create('interview') : { record: function () {}, identify: function () {}, state: function () {}, flush: function () {}, context: function () { return {}; }, id: function () { return ''; }, source: RVSS.readSrc };
   function inputState() {
     var name = document.getElementById('name').value.trim();
-    var email = document.getElementById('email').value.trim();
-    return { nameFilled: !!name, emailState: !email ? 'empty' : /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? 'valid' : 'invalid',
+    return { nameFilled: !!name,
       dateFilled: !!document.getElementById('planDate').value, slot: document.getElementById('planDate').value };
   }
-  ['name', 'email', 'planDate'].forEach(function (field) {
+  ['name', 'planDate'].forEach(function (field) {
     var el = document.getElementById(field);
     el.addEventListener('focus', function () { journey.record('field_focus', Object.assign({ stage: 'input', field: field }, inputState())); });
     ['change', 'blur'].forEach(function (event) { el.addEventListener(event, function () {
@@ -292,13 +288,11 @@ body{padding:0}
   document.getElementById('submit').addEventListener('click', function () {
     if (sending) return;
     var name = document.getElementById('name').value.trim();
-    var email = document.getElementById('email').value.trim();
     var planDate = document.getElementById('planDate').value;
     var state = inputState();
     journey.state(state); journey.record('submit_click', Object.assign({ stage: 'submit' }, state));
 
     if (!name) { journey.record('validation_error', Object.assign({ stage: 'input', field: 'name', result: 'required' }, state)); return RVSS.setStatus('氏名（ふりがな）を入力してください。', 'err'); }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { journey.record('validation_error', Object.assign({ stage: 'input', field: 'email', result: !email ? 'required' : 'format' }, state)); return RVSS.setStatus('メールアドレスの形式をご確認ください。', 'err'); }
     if (!planDate) { journey.record('validation_error', Object.assign({ stage: 'input', field: 'planDate', result: 'required' }, state)); return RVSS.setStatus('ご希望の日程を選んでください。', 'err'); }
 
     if (PREVIEW) { RVSS.hide('form-area'); document.getElementById('done-when').textContent = planDate + '（オンライン・Zoom）'; RVSS.show('done'); return; }
@@ -312,7 +306,6 @@ body{padding:0}
     RVSS.postToGas({
       kind: 'interview',
       name: name,
-      email: email,
       interviewDate: planDate,
       planDate: planDate,
       src: src,
