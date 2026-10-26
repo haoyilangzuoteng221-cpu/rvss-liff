@@ -162,6 +162,13 @@ body{padding:0}
     document.querySelector('#form-area h1').textContent = 'REAL ROOKIES 参加者の方へ｜面談のご予約';
     document.querySelector('#form-area .lead').innerHTML = '本日の1on1の続きを、担当者との面談でお話しします。<br>この場で日程をお選びください。';
   }
+  /* ---------- SOKOAGE SUMMIT（11/1・大阪）の QR から開いたときだけ、上の小見出しを変える（2026-10-27 平井くん依頼・Adness a8ab6ee3） ----------
+     QR＝https://liff.line.me/2011618269-t2d8nrIF?src=kikaku_sokoage1101 。題名・本文・枠・予約の処理は通常と同じ。
+     kikaku_ で始めるので、候補者マスター45列（入口の種類）は「企画部署」になる。 */
+  if (/^kikaku_sokoage/i.test(entrySrc)) {
+    document.title = 'RVSS カジュアル面談の予約｜SOKOAGE SUMMIT 参加者の方へ';
+    document.querySelector('#form-area .hero-copy .kicker').textContent = 'SOKOAGE SUMMIT 参加者の方へ';
+  }
 
   /* ---------- 2026-10-25 LP化：視聴ページのボタンから来た人（via=od）には動画の入口と「動画を見ていなくても」を出さない ----------
      via は src と同じく liff.state に畳まれて届くことがあるので、同じ読み方をする。 */
