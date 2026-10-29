@@ -30,7 +30,7 @@
     <h1 id="hero-title"><span class="ph">大学の外で、</span><span class="ph"><span class="mark">仲間と挑戦する。</span></span></h1>
   </div>
   <div class="hero-body">
-    <h2 class="video-title"><span class="ph">約6分でわかる、</span><span class="ph">RVSSのこと</span></h2>
+    <h2 class="video-title"><span class="ph">約4分でわかる、</span><span class="ph">RVSSのこと</span></h2>
 
     <!-- 動画の枠：認証が終わるまで「読み込んでいます」。準備中・期限切れはこの枠の中で出す（ページの他の部分は出したまま） -->
     <div id="loading" class="video-state">読み込んでいます…</div>
@@ -46,23 +46,23 @@
     </div>
 
     <div id="watch-area" hidden>
-      <!-- 表紙（公開中の動画の 3:03 の場面・字幕の帯は切り落とし）＋大きな再生ボタン。
+      <!-- 表紙（公開中の動画 v11 の 2:00 の場面＝活動写真と「関東・関西で、対面のイベントも。」）＋大きな再生ボタン。
            プレーヤーはページを開いた時点で表紙の下に作っておき、表紙を押した操作の中で再生する（iPhone は押した操作の中でないと再生させない・10/23 守屋の実機で確認） -->
       <div class="player facade" id="player-box">
         <img class="poster" src="lp/video-poster.jpg" alt="紹介動画の一場面。活動写真が並んでいる">
-        <button type="button" class="play-btn" aria-label="紹介動画を再生する（約6分）"><span class="tri" aria-hidden="true"></span></button>
-        <span class="play-label" aria-hidden="true">タップで再生（5:49）</span>
+        <button type="button" class="play-btn" aria-label="紹介動画を再生する（約4分）"><span class="tri" aria-hidden="true"></span></button>
+        <span class="play-label" aria-hidden="true">タップで再生（3:41）</span>
         <span class="deadline" id="countdown">視聴期限 <b id="cd-value">--:--:--</b></span>
         <div id="player"></div>
       </div>
       <p class="play-hint" id="play-hint" hidden>▶ をもう一度押してください</p>
       <div class="bar" aria-hidden="true"><i id="bar-fill"></i></div>
       <ol class="chapters" aria-label="この動画でわかること（押すとその場面から再生）">
-        <li><button type="button" data-start="73"><b>1:13</b>RVSSとは</button></li>
-        <li><button type="button" data-start="95"><b>1:35</b>なぜ、いま「挑戦者」なのか</button></li>
-        <li><button type="button" data-start="155"><b>2:35</b>得られる価値</button></li>
-        <li><button type="button" data-start="215"><b>3:35</b>参加のかたち</button></li>
-        <li><button type="button" data-start="241"><b>4:01</b>求める人物像</button></li>
+        <li><button type="button" data-start="54"><b>0:54</b>RVSSとは</button></li>
+        <li><button type="button" data-start="63"><b>1:03</b>なぜ、いま「挑戦者」なのか</button></li>
+        <li><button type="button" data-start="90"><b>1:30</b>得られる価値</button></li>
+        <li><button type="button" data-start="132"><b>2:12</b>参加のかたち</button></li>
+        <li><button type="button" data-start="158"><b>2:38</b>求める人物像</button></li>
       </ol>
       <div id="status" class="status" hidden></div>
     </div>
