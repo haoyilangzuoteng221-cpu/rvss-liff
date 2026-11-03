@@ -57,7 +57,7 @@ window.RVSS_CONFIG = {
 
   // 視聴LIFFに出す動画。YouTube の限定公開ID。
   // 入るまでは watch ページが「準備中」を出して止まる（空のプレイヤーを見せない）。
-  YOUTUBE_ID: 'requ59GNGLQ',   // 2026-10-29 オンデマンド v11（動く映像＋AI音声・221秒・RVSS・限定公開・埋め込み可・守屋 10/28「許可出る前に変更してOK」）。旧 v9＝ZhhdgT-HhlY（HERO’ZZ除去版・349秒）／ZsRlQcT1Efw／v8＝lmkSz3wLtSE／v5＝yrXmfHOhBwo
+  YOUTUBE_ID: 'TfYGWG_JnXs',   // 2026-11-03 オンデマンド v14（語り＝Gemini Puck・236秒・RVSS・限定公開・埋め込み可・守屋 11/3「v14 を上げる」）。旧 v11＝requ59GNGLQ（10/29〜11/3・221秒）／v9＝ZhhdgT-HhlY（HERO’ZZ除去版・349秒）／ZsRlQcT1Efw／v8＝lmkSz3wLtSE／v5＝yrXmfHOhBwo
 
   // 視聴期限（時間）。決定10（2026-08-25）＝48時間。
   WATCH_DEADLINE_HOURS: 48,
