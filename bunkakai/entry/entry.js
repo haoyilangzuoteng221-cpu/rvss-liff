@@ -135,6 +135,15 @@
   /** ②LINEの本人確認が済んだら、友だちかどうかと申込済みかどうかを同時に確かめる（プロフィールは使わないので取らない）。 */
   function afterLiff() {
     liffReady = true; update();
+    // 申込しなかった人も数える。受付の成否とは独立させ、同じIDでの再試行は二重計上しない。
+    if (!preview) {
+      var visitId = randomId();
+      Promise.resolve().then(function () {
+        return post({action:'visit', accessToken:token(), eventId:visitId, src:source});
+      }).catch(function () {
+        return post({action:'visit', accessToken:token(), eventId:visitId, src:source}).catch(function () {});
+      });
+    }
     friendP = preview ? Promise.resolve(friend) : Promise.resolve().then(function () { return global.liff.getFriendship(); })
       .then(function (f) { return f && f.friendFlag ? '1' : '0'; }, function () { return ''; });
     // 友だちでない人には確認LINEが届かない。分かれば送らずに画面へ参加用のリンクを出す。読めなければ送る側に倒す。
