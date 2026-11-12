@@ -21,14 +21,35 @@ body{padding:0}
 .gk-book input,.gk-book select{background:#fff;border-color:var(--line);font-size:16px}
 #submit{display:block;width:100%;min-height:60px;margin-top:8px;border:0;border-radius:999px;background:var(--action);color:#fff;font-size:18px;font-weight:800;letter-spacing:.04em;box-shadow:0 4px 0 var(--action-shadow)}
 #submit:active{transform:translateY(3px);box-shadow:0 1px 0 var(--action-shadow)}
-#submit:disabled{opacity:.6}
+#submit:disabled{background:#e5e7e8;color:#6b747a;box-shadow:none;opacity:1;transform:none}
+.question-option{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:18px;padding:14px 0 0;border-top:1px solid var(--line);min-height:66px;color:var(--ink)}
+.question-option small,.question-option b,.question-option em{display:block;font-style:normal}
+.question-option small,.question-option em{font-size:13px;color:var(--sub)}
+.question-option b{font-size:16px;margin:2px 0}
+.schedule-recovery{background:#fff;border:1px solid var(--line);border-radius:12px;color:var(--ink);padding:16px;margin-top:20px}
+.schedule-recovery p{margin:8px 0 14px;font-size:14px;line-height:1.6}
+.schedule-recovery button{min-height:48px;border:1px solid var(--ink);border-radius:999px;background:var(--ink);font-size:15px}
+.schedule-recovery a{display:block;text-align:center;font-size:14px;min-height:44px;padding:14px 0 2px;text-decoration:underline}
+.schedule-recovery b{font-size:15px}
+.question-option:focus-visible,.done-links a:focus-visible,.schedule-recovery a:focus-visible,button:focus-visible{outline:3px solid var(--ink);outline-offset:4px}
 .gk-video{padding:32px var(--pad) 36px;border-top:1px solid var(--line)}
 .gk-video p:not(.kicker){margin:0 0 14px;font-size:15px;line-height:1.8;color:var(--sub)}
 .gk-video .player{display:block}
 .gk-video .btn-secondary{margin-top:14px}
 .foot{padding-bottom:40px}
 .faq .sub-link{display:inline-block;margin-top:6px;font-weight:700;text-decoration:underline}
-.done{padding:40px var(--pad)}
+.done{padding:48px var(--pad);text-align:center}
+.done h2{font-size:25px;line-height:1.5;margin:0 0 24px}
+.done h2:focus{outline:none}
+.done #done-when{background:#fff;border:1px solid var(--line);border-radius:12px;padding:22px 12px;font-size:19px;line-height:1.7;margin:0 0 24px;color:var(--ink)}
+.done #done-when strong{font-size:22px}
+.done #done-when span{font-size:14px;color:var(--sub)}
+.done-links a{min-height:66px;display:block;padding:14px;background:#fff;border:1px solid var(--ink);border-radius:12px;font-size:16px;font-weight:700;text-decoration:none;margin:12px 0}
+.done-links a small{font-size:13px;font-weight:400;margin-top:4px}
+.done-links #cal-link{background:var(--action);color:#fff;border-color:var(--action)}
+.done-links #cal-link small{color:#fff}
+.done #done-note{font-size:14px;line-height:1.85;margin-top:24px;color:var(--sub)}
+.done #done-note b{color:var(--ink)}
 .loading{padding:40px var(--pad)}
 </style>
 </head>
@@ -52,7 +73,8 @@ body{padding:0}
           <p class="lead" id="lead"><span class="ph">これまで取り組んできたことや、</span><span class="ph">RVSSでやってみたいことを</span><span class="ph">伺います。</span></p>
           <ul class="facts"><li>Zoom・約30分</li><li>ZoomのURLはLINEで届きます</li></ul>
           <div class="cta-group">
-            <a class="btn-primary" href="#book" data-jump="hero"><span>日時を選ぶ</span><span class="arrow" aria-hidden="true">↓</span></a>
+            <a class="btn-primary" href="#book" data-jump="hero"><span>面談の日時を選ぶ</span><span class="arrow" aria-hidden="true">↓</span></a>
+            <a class="question-option" href="#" data-kouryu="hero"><span><small>活動を聞いてから決めたい方へ</small><b>RVSS質問会の日時を見る</b><em>Zoom・20分</em></span><span aria-hidden="true">→</span></a>
           </div>
         </div>
       </section>
@@ -92,8 +114,14 @@ body{padding:0}
           <select id="planDate"><option value="">読み込んでいます…</option></select>
           <p class="note">面談は約30分です。オンライン（Zoom）で行います。</p>
         </div>
-        <button id="submit" type="button">この日程で予約する</button>
-        <div id="status" class="status" hidden></div>
+        <button id="submit" type="button" disabled>この日程で予約する</button>
+        <div id="schedule-recovery" class="schedule-recovery" role="status" hidden>
+          <b id="schedule-recovery-title">日程を読み込めませんでした</b>
+          <p id="schedule-recovery-note">お名前はそのまま、もう一度お試しください。</p>
+          <button id="schedule-retry" type="button">日程を再読み込み</button>
+          <a href="https://line.me/R/ti/p/@392huviq">公式LINEで相談する →</a>
+        </div>
+        <div id="status" class="status" role="status" aria-live="polite" hidden></div>
       </section>
 
       <!-- 動画はいちばん下。視聴ページのボタンから来た人（via=od）には出さない（もう見ている） -->
@@ -110,16 +138,16 @@ body{padding:0}
   </div>
 
   <div id="done" class="done" hidden>
-    <h2>カジュアル面談の<br>ご予約を受け付けました</h2>
+    <h2 tabindex="-1" id="done-title">ご予約が完了しました</h2>
     <p id="done-when"></p>
     <!-- ★2026-09-25 守屋＝申込が終わったら「カレンダー追加」と「Zoom」の2つのリンクを出す（合説の申込後と同じ形）。
          ★2026-10-24 セキュリティ点検①｜GAS は Zoom を返さなくなった（日程の窓口は誰でも呼べるため）。
          Zoom は予約直後の確認LINEで本人にだけ届く。Zoom のボタンは出ず、下の一文で LINE の案内に寄せる。 -->
     <div class="done-links">
-      <a id="cal-link" href="#" hidden>📅 Googleカレンダーに追加する<small>日時が予定に入ります</small></a>
-      <a id="zoom-link" href="#" hidden>💻 当日のZoomを開く<small>時間になったらここから入ってください</small></a>
+      <a id="cal-link" href="#" hidden>Googleカレンダーに追加する<small>日時を予定に残せます</small></a>
+      <a class="line-guide" href="https://line.me/R/ti/p/@392huviq">公式LINEで案内を見る<small>参加用のZoomはこちらに届きます</small></a>
     </div>
-    <p id="done-note">ZoomのURLは、このあとLINEでお送りします。<br>このページは閉じていただいて大丈夫です。</p>
+    <p id="done-note"><b id="notification-note">確認LINEの送信状況は、公式LINEでご確認ください。</b><br>日程を変えたいときは、<br>公式LINEに返信してください。</p>
   </div>
 
 </div>
@@ -132,13 +160,14 @@ body{padding:0}
 <script src="https://rvss-dx-ten.vercel.app/integrations/rvss-action-visits.js"
         integrity="sha384-bF87t8MAX1DVifpxK9/TfKPG757JY76E6FULbuWdrgOYCKdz3I5kXpXhimiy4AQ9"
         crossorigin="anonymous"></script>
-<script src="../config.js?v=20261018.1"></script>
-<script src="../assets/liff-common.js?v=20261024.1"></script>
+<script src="../config.js?v=20261113.1"></script>
+<script src="../assets/liff-common.js?v=20261112.1"></script>
 <script src="../assets/journey-analytics.js?v=20261013.4"></script>
 <script>
 (function () {
   'use strict';
-  var profile = null, src = 'unknown', sending = false;
+  var profile = null, src = 'unknown', sending = false, scheduleLoading = false;
+  var bookingRequestId = '', bookingFingerprint = '';
   var journey = window.RVSSJourney ? window.RVSSJourney.create('interview') : { record: function () {}, identify: function () {}, state: function () {}, flush: function () {}, context: function () { return {}; }, id: function () { return ''; }, source: RVSS.readSrc };
   function inputState() {
     var name = document.getElementById('name').value.trim();
@@ -198,6 +227,38 @@ body{padding:0}
   document.querySelectorAll('[data-watch]').forEach(function (a) { a.addEventListener('click', function (e) { goLiff('watch', e); }); });
   document.querySelectorAll('[data-kouryu]').forEach(function (a) { a.addEventListener('click', function (e) { goLiff('kouryu', e); }); });
 
+  // 入力した氏名は残したまま、日程だけを取り直す。多重クリックで取得を重ねない。
+  function loadSchedule() {
+    if (scheduleLoading || sending) return;
+    scheduleLoading = true;
+    var sel = document.getElementById('planDate'), selected = sel.value;
+    var btn = document.getElementById('submit'), retry = document.getElementById('schedule-retry');
+    sel.disabled = true; btn.disabled = true; retry.disabled = true;
+    sel.innerHTML = '<option value="">読み込んでいます…</option>';
+    RVSS.hide('schedule-recovery'); RVSS.setStatus('', '');
+    journey.record('schedule_start', { stage: 'schedule' });
+    return RVSS.fillDates(sel, '面接').then(function (n) {
+      var sch = RVSS.lastSchedule || {};
+      journey.record(n ? 'schedule_ready' : 'schedule_empty', { stage: 'schedule', count: n,
+        slotOptions: (sch.items || []).map(function (x) { return x.value; }), scheduleVersion: sch.updatedAt || '' });
+      if (!n) {
+        sel.innerHTML = '<option value="">予約できる枠がありません</option>';
+        document.getElementById('schedule-recovery-title').textContent = 'いま予約できる枠がありません';
+        document.getElementById('schedule-recovery-note').textContent = 'ご希望の日程を公式LINEでご相談ください。';
+        RVSS.show('schedule-recovery'); return;
+      }
+      if (Array.prototype.some.call(sel.options, function (o) { return o.value === selected; })) sel.value = selected;
+      sel.disabled = false; btn.disabled = false;
+    }).catch(function () {
+      sel.innerHTML = '<option value="">日程を読み込めませんでした</option>';
+      document.getElementById('schedule-recovery-title').textContent = '日程を読み込めませんでした';
+      document.getElementById('schedule-recovery-note').textContent = 'お名前はそのまま、もう一度お試しください。';
+      journey.record('schedule_error', { stage: 'schedule', result: 'load_failed' });
+      RVSS.show('schedule-recovery');
+    }).finally(function () { scheduleLoading = false; retry.disabled = false; });
+  }
+  document.getElementById('schedule-retry').addEventListener('click', loadSchedule);
+
   /* ---------- 情シスの訪問計測（2026-09-29） ----------
      認証（liff.init）より前に作る＝ログイン画面へ飛ぶ前の ?src= を保持するため。 */
   var rvssVisitTracker = null;
@@ -215,6 +276,7 @@ body{padding:0}
     var sel = document.getElementById('planDate');
     sel.innerHTML = '<option value="">日程を選んでください</option><option>10/26(月) 22:00〜22:30</option><option>10/29(木) 22:00〜22:30</option>';
     RVSS.lastSchedule = { items: [] };
+    document.getElementById('submit').disabled = false;
   } else RVSS.boot({
     liffKey: 'interview',
     analytics: journey,
@@ -242,30 +304,26 @@ body{padding:0}
           lineDisplayName: p.displayName || '', email: '' }).catch(function () {});
       }
       // 日程は「予定」タブの種別＝面接 を読む（2026-09-25 Daichi：画面上の呼び方は「カジュアル面談」、枠は面接のまま）
-      journey.record('schedule_start', { stage: 'schedule' });
-      RVSS.fillDates(document.getElementById('planDate'), '面接')
-        .then(function (n) {
-          journey.record(n ? 'schedule_ready' : 'schedule_empty', { stage: 'schedule', count: n,
-            slotOptions: (RVSS.lastSchedule.items || []).map(function (x) { return x.value; }), scheduleVersion: RVSS.lastSchedule.updatedAt || '' });
-          if (!n) {
-            RVSS.setStatus('いま予約できる枠がありません。お手数ですがLINEでご連絡ください。', 'err');
-            document.getElementById('submit').disabled = true;
-          }
-        })
-        .catch(function () {
-          journey.record('schedule_error', { stage: 'schedule', result: 'load_failed' });
-          RVSS.setStatus('日程の読み込みに失敗しました。開き直すか、LINEでご連絡ください。', 'err');
-          document.getElementById('submit').disabled = true;
-        });
+      loadSchedule();
     }
   });
 
   /* 完了画面の2つのリンク。選んだ枠（"9/28(月) 22:00〜23:00"＋date=2026-09-28）から日本時間で予定を組む。 */
-  function showDoneLinks(planDate) {
+  function showDoneLinks(planDate, result) {
     var sch = RVSS.lastSchedule || {};
     var item = (sch.items || []).filter(function (x) { return x.value === planDate; })[0];
-    var zoom = /^https:\/\/[a-z0-9.-]*zoom\.us\//i.test(sch.zoom || '') ? sch.zoom : '';
-    document.getElementById('done-when').textContent = planDate + '（オンライン・Zoom）';
+    var when = document.getElementById('done-when');
+    when.textContent = '';
+    var label = planDate.match(/^(.*?)[\s　]+(\d{1,2}[:：]\d{2}\s*[〜~～-]\s*\d{1,2}[:：]\d{2})/);
+    var dateText = document.createElement('strong'); dateText.textContent = label ? label[1] : planDate;
+    when.appendChild(dateText); when.appendChild(document.createElement('br'));
+    if (label) { when.appendChild(document.createTextNode(label[2])); when.appendChild(document.createElement('br')); }
+    var venue = document.createElement('span'); venue.textContent = 'オンライン・Zoom'; when.appendChild(venue);
+    var notification = (result || {}).notificationStatus;
+    document.getElementById('notification-note').textContent = notification === 'sent' ? '確認LINEをお送りしました。' :
+      notification === 'pending' ? '確認LINEをお送りしています。' :
+      notification === 'failed' ? '予約は完了しています。案内が届かない場合は公式LINEでお知らせください。' :
+      '確認LINEの送信状況は、公式LINEでご確認ください。';
     var m = item && item.date && /(\d{1,2}):(\d{2})\s*[〜~～-]\s*(\d{1,2}):(\d{2})/.exec(item.label || item.value);
     if (m) {
       var ymd = item.date.replace(/-/g, '');
@@ -274,13 +332,8 @@ body{padding:0}
         + '&text=' + encodeURIComponent('RVSS カジュアル面談')
         + '&dates=' + ymd + 'T' + hm(m[1], m[2]) + '/' + ymd + 'T' + hm(m[3], m[4])
         + '&ctz=Asia%2FTokyo'
-        + '&details=' + encodeURIComponent('RVSSのメンバーとオンラインで話すカジュアル面談です。' + (zoom ? '\nZoom: ' + zoom : ''))
-        + (zoom ? '&location=' + encodeURIComponent(zoom) : '');
+        + '&details=' + encodeURIComponent('RVSSのメンバーとオンラインで話すカジュアル面談です。参加用のZoomはRVSS公式LINEでご確認ください。');
       linkOut('cal-link', cal);
-    }
-    if (zoom) {
-      linkOut('zoom-link', zoom);
-      document.getElementById('done-note').innerHTML = '当日は上のZoomから入ってください。<br>このページは閉じていただいて大丈夫です。';
     }
   }
   // LINE の中のブラウザではなく、端末の既定ブラウザ（Zoom はアプリ）で開く
@@ -293,7 +346,7 @@ body{padding:0}
   }
 
   document.getElementById('submit').addEventListener('click', function () {
-    if (sending) return;
+    if (sending || scheduleLoading) return;
     var name = document.getElementById('name').value.trim();
     var planDate = document.getElementById('planDate').value;
     var state = inputState();
@@ -302,16 +355,21 @@ body{padding:0}
     if (!name) { journey.record('validation_error', Object.assign({ stage: 'input', field: 'name', result: 'required' }, state)); return RVSS.setStatus('氏名（ふりがな）を入力してください。', 'err'); }
     if (!planDate) { journey.record('validation_error', Object.assign({ stage: 'input', field: 'planDate', result: 'required' }, state)); return RVSS.setStatus('ご希望の日程を選んでください。', 'err'); }
 
-    if (PREVIEW) { RVSS.hide('form-area'); document.getElementById('done-when').textContent = planDate + '（オンライン・Zoom）'; RVSS.show('done'); return; }
+    if (PREVIEW) { RVSS.hide('form-area'); showDoneLinks(planDate, { notificationStatus: 'pending' }); RVSS.show('done'); return; }
     sending = true;
     var btn = document.getElementById('submit');
     btn.disabled = true; btn.textContent = '送信しています…';
     RVSS.setStatus('送信しています…', '');
     var attemptId = journey.id();
+    var fingerprint = name + '\n' + planDate;
+    if (!bookingRequestId || bookingFingerprint !== fingerprint) {
+      bookingRequestId = RVSS.newBookingRequestId(); bookingFingerprint = fingerprint;
+    }
     journey.record('submit_attempt', Object.assign({ stage: 'submit', attemptId: attemptId }, state));
 
-    RVSS.postToGas({
+    RVSS.postBooking({
       kind: 'interview',
+      requestId: bookingRequestId,
       name: name,
       interviewDate: planDate,
       planDate: planDate,
@@ -320,17 +378,35 @@ body{padding:0}
       lineDisplayName: (profile && profile.displayName) || '',
       journeyContext: JSON.stringify(journey.context()),
       journeyAttemptId: attemptId
-    }).then(function () {
-      journey.record('transport_response', { stage: 'response', result: 'unconfirmed', attemptId: attemptId });
+    }).then(function (result) {
+      journey.record('transport_response', { stage: 'response', result: 'saved', attemptId: attemptId });
       RVSS.hide('form-area');
-      showDoneLinks(planDate);
+      showDoneLinks(planDate, result);
       RVSS.show('done');
-      journey.record('confirmation_visible', { stage: 'response', result: 'unconfirmed', attemptId: attemptId });
-    }).catch(function () {
+      document.getElementById('done-title').focus();
+      window.scrollTo(0, 0);
+      journey.record('confirmation_visible', { stage: 'response', result: 'saved', attemptId: attemptId });
+    }).catch(function (error) {
       journey.record('transport_error', { stage: 'submit', result: 'no_response', attemptId: attemptId });
       sending = false;
       btn.disabled = false; btn.textContent = 'もう一度送る';
-      RVSS.setStatus('送信を確認できませんでした。もう一度お試しください。それでも進まない場合はLINEでお知らせください。', 'err');
+      var messages = { login_required: 'LINEからこのページを開き直してください。予約の完了はまだ確認できていません。',
+        not_configured: 'このページから予約を受け付けられません。公式LINEでご希望の日程をお知らせください。',
+        busy: 'ただいま混み合っています。入力は残っていますので、少し待って再送してください。',
+        invalid_slot: 'この日程では予約できません。日程を読み込み直してお選びください。',
+        closed: 'この日程の受付は終了しました。別の日程をお選びください。',
+        booking_changed: '前回の予約内容が変更されています。最新の日程から選び直してください。',
+        request_conflict: '予約内容を確認するため、最新の日程から選び直してください。' };
+      if (error.message === 'invalid_slot' || error.message === 'closed' || error.message === 'booking_changed' || error.message === 'request_conflict') {
+        bookingRequestId = ''; bookingFingerprint = '';
+        document.getElementById('planDate').value = '';
+        document.getElementById('planDate').disabled = true;
+        btn.disabled = true;
+        document.getElementById('schedule-recovery-title').textContent = '別の日程をお選びください';
+        document.getElementById('schedule-recovery-note').textContent = 'お名前はそのまま、最新の日程を読み込み直せます。';
+        RVSS.show('schedule-recovery');
+      }
+      RVSS.setStatus(messages[error.message] || '予約の保存を確認できませんでした。入力は残っています。同じ内容でもう一度送るか、公式LINEでお知らせください。', 'err');
     });
   });
 })();

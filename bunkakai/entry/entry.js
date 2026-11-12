@@ -57,7 +57,7 @@
   function boxes() { return [].slice.call(document.querySelectorAll('#sessions input:not(:disabled)')); }
   function chosen() { return boxes().filter(function (b) { return b.checked; }).map(function (b) { return b.value; }); }
   // 押せるのはLINEの本人確認（liff.init）が済んでから。カードはそれより先に出す。
-  function update() { var n = chosen().length; join.disabled = sending || !n || !liffReady; join.textContent = !liffReady ? '読み込み中…' : n > 1 ? '両日に参加する' : '参加する'; }
+  function update() { var n = chosen().length; join.disabled = sending || !n || !liffReady; join.textContent = !liffReady ? '読み込み中…' : n > 1 ? '両日に申し込む' : 'この回に申し込む'; }
   /** 前回この端末で取れた回の一覧（公開の日時・題だけ）。開いた瞬間に出し、届いた最新で差し替える。
    * 置き場はGASの開催設定の1か所のまま（ここは控え）。6時間より古い控えは使わない。保存できない端末では何もしない。 */
   var CACHE_KEY = 'rvssBunkakaiSlots', CACHE_MS = 6 * 3600000;

@@ -10,6 +10,10 @@ window.RVSS_CONFIG = {
   GAS_ENDPOINT:
     'https://script.google.com/macros/s/AKfycbxtbP-FcEnrjQT8m50gZ7VaMoUZJncTwdNHE37QdJXyKKeU0kIELi3ffCNLpuJ5_dkm/exec',
 
+  // 面談・質問会の予約専用。保存結果を返す口を分け、既存の日程・視聴・計測は上のURLを維持する。
+  BOOKING_GAS_ENDPOINT:
+    'https://script.google.com/macros/s/AKfycbxf8SoYDmES67RUBvWmy82mB5e804p_PizO7pp3Tl9ZUnHtsu772681lVTmsz9RHWsT/exec',
+
   // REAL ROOKIES 終了後アンケート専用。既存フォームの公開先は変更しない。
   ROOKIES_SURVEY_GAS_ENDPOINT:
     'https://script.google.com/macros/s/AKfycbxrLt-cGq5yFkSG46OxS73oBdP4Gs2MECpRIfN_AeQh30SjhvOFIaUJ9qr-ARNEYb1g/exec',

@@ -8,7 +8,8 @@
  *  1. 送信は「隠しiframe + form POST」。fetch を使わない。
  *     ∵ GAS の /exec は CORS ヘッダを返さないので、fetch だと成功しても結果を読めない。
  *       しかも script.google.com → googleusercontent.com へリダイレクトするため
- *       no-cors でも扱いが不安定。form POST なら確実に届き、iframe の load で完了を拾える。
+ *       no-cors でも扱いが不安定。既存の視聴・計測はform POSTのloadを受信し、保存確認は別に行う。
+ *       予約のpostBookingは、GASが返す明示的な保存応答だけを成功にする（2026-11-12）。
  *  2. 個人情報を URL に載せない。氏名・メール・userID は必ず POST の body で送る。
  *  3. 二重送信を2段で止める。①押した瞬間にボタンを無効化 ②GAS 側で同一内容の重複を弾く。
  *     ∵ 2026-09-05 の実測で、既存LIFF経由の23行のうち5行が二重登録だった。
@@ -216,6 +217,69 @@
     });
   }
 
+  /** 予約用の応答照合ID。再送時は呼び出し側が同じIDを使う。 */
+  function newBookingRequestId() {
+    var bytes = new Uint8Array(16);
+    global.crypto.getRandomValues(bytes);
+    return Array.prototype.map.call(bytes, function (n) { return ('0' + n.toString(16)).slice(-2); }).join('');
+  }
+
+  /**
+   * 保存結果を明示的に返す予約用POST（interview / kouryu）。
+   * iframeのloadは成功にしない。既存の視聴・計測用postToGasとは分離する。
+   * GASのHtmlServiceは内側のiframeから応答するため、sourceの直接一致は使えない。
+   * Googleのorigin、推測できないrequestId、種別、保存済みの受付番号を照合する。
+   */
+  function postBooking(data, timeoutMs) {
+    return new Promise(function (resolve, reject) {
+      var endpoint = CFG.BOOKING_GAS_ENDPOINT || '';
+      if (!/^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec$/.test(endpoint) ||
+          !/^(interview|kouryu)$/.test(String(data.kind || ''))) {
+        reject(new Error('not_configured')); return;
+      }
+      var accessToken;
+      try { accessToken = global.liff && global.liff.getAccessToken(); } catch (_) {}
+      if (!accessToken) { reject(new Error('login_required')); return; }
+      var id = data.requestId || newBookingRequestId();
+      if (!/^[a-f0-9]{32}$/.test(id)) { reject(new Error('invalid_request')); return; }
+      var frame = document.createElement('iframe');
+      frame.name = '__rvssBooking_' + id; frame.hidden = true;
+      var form = document.createElement('form');
+      form.method = 'POST'; form.action = endpoint; form.target = frame.name; form.hidden = true;
+      var payload = Object.assign({}, data, { requestId: id, receiverOrigin: global.location.origin, accessToken: accessToken });
+      if (CFG.LIFF_TOKEN) payload.token = CFG.LIFF_TOKEN;
+      Object.keys(payload).forEach(function (key) {
+        var input = document.createElement('input'); input.type = 'hidden'; input.name = key;
+        input.value = payload[key] == null ? '' : String(payload[key]); form.appendChild(input);
+      });
+      var finished = false, timer;
+      function finish(error, result) {
+        if (finished) return;
+        finished = true; clearTimeout(timer); global.removeEventListener('message', onMessage);
+        if (form.parentNode) form.parentNode.removeChild(form);
+        if (frame.parentNode) frame.parentNode.removeChild(frame);
+        if (error) reject(error); else resolve(result);
+      }
+      function onMessage(event) {
+        var message = event.data;
+        if (!/^https:\/\/(?:script\.google\.com|script\.googleusercontent\.com|[a-z0-9-]+-script\.googleusercontent\.com)$/.test(event.origin) ||
+            !event.source || event.source === global || !message || message.type !== 'rvss-booking' ||
+            message.requestId !== id || !message.result) return;
+        var result = message.result;
+        if (result.kind !== data.kind) return;
+        if (result.ok !== true) { finish(new Error(result.error || 'save_failed')); return; }
+        if (result.saved !== true || typeof result.receiptId !== 'string' || !result.receiptId) {
+          finish(new Error('save_unconfirmed')); return;
+        }
+        finish(null, result);
+      }
+      global.addEventListener('message', onMessage);
+      timer = setTimeout(function () { finish(new Error('no_response')); }, timeoutMs || 60000);
+      document.body.appendChild(frame); document.body.appendChild(form);
+      try { form.submit(); } catch (_) { finish(new Error('network')); }
+    });
+  }
+
   /**
    * ページの共通起動処理。
    * @param {Object} opts
@@ -273,6 +337,8 @@
     hide: hide,
     fillDates: fillDates,
     postToGas: postToGas,
+    postBooking: postBooking,
+    newBookingRequestId: newBookingRequestId,
     boot: boot
   };
 })(window);

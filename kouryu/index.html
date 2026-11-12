@@ -50,14 +50,15 @@
          font-size: 21px; font-weight: 700; letter-spacing: .06em; line-height: 1.4; text-align: left; cursor: pointer;
          -webkit-tap-highlight-color: transparent; transition: transform .08s, box-shadow .08s, background .08s; }
   .cta:active { background: #1a5f99; transform: translateY(3px); box-shadow: 0 1px 0 #154f80, 0 4px 10px rgba(31, 111, 178, .25); }
-  /* 日時を選ぶ前は、押せない見た目（押すと日時の場所へ送る） */
-  .cta.is-off, .cta.is-off:active { background: #b7c4cf; box-shadow: none; transform: none; }
+  #go-book { background: transparent; color: #1f6fb2; box-shadow: none; border: 1px solid #1f6fb2; min-height: 52px; font-size: 18px; }
+  #go-book .cta-arrow { border-color: #1f6fb266; }
+  #go-book:active { background: #fff; }
   /* 申込ボタンは画面の下に固定（ページが長くても押せる）。帯に隠れないよう、ページの下に余白を取る */
   .join-bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 10; background: #fff; border-top: 1px solid #e1eaf1;
               box-shadow: 0 -6px 16px rgba(21, 44, 72, .08); padding: 12px 16px calc(10px + env(safe-area-inset-bottom)); }
   .join-inner { max-width: 520px; margin: 0 auto; }
-  .join-bar .cta { margin: 0; justify-content: center; text-align: center; }
-  .join-note { margin: 6px 0 0; font-size: 12px; line-height: 1.5; color: var(--sub); text-align: center; }
+  .join-bar .cta { margin: 0; justify-content: center; text-align: center; box-shadow: 0 2px 0 #154f80; }
+  .join-note { margin: 6px 0 0; font-size: 13px; line-height: 1.5; color: var(--sub); text-align: center; }
   .join-bar .status { margin: 0 0 10px; }
   .wrap { padding-bottom: 130px; }
   .cta-arrow { flex: 0 0 34px; height: 34px; display: grid; place-items: center; border: 1px solid #ffffff73; border-radius: 50%; font-weight: 400; }
@@ -171,26 +172,27 @@
 
     <footer class="foot"><img class="logo" src="../assets/rvss-logo-official.png" alt="REAL VALUE STUDENTS" width="480" height="246"></footer>
 
-    <!-- 申込ボタン（画面の下に固定）。日時を選ぶ前は押せない見た目で、押すと日時の場所へ送る -->
+    <!-- 日時未選択なら日時へ移動し、選択後はその日時の申込を確定する -->
     <div class="join-bar" id="join-bar">
       <div class="join-inner">
         <div id="status" class="status" hidden></div>
-        <button id="submit" class="cta submit is-off" type="button">日時を選んでください</button>
-        <p class="join-note"><span class="ph">押すと、公式LINEに</span><span class="ph">確認のメッセージとZoomのURLが届きます。</span></p>
+        <button id="submit" class="cta submit" type="button">日時を選ぶ</button>
+        <p class="join-note">日時を選んだあとに、申込を確定します。</p>
       </div>
     </div>
   </div>
 
   <div id="done" class="done" hidden>
     <p class="pre">RVSS質問会（Zoom・20分）</p>
-    <h2>お申し込みを受け付けました</h2>
+    <h2 id="done-title" tabindex="-1">お申し込みを受け付けました</h2>
     <p id="done-when"></p>
-    <p><span class="ph">確認のメッセージを</span><span class="ph">LINEでお送りします。</span><br><span class="ph">前日の20時ごろと開始2時間前にも、</span><span class="ph">LINEでお知らせします。</span></p>
+    <p><span id="notification-note">確認LINEの送信状況は、公式LINEでご確認ください。</span><br><span class="ph">前日の20時ごろと開始2時間前にも、</span><span class="ph">LINEでお知らせします。</span></p>
+    <p><a href="https://line.me/R/ti/p/@392huviq">公式LINEで案内を見る</a></p>
   </div>
 
 </div>
 
-<script src="../config.js?v=20261022.1"></script>
+<script src="../config.js?v=20261113.1"></script>
 <script>
 /* ★2026-10-23 守屋「時間がすぐに表示されない」「なるべく表示スピード速く」。
    10/23 実測＝枠の問い合わせ（GAS の doGet）が1回 3.5〜5.3秒。何もしない問い合わせでも 3.7秒＝大半は GAS の起動。
@@ -223,7 +225,7 @@
 <script src="https://rvss-dx-ten.vercel.app/integrations/rvss-action-visits.js"
         integrity="sha384-bF87t8MAX1DVifpxK9/TfKPG757JY76E6FULbuWdrgOYCKdz3I5kXpXhimiy4AQ9"
         crossorigin="anonymous"></script>
-<script src="../assets/liff-common.js?v=20261024.1"></script>
+<script src="../assets/liff-common.js?v=20261112.1"></script>
 <script>
 (function () {
   'use strict';
@@ -232,6 +234,7 @@
   T.sdk = performance.now();   // LINE の部品・計測・共通処理を読み終えた時刻
   var profile = null, src = RVSS.readSrc(), sending = false;
   var items = [], picked = null, day = null;
+  var bookingRequestId = '', bookingFingerprint = '';
   var resolveProfile, profileReady = new Promise(function (r) { resolveProfile = r; });
   // ★前回の枠を端末に覚えておき、次に開いたときは先に出す（30分以内のものだけ）。最新の枠が届いたら差し替える。
   //   覚えた枠が締め切られていても、送る直前に枠を取り直して確かめる（下の送信処理）ので、間違った枠では申し込まれない。
@@ -274,7 +277,7 @@
       var b = document.createElement('button');
       b.type = 'button'; b.textContent = byDay[d][0].dateLabel;
       if (d === day) b.className = 'on';
-      b.addEventListener('click', function () { day = d; render(); });
+      b.addEventListener('click', function () { if (sending) return; day = d; render(); });
       daysEl.appendChild(b);
     });
     byDay[day].forEach(function (it) {
@@ -282,6 +285,7 @@
       b.type = 'button'; b.textContent = it.time;
       if (picked && picked.value === it.value) b.className = 'on';
       b.addEventListener('click', function () {
+        if (sending) return;
         picked = it;
         var p = document.getElementById('picked');
         p.textContent = '選択中：' + it.label;
@@ -296,12 +300,14 @@
   function goBook() { document.getElementById('book').scrollIntoView({ behavior: 'smooth', block: 'start' }); }
   document.getElementById('go-book').addEventListener('click', goBook);
 
-  // 下の申込ボタン：日時を選ぶ前は押せない見た目・選んだら「この日時で申し込む」
+  // 日時を選ぶ前も押せる入口として表示し、確定のボタンと文を切り替える。
   function updateSubmit() {
     if (sending) return;
     var btn = document.getElementById('submit');
-    btn.classList.toggle('is-off', !picked);
-    btn.textContent = picked ? 'この日時で申し込む' : '日時を選んでください';
+    btn.textContent = picked ? 'この日時で申し込む' : '日時を選ぶ';
+    document.querySelector('.join-note').textContent = picked
+      ? '申し込むと、公式LINEに確認のメッセージとZoomのURLが届きます。'
+      : '日時を選んだあとに、申込を確定します。';
   }
 
   /* 氏名＝LINE の表示名。★実機の通しは ?src=test で開く＝頭に「テスト」を付け、GAS の kouryu_isTest_ で
@@ -365,17 +371,17 @@
     RVSS.setStatus('', '');
 
     sending = true;
+    var selected = Object.assign({}, picked);
     var btn = document.getElementById('submit');
     btn.disabled = true; btn.textContent = '送信しています…';
     RVSS.setStatus(profile ? '空きを確認しています…' : 'LINEの読み込みを待っています…', '');
 
-    // ★送信の結果は画面から読めない（GAS は CORS を返さない＝liff-common.js の決めごと1）。
-    //   ∴ 送る直前にもう一度枠を取り直し、選んだ枠がまだあるかをこちらで確かめる。
+    // 送る直前に枠を取り直し、保存後は専用GASの明示的な応答を待つ。
     //   LINE の読み込み（プロフィール）が済んでいなければ、それも待つ（ページは先に出しているため）。
     var waitProfile = Promise.race([profileReady, new Promise(function (_, rej) { setTimeout(function () { rej(new Error('profile')); }, 20000); })]);
     Promise.all([waitProfile, load()]).then(function (r) { return r[1]; }).then(function (list) {
       items = list;
-      var still = list.some(function (it) { return it.value === picked.value; });
+      var still = list.some(function (it) { return it.value === selected.value; });
       if (!still) {
         sending = false; btn.disabled = false;
         picked = null; document.getElementById('picked').hidden = true; render();
@@ -383,24 +389,42 @@
       }
       RVSS.setStatus('送信しています…（20秒ほどかかることがあります。このままお待ちください）', '');
       // ★メール・大学学年・話したいことは送らない（2026-10-22 GAS 側で、メール無しは LINE userID で受ける形に直した）
-      return RVSS.postToGas({
+      var fingerprint = applicantName() + '\n' + selected.value;
+      if (!bookingRequestId || bookingFingerprint !== fingerprint) {
+        bookingRequestId = RVSS.newBookingRequestId(); bookingFingerprint = fingerprint;
+      }
+      return RVSS.postBooking({
         kind: 'kouryu',
+        requestId: bookingRequestId,
         name: applicantName(),
-        planDate: picked.value,
+        planDate: selected.value,
         src: src,
         lineUserId: (profile && profile.userId) || '',
         lineDisplayName: (profile && profile.displayName) || ''
-      }, 45000).then(function () {
+      }, 60000).then(function (result) {
         clearCache();   // 申し込んだ枠の人数が変わるので、覚えた枠は捨てる
         RVSS.hide('form-area'); RVSS.hide('join-bar');
-        document.getElementById('done-when').textContent = picked.label + '（20分・Zoom）';
+        document.getElementById('done-when').textContent = selected.label + '（20分・Zoom）';
+        document.getElementById('notification-note').textContent = result.notificationStatus === 'sent' ? '確認LINEをお送りしました。' :
+          result.notificationStatus === 'pending' ? '確認LINEをお送りしています。' :
+          result.notificationStatus === 'failed' ? 'お申し込みは完了しています。案内が届かない場合は公式LINEでお知らせください。' :
+          '確認LINEの送信状況は、公式LINEでご確認ください。';
         RVSS.show('done');
+        document.getElementById('done-title').focus();
         window.scrollTo(0, 0);
       });
-    }).catch(function () {
+    }).catch(function (error) {
       sending = false;
       btn.disabled = false; btn.textContent = 'もう一度送る';
-      RVSS.setStatus('送信を確認できませんでした。もう一度お試しください。それでも進まない場合はLINEでお知らせください。', 'err');
+      if (['invalid_slot','closed','booking_changed','request_conflict'].indexOf(error.message) >= 0) {
+        bookingRequestId = ''; bookingFingerprint = ''; picked = null;
+        document.getElementById('picked').hidden = true; render();
+        RVSS.setStatus('予約内容が変更されたか、受付が終了しています。日時を選び直してください。', 'err');
+        goBook(); return;
+      }
+      RVSS.setStatus(error.message === 'login_required' ? 'LINEからこのページを開き直してください。お申し込みの完了はまだ確認できていません。' :
+        error.message === 'not_configured' ? 'このページからお申し込みを受け付けられません。公式LINEでご希望の日時をお知らせください。' :
+        'お申し込みの保存を確認できませんでした。選んだ日時は残っています。同じ内容でもう一度送るか、公式LINEでお知らせください。', 'err');
     });
   });
 })();

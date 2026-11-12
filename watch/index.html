@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800&display=swap">
-<link rel="stylesheet" href="lp.css?v=20261023.2">
+<link rel="stylesheet" href="lp.css?v=20261112.1">
 </head>
 <body>
 
@@ -30,7 +30,8 @@
     <h1 id="hero-title"><span class="ph">大学の外で、</span><span class="ph"><span class="mark">仲間と挑戦する。</span></span></h1>
   </div>
   <div class="hero-body">
-    <h2 class="video-title"><span class="ph">約4分でわかる、</span><span class="ph">RVSSのこと</span></h2>
+    <p class="intro-value">AIなどの実践スキルを学び、大学を越えてつながる学生コミュニティです。</p>
+    <h2 class="video-title">RVSSの紹介動画</h2>
 
     <!-- 動画の枠：認証が終わるまで「読み込んでいます」。準備中・期限切れはこの枠の中で出す（ページの他の部分は出したまま） -->
     <div id="loading" class="video-state">読み込んでいます…</div>
@@ -54,6 +55,11 @@
         <span class="play-label" aria-hidden="true">タップで再生（3:56）</span>
         <span class="deadline" id="countdown">視聴期限 <b id="cd-value">--:--:--</b></span>
         <div id="player"></div>
+        <div id="video-error" class="video-error" role="alert" hidden>
+          <b>動画を読み込めませんでした</b>
+          <p>通信環境を確かめて、<br>もう一度お試しください。</p>
+          <button id="video-retry" type="button">動画を読み込み直す</button>
+        </div>
       </div>
       <p class="play-hint" id="play-hint" hidden>▶ をもう一度押してください</p>
       <div class="bar" aria-hidden="true"><i id="bar-fill"></i></div>
@@ -244,7 +250,7 @@
   var CFG = window.RVSS_CONFIG;
   var journey = window.RVSSJourney ? window.RVSSJourney.create('watch') : { record: function () {}, identify: function () {}, state: function () {}, flush: function () {}, source: RVSS.readSrc };
   var profile = null, src = 'unknown';
-  var player = null, duration = 0, maxPct = 0, ticker = null;
+  var player = null, duration = 0, maxPct = 0, ticker = null, lastPosition = 0;
   var sentMarks = {};          // 25/50/75/100 の節目を1回ずつだけ送る
   var LS_KEY = 'rvss_watch_started_at';
   var ready = false;           // 認証と期限の確認が終わったか（終わる前は表紙を押しても再生しない）
@@ -309,14 +315,27 @@
   /* ---------- YouTube ---------- */
   var ytPromise = null;
   function loadYouTube() {
+    if (window.YT && window.YT.Player) return Promise.resolve();
     if (ytPromise) return ytPromise;
-    ytPromise = new Promise(function (resolve) {
-      if (window.YT && window.YT.Player) return resolve();
-      var timer = setTimeout(function () { journey.record('video_error', { stage: 'video', errorCode: 1000 }); }, 20000);
-      window.onYouTubeIframeAPIReady = function () { clearTimeout(timer); resolve(); };
+    ytPromise = new Promise(function (resolve, reject) {
       var s = document.createElement('script');
+      var settled = false;
+      function finish(code) {
+        if (settled) return;
+        settled = true; clearTimeout(timer);
+        if (window.onYouTubeIframeAPIReady === onReady) window.onYouTubeIframeAPIReady = null;
+        s.onerror = null;
+        if (code) {
+          if (s.parentNode) s.parentNode.removeChild(s);
+          ytPromise = null;
+          var error = new Error('video_api_unavailable'); error.videoCode = code; reject(error);
+        } else resolve();
+      }
+      function onReady() { finish(window.YT && window.YT.Player ? 0 : 1001); }
+      var timer = setTimeout(function () { finish(1000); }, 20000);
+      window.onYouTubeIframeAPIReady = onReady;
       s.src = 'https://www.youtube.com/iframe_api';
-      s.onerror = function () { clearTimeout(timer); journey.record('video_error', { stage: 'video', errorCode: 1001 }); };
+      s.onerror = function () { finish(1001); };
       document.head.appendChild(s);
     });
     return ytPromise;
@@ -326,6 +345,7 @@
     if (!player || !duration) return;
     var t = 0;
     try { t = player.getCurrentTime() || 0; } catch (e) { return; }
+    lastPosition = t;
     var pct = Math.min(100, Math.round((t / duration) * 100));
     if (pct > maxPct) maxPct = pct;
     journey.state({ pct: maxPct, positionSec: t, durationSec: duration });
@@ -361,7 +381,23 @@
   // ★2026-10-23｜プレーヤーはページを開いた時点で表紙の下に作る（本番 10/13 版と同じ時点）。
   //   iPhone の LINE は、表紙を押した操作の中で playVideo() を呼ばないと再生を止める（10/23 守屋の実機で「まだ始まっていない」のまま0秒）。
   //   onReady・onStateChange・節目の記録は本番と同じ。
-  var playerReady = false, pendingStart = null, revealTimer = null;
+  var playerReady = false, pendingStart = null, revealTimer = null, playerReadyTimer = null;
+  var playerGeneration = 0, videoFailed = false;
+  function showVideoError(code) {
+    if (videoFailed) return;
+    videoFailed = true; playerReady = false;
+    clearTimeout(playerReadyTimer); clearTimeout(revealTimer);
+    if (ticker) { clearInterval(ticker); ticker = null; }
+    document.getElementById('player-box').classList.remove('facade');
+    document.getElementById('play-hint').hidden = true;
+    document.getElementById('video-error').hidden = false;
+    journey.record('video_error', { stage: 'video', errorCode: code });
+  }
+  function preparePlayer() {
+    loadYouTube().then(function () {
+      if (!player && !videoFailed) buildPlayer();
+    }).catch(function (error) { showVideoError(error.videoCode || 1001); });
+  }
   function reveal(needTap) {
     document.getElementById('player-box').classList.remove('facade');
     document.getElementById('play-hint').hidden = !needTap;
@@ -374,25 +410,33 @@
     } catch (e) {}
     clearTimeout(revealTimer);
     revealTimer = setTimeout(function () {
+      if (videoFailed) return;
       var st = -1;
       try { st = player.getPlayerState(); } catch (e) {}
       reveal(st !== YT.PlayerState.PLAYING && st !== YT.PlayerState.BUFFERING);
     }, 1200);
   }
   function buildPlayer() {
+    var generation = ++playerGeneration;
+    playerReadyTimer = setTimeout(function () {
+      if (generation === playerGeneration && !playerReady) showVideoError(1002);
+    }, 20000);
     player = new YT.Player('player', {
       videoId: CFG.YOUTUBE_ID,
       playerVars: { playsinline: 1, rel: 0, modestbranding: 1 },
       events: {
         onReady: function () {
+          if (generation !== playerGeneration || videoFailed) return;
+          clearTimeout(playerReadyTimer);
           try { duration = player.getDuration() || 0; } catch (e) { duration = 0; }
           journey.record('video_ready', { stage: 'video', durationSec: duration });
           playerReady = true;
           // 読み込み前に表紙が押されていたとき（押した操作の外なので、iPhone では ▶ の案内に回ることがある）
           if (pendingStart !== null) { var s = pendingStart; pendingStart = null; startPlayback(s); }
         },
-        onError: function (ev) { journey.record('video_error', { stage: 'video', errorCode: ev.data }); },
+        onError: function (ev) { if (generation === playerGeneration) showVideoError(ev.data); },
         onStateChange: function (ev) {
+          if (generation !== playerGeneration || videoFailed) return;
           journey.record('video_state', { stage: 'video', playerState: ev.data, pct: maxPct });
           if (!duration) { try { duration = player.getDuration() || 0; } catch (e) {} }
           if (ev.data === YT.PlayerState.PLAYING || ev.data === YT.PlayerState.BUFFERING) {
@@ -414,11 +458,29 @@
   }
 
   function play(start) {
-    if (!ready) return;
+    if (!ready || videoFailed) return;
     if (player && playerReady) { startPlayback(start || 0); return; }
     pendingStart = start || 0;
-    loadYouTube().then(function () { if (!player) buildPlayer(); });
+    preparePlayer();
   }
+  document.getElementById('video-retry').addEventListener('click', function (event) {
+    event.stopPropagation();
+    if (!ready || !videoFailed) return;
+    ++playerGeneration;
+    clearTimeout(playerReadyTimer); clearTimeout(revealTimer);
+    if (ticker) { clearInterval(ticker); ticker = null; }
+    try { if (player) player.destroy(); } catch (e) {}
+    player = null; playerReady = false; duration = 0; videoFailed = false;
+    // 再試行は同じ視聴。到達率と送信済みの節目を保ち、通知を重ねない。
+    pendingStart = lastPosition;
+    if (!document.getElementById('player')) {
+      var mount = document.createElement('div'); mount.id = 'player';
+      document.getElementById('player-box').insertBefore(mount, document.getElementById('video-error'));
+    }
+    document.getElementById('video-error').hidden = true;
+    document.getElementById('player-box').classList.add('facade');
+    preparePlayer();
+  });
   document.getElementById('player-box').addEventListener('click', function () {
     if (this.classList.contains('facade')) play(0);
   });
@@ -487,7 +549,7 @@
       ready = true;
 
       // プレーヤーを表紙の下に作っておく（表紙を押した操作の中で再生するため）。読み込み失敗の記録は本番と同じ
-      loadYouTube().then(function () { if (!player) buildPlayer(); });
+      preparePlayer();
     }
   });
 

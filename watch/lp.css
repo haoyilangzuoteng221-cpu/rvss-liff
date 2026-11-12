@@ -381,3 +381,20 @@ body{font-size:16px}
 }
 /* 予約済みの経路（?src=rr1017… / direct_interview_od）：面談の申込をまとめて隠す */
 .booked .interview-only{display:none!important}
+
+/* 2026-11-12：活動の説明と、動画が読み込めないときの復帰口 */
+.hero .mosaic{height:115px}
+.intro-value{font-size:14px;line-height:1.65;margin:12px 0 8px;color:var(--sub)}
+.hero .video-title{margin-top:8px}
+.chapters button{min-height:44px;font-size:14px;align-items:center;padding:6px 12px}
+.hero #cta{margin-top:10px}
+.hero .cta-note{font-size:12px;margin-top:6px}
+.hero .bubble,.hero .btn-secondary{margin-top:10px}
+.video-error{position:absolute;inset:0;z-index:3;display:flex;flex-direction:column;justify-content:center;align-items:center;background:#fff;border:1px solid var(--line);border-radius:10px;color:var(--ink);padding:16px;text-align:center}
+.video-error[hidden]{display:none}
+.video-error b{font-size:16px}
+.video-error p{margin:8px 0 12px;font-size:14px;line-height:1.6;color:var(--sub)}
+.video-error button{border:0;border-radius:999px;min-height:44px;padding:10px 22px;font-family:inherit;font-size:14px;font-weight:700;line-height:1.5;background:var(--ink);color:#fff;cursor:pointer}
+.video-error button:hover{background:var(--sub)}
+.video-error button:active{transform:translateY(1px)}
+.video-error button:focus-visible,.chapters button:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
