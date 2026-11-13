@@ -48,3 +48,24 @@ h1{font-size:28px;line-height:1.4;margin:0 0 8px}.lead{font-size:15px;line-heigh
 .sub-link{display:block;width:100%;margin-top:12px;padding:13px 0;border:1px solid #bdccd9;border-radius:12px;background:#fff;color:var(--fg);font-size:15px;font-weight:700;text-decoration:none;cursor:pointer}
 .done-mark{display:inline-grid;place-items:center;width:48px;height:48px;border-radius:50%;background:#e8f5ed;color:var(--accent);font-size:26px}
 @media(max-width:420px){.wrap{padding:18px 14px 26px}.entry-card{padding:20px 16px;border-radius:15px}}
+
+/* 2026-11-13：写真のない参加ページも、他の採用ページと色・文字・操作を揃える。 */
+:root{--accent:#246fa7;--accent-press:#1d5a88;--fg:#182d3b;--fg-sub:#4a5a66;--line:#182d3b26}
+html{color-scheme:light}
+body{background:#f8f6f0}
+.wrap{max-width:720px;padding:32px 20px 40px}
+.intro{padding:0 0 8px}
+h1{font-size:30px;letter-spacing:-.025em}
+.entry-card{border-color:var(--line);border-radius:16px;padding:24px}
+.session{padding:16px;border-radius:12px;border-color:#bdc6cd}
+.session:has(input:checked){background:#f0f5f9;border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.session:focus-within{outline-color:#246fa750}
+.session-when{font-size:18px;letter-spacing:-.01em}
+.badge,.done-mark{background:#e4edf3}
+.join{min-height:56px;border-radius:12px;font-size:18px;letter-spacing:0;box-shadow:none}
+.join:active{transform:translateY(1px);box-shadow:none}
+.join:focus-visible{outline-color:#246fa750}
+.join-bar{box-shadow:none;border-color:var(--line)}
+.join-bar>*{max-width:640px}
+.privacy{color:var(--fg-sub)}
+@media(min-width:760px){.wrap{padding-top:48px;padding-bottom:48px}.intro{padding-bottom:16px}.entry-card{padding:28px}.band{padding-left:max(24px,calc((100vw - 680px)/2))}footer.band{padding-left:20px}}

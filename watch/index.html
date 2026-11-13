@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800&display=swap">
-<link rel="stylesheet" href="lp.css?v=20261112.1">
+<link rel="stylesheet" href="lp.css?v=20261113.3">
 </head>
 <body>
 
@@ -20,14 +20,15 @@
 </header>
 
 <main>
-<!-- 1画面目：活動写真を組んだ一枚絵に見出しの紙片を重ね、すぐ下に紹介動画、動画のすぐ下に面談の申込（動画の最後の「すぐ下のボタン」を守る） -->
+<!-- 内部メンバーの写真と紹介動画。動画のすぐ下に面談の申込を置く。 -->
 <section class="hero" aria-labelledby="hero-title">
+  <div class="hero-story">
   <div class="mosaic">
-    <figure class="m m1"><img src="lp/hero-work.jpg" alt="机を囲み、パソコンとタブレットで一緒に作業するメンバー"></figure>
-    <figure class="m m2"><img src="lp/hero-expo.jpg" alt="学生団体の合同イベントで、展示ボードの前で笑顔を見せるメンバー"><img class="alt" src="lp/hero-stage.jpg" alt="" aria-hidden="true"></figure>
+    <figure class="m m1"><img src="../assets/rvss-members-bbq-20261113.jpg" alt="屋外で集まったRVSSのメンバー" width="1620" height="1080" fetchpriority="high"></figure>
   </div>
   <div class="hero-copy">
     <h1 id="hero-title"><span class="ph">大学の外で、</span><span class="ph"><span class="mark">仲間と挑戦する。</span></span></h1>
+  </div>
   </div>
   <div class="hero-body">
     <p class="intro-value">AIなどの実践スキルを学び、大学を越えてつながる学生コミュニティです。</p>
@@ -47,10 +48,10 @@
     </div>
 
     <div id="watch-area" hidden>
-      <!-- 表紙（公開中の動画 v14 の 2:11 の場面＝BBQ の集合写真と「関東・関西で、対面のイベントも。」・11/3）＋大きな再生ボタン。
+      <!-- 内部メンバーの集合写真を表紙に使う。写真の出典はassets/member-photos-20261113.md。
            プレーヤーはページを開いた時点で表紙の下に作っておき、表紙を押した操作の中で再生する（iPhone は押した操作の中でないと再生させない・10/23 守屋の実機で確認） -->
       <div class="player facade" id="player-box">
-        <img class="poster" src="lp/video-poster.jpg" alt="紹介動画の一場面。活動写真が並んでいる">
+        <img class="poster" src="../assets/rvss-members-group-20261113.jpg" alt="RVSSのメンバーの集合写真" width="1477" height="1108">
         <button type="button" class="play-btn" aria-label="紹介動画を再生する（約4分）"><span class="tri" aria-hidden="true"></span></button>
         <span class="play-label" aria-hidden="true">タップで再生（3:56）</span>
         <span class="deadline" id="countdown">視聴期限 <b id="cd-value">--:--:--</b></span>
@@ -93,19 +94,12 @@
   </ul>
 </section>
 
-<!-- RVSSってどんな団体か。写真から入る -->
+<!-- RVSSってどんな団体か -->
 <section class="about" aria-labelledby="about-title">
-  <figure class="about-main">
-    <img src="lp/discuss.jpg" alt="スクリーンを見ながら話し合うRVSSのメンバー" loading="lazy">
-  </figure>
   <div class="about-text">
     <p class="kicker">RVSSってどんな団体？</p>
     <h2 id="about-title"><span class="ph">AIをはじめとする</span><span class="ph">実践スキルと、</span><span class="ph">つながりを手に入れる</span><span class="ph">学生コミュニティです。</span></h2>
     <p><span class="ph">活動のメインテーマは</span><span class="ph">「学びとつながり」。</span><span class="ph">大学や学年を越えて</span><span class="ph">集まったメンバーが、</span><span class="ph">定例ミーティングやイベント、</span><span class="ph">分科会で活動しています。</span></p>
-  </div>
-  <div class="about-pair">
-    <figure><img src="lp/outdoor.jpg" alt="屋外のイベントで集まるメンバー" loading="lazy"><figcaption>屋外のイベント</figcaption></figure>
-    <figure><img src="lp/hall.jpg" alt="イベント会場に集まった学生たち" loading="lazy"><figcaption>イベントの会場</figcaption></figure>
   </div>
 </section>
 
@@ -123,14 +117,14 @@
   </div>
   <div class="scene-track" role="region" aria-roledescription="カルーセル" aria-label="RVSSで得られること（横にめくって見られます）" tabindex="0">
     <article class="scene s1" id="scene-1" aria-label="1枚目／4枚中">
-      <figure><span class="photo"><img src="lp/learn.jpg" alt="教室でスクリーンを見ながら話を聞くメンバー" loading="lazy"></span><span class="scene-num" aria-hidden="true">01</span></figure>
+      <span class="scene-num" aria-hidden="true">01</span>
       <div class="scene-text">
         <h3><span class="ph">経営者の話を、</span><span class="ph">直接聞ける</span></h3>
         <p><span class="ph">毎週土曜の朝の</span><span class="ph">定例ミーティングには、</span><span class="ph">全員が顔を出します。</span><span class="ph">経営者の方が</span><span class="ph">直接話してくださる</span><span class="ph">時間もあります。</span></p>
       </div>
     </article>
     <article class="scene s2" id="scene-2" aria-label="2枚目／4枚中">
-      <figure><span class="photo"><img src="lp/meet.jpg" alt="イベント会場で笑顔で写真に収まるメンバー" loading="lazy"></span><span class="scene-num" aria-hidden="true">02</span></figure>
+      <span class="scene-num" aria-hidden="true">02</span>
       <div class="scene-text">
         <h3><span class="ph">全国の大学の</span><span class="ph">仲間とつながる</span></h3>
         <p><span class="ph">関東にも関西にも、</span><span class="ph">中部や東北にも、</span><span class="ph">本気で動く仲間がいます。</span><span class="ph">遊ぶときは、</span><span class="ph">全力で遊びます。</span></p>
@@ -138,14 +132,14 @@
       </div>
     </article>
     <article class="scene s3" id="scene-3" aria-label="3枚目／4枚中">
-      <figure><span class="photo"><img src="lp/laptops.jpg" alt="教室でパソコンを開き、一緒に作業するメンバー" loading="lazy"></span><span class="scene-num" aria-hidden="true">03</span></figure>
+      <span class="scene-num" aria-hidden="true">03</span>
       <div class="scene-text">
         <h3><span class="ph">AIや営業を、</span><span class="ph">分科会で学ぶ</span></h3>
         <p><span class="ph">AI・営業・就活など、</span><span class="ph">テーマごとに</span><span class="ph">分科会があります。</span></p>
       </div>
     </article>
     <article class="scene s4" id="scene-4" aria-label="4枚目／4枚中">
-      <figure><span class="photo"><img src="lp/run.jpg" alt="イベントの司会をマイクを持って務めるメンバー" loading="lazy"></span><span class="scene-num" aria-hidden="true">04</span></figure>
+      <span class="scene-num" aria-hidden="true">04</span>
       <div class="scene-text">
         <h3><span class="ph">組織を、</span><span class="ph">自分たちでつくる</span></h3>
         <p><span class="ph">イベントの企画や広報、</span><span class="ph">採用まで、</span><span class="ph">運営はメンバーが担っています。</span></p>
@@ -211,7 +205,7 @@
 
 <!-- 末尾：集合写真で締め、2つの入口をもう一度 -->
 <section class="closing" aria-labelledby="closing-title">
-  <figure><img src="lp/community.jpg" alt="活動の会場に集まって写真を撮るRVSSのメンバー" loading="lazy"></figure>
+  <figure><img src="../assets/rvss-members-award-20261113.jpg" alt="RVSSのメンバーの集合写真" width="1567" height="1045" loading="lazy"></figure>
   <div class="closing-text">
     <h2 id="closing-title"><span class="ph">続きは、</span><span class="ph">Zoomで。</span></h2>
     <div class="cta-group">

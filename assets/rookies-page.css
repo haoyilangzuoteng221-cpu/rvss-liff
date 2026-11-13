@@ -1,0 +1,21 @@
+/* REAL ROOKIES：人物写真を使わず、既存の開催情報と申込項目を読める形に整える。 */
+:root{--fg:#182d3b;--fg-sub:#4a5a66;--bg:#f8f6f0;--line:#182d3b26;--accent:#246fa7;--accent-press:#1d5a88;--radius:10px}
+html{color-scheme:light}
+body{padding:0 0 48px;line-height:1.7}
+.wrap{max-width:720px;padding:0 20px;margin:auto}
+.event-brand{display:flex;align-items:center;height:64px;margin:0 -20px 28px;padding:0 20px;background:#0a1227}
+.event-brand img{display:block;width:auto;height:40px}
+h1{font-size:clamp(24px,5.8vw,30px);line-height:1.5;letter-spacing:-.02em;margin:0 0 12px}
+.ph{display:inline-block}
+.lead{font-size:15px;line-height:1.7;margin:0 0 28px}
+.info{padding:20px;background:#fff;margin-bottom:32px}
+.info dl{gap:16px 12px}
+.info dt{font-size:14px}
+.info a{color:var(--accent);text-underline-offset:3px}
+.field{margin-bottom:24px}
+label{font-size:15px;margin-bottom:8px}
+button{min-height:56px;font-size:17px;font-weight:700;border-radius:12px;box-shadow:none}
+input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px #246fa71f}
+a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.done{padding-top:48px}
+@media(min-width:760px){.wrap{padding:0 40px}.event-brand{margin:0 -40px 40px;padding:0 40px}.info{padding:24px}.field{margin-bottom:28px}}

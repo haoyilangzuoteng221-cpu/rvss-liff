@@ -398,3 +398,134 @@ body{font-size:16px}
 .video-error button:hover{background:var(--sub)}
 .video-error button:active{transform:translateY(1px)}
 .video-error button:focus-visible,.chapters button:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+
+/* 2026-11-13：内部メンバーの写真に限定し、写真・文章・申込の順序を落ち着いて読める形へ。 */
+:root{--action:#246fa7;--action-press:#1d5a88;--action-shadow:transparent;--gold:#246fa7;--gold-light:#e4edf3;--band:#f0eee7;--surface:#fff;--radius:12px}
+html{background:#eeece6;color-scheme:light}
+body{max-width:1120px;margin:0 auto;letter-spacing:0;line-height:1.7}
+.top{background:#0a1227}
+.foot{background:#0a1227}
+h1,h2,h3{letter-spacing:-.02em}
+.hero .mosaic{display:block;height:125px;background:var(--paper)}
+.mosaic .m{height:100%;animation:none;clip-path:none}
+.mosaic .m img{object-position:50% 67%;animation:none;transform:none}
+.hero-copy{margin:0;padding:12px var(--pad) 0;animation:none}
+.hero-copy::before{display:none}
+.hero h1{font-size:28px;line-height:1.35;letter-spacing:-.025em}
+.mark{background:none}
+.intro-value{margin:8px 0;font-size:14px;line-height:1.65}
+.hero .video-title{margin:4px 0 8px;font-size:17px}
+.video-title::before{display:none}
+.player{border-radius:var(--radius)}
+.player .poster{object-position:50% 65%;filter:brightness(.92)}
+.play-btn{width:64px;height:64px;margin:-32px 0 0 -32px;background:#fff;color:var(--ink);box-shadow:0 2px 12px #0003}
+.play-btn .tri{border-left-color:var(--ink);border-left-width:19px;border-top-width:12px;border-bottom-width:12px;margin-left:5px}
+.player.facade .play-btn::after{display:none;animation:none}
+.player .play-label,.player .deadline{bottom:8px;font-size:11px;padding:3px 8px}
+.player .deadline b{font-size:11px}
+.chapters button{border-radius:8px;background:transparent;font-size:13px;min-height:44px}
+.btn-primary{min-height:56px;padding:12px 40px;font-size:16px;font-weight:700;letter-spacing:0;border-radius:var(--radius);box-shadow:none}
+.btn-primary:hover{background:var(--action-press)}
+.btn-primary:active,.btn-primary.tapped{transform:translateY(1px);box-shadow:none}
+#cta.on .btn-primary{animation:none}
+.btn-primary .arrow{right:18px;font-size:18px}
+.bubble{margin:0 0 6px;padding:0;border:0;border-radius:0;background:transparent;color:var(--sub);font-size:12px;font-weight:500;text-align:left}
+.bubble::after{display:none}
+.hero .bubble{margin-top:4px}
+.btn-secondary{min-height:52px;padding:10px 40px;border:1px solid var(--line);border-radius:var(--radius);background:transparent;font-size:14px;line-height:1.45}
+.btn-secondary:hover{background:var(--surface)}
+.btn-secondary.on-dark{border-color:#ffffff80}
+.btn-secondary.on-dark:hover{background:#ffffff12}
+.hero .btn-secondary{margin-top:8px}
+.cta-note{color:var(--sub)}
+.kicker{letter-spacing:.02em;font-size:13px}
+.about{padding:40px 0;border-top:1px solid var(--line)}
+.about-text{padding-top:0;max-width:760px}
+.about h2,.scenes h2,.people h2,.qa-band h2,.interview h2,.faq h2,.closing h2{font-size:24px;line-height:1.5;letter-spacing:-.02em}
+.hook,.scenes,.people,.qa-band,.interview,.faq{padding-top:40px;padding-bottom:40px}
+.checks li{background:transparent;border-width:0 0 1px;border-radius:0;padding-top:16px;padding-bottom:16px;font-size:15px}
+.checks li+li{margin-top:0}
+.checks li::before,.people .checks li::before{background:var(--ink);width:16px;height:16px;margin-top:-8px}
+.checks li::after{left:19px;width:5px;height:8px;margin-top:-5px}
+.value-index{gap:8px}
+.value-index a{padding:10px 2px;border:0;border-bottom:1px solid var(--line);border-radius:0;background:transparent;font-size:12px}
+.value-index a:focus-visible{outline:2px solid var(--action);outline-offset:2px}
+.scene-track{gap:12px;padding-top:4px;padding-bottom:4px;align-items:stretch}
+.scene-track::after{flex-basis:calc(14% - 12px)}
+.scene{flex-basis:86%;padding:24px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);opacity:1!important;transform:none!important;transition:none!important}
+.scene-num{display:block;position:static;color:var(--action);font-size:14px;font-weight:700;line-height:1.5;letter-spacing:.06em;-webkit-text-stroke:0;paint-order:normal}
+.scene-text{padding:12px 0 0}
+.scene h3{font-size:20px;line-height:1.5}
+.scene-text p:not(.scene-no){font-size:15px;line-height:1.8;color:var(--sub)}
+.uni{padding:12px 0 0;background:transparent;border-top:1px solid var(--line);border-radius:0;font-size:13px!important}
+.scene-nav{margin-top:16px}
+.arrows button{width:44px;height:44px}
+.badge{border-width:1px;font-size:13px;font-weight:700;vertical-align:3px}
+.qa-band{background:var(--ink)}
+.qa-band .kicker{color:#b3d6ef}
+.flow li{padding:16px;border-radius:var(--radius)}
+.flow .step{flex-basis:28px;height:28px;font-size:14px}
+.flow li+li::before{left:29px;background:var(--line);width:1px}
+.faq details{background:transparent;border-width:0 0 1px;border-radius:0}
+.faq details+details{margin-top:0}
+.faq summary{padding:18px 32px 18px 0}
+.faq summary::after{right:4px}
+.faq details p{padding:0 24px 20px 0}
+.closing figure{aspect-ratio:auto}
+.closing figure img{height:auto;object-fit:contain}
+.closing-text{padding:32px var(--pad) 40px}
+.dock{background:#fff;backdrop-filter:none;box-shadow:none;gap:12px}
+.dock a{font-size:14px;border-radius:10px;font-weight:700;min-height:48px}
+.dock .dock-main{box-shadow:none}
+.dock .dock-sub{border-width:1px;border-color:var(--line)}
+.foot p{color:#d7e0e6}
+
+/* 面談ページも同じ写真・文字組み・ボタンの作法に揃える。入力と送信処理には触れない。 */
+.interview-page .gk-photo{aspect-ratio:auto}
+.interview-page .gk-photo img{display:block;height:auto;object-fit:contain}
+.interview-page .hero-copy{padding-top:24px}
+.interview-page .gk-hero h1{font-size:30px;line-height:1.4;letter-spacing:-.025em}
+.interview-page .gk-book{padding-top:40px;padding-bottom:40px;background:#fff}
+.interview-page .gk-book input,.interview-page .gk-book select{border-radius:10px;border-color:#bdc6cd;min-height:52px}
+.interview-page .gk-book input:focus,.interview-page .gk-book select:focus{border-color:var(--action);box-shadow:0 0 0 3px #246fa71f}
+.interview-page #submit{min-height:56px;border-radius:12px;box-shadow:none;font-size:17px;letter-spacing:0}
+.interview-page #submit:active{transform:translateY(1px);box-shadow:none}
+.interview-page .done{max-width:600px;margin:0 auto}
+.interview-page .question-option{margin-top:20px;padding-top:16px}
+.interview-page .gk-video{padding-top:40px;padding-bottom:40px}
+
+@media(min-width:760px){
+  :root{--pad:48px}
+  body{border-inline:1px solid var(--line)}
+  .top{height:72px}.top .logo-img{height:42px}
+  .hero{display:grid;grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr);column-gap:40px;padding:40px var(--pad);align-items:start}
+  .hero .mosaic{height:auto;aspect-ratio:3/2;border-radius:var(--radius);overflow:hidden}
+  .mosaic .m img{object-position:center}
+  .hero .hero-copy{padding:24px 0 0}
+  .hero h1{font-size:36px;line-height:1.4}
+  .hero .hero-body{padding:0;min-width:0}
+  .intro-value{margin-top:0;font-size:15px}
+  .hero .video-title{margin-top:20px;font-size:18px}
+  .hero .btn-secondary{margin-top:12px}
+  .hero .cta-note{font-size:13px}
+  .about,.hook,.people,.interview,.faq,.qa-band,.scenes{padding-top:56px;padding-bottom:56px}
+  .about h2,.scenes h2,.people h2,.qa-band h2,.interview h2,.faq h2,.closing h2{font-size:30px}
+  .checks,.flow,.faq details,.people h2,.interview>p,.qa-band>p,.qa-band>.facts{max-width:760px}
+  .about-text{max-width:860px}
+  .scene{flex-basis:46%;padding:28px}
+  .scene-track::after{flex-basis:calc(54% - 12px)}
+  .scene h3{font-size:23px}
+  .value-index{max-width:600px}
+  .value-index a{font-size:14px}
+  .interview .cta-group,.qa-band .btn-secondary{max-width:600px}
+  .closing{display:grid;grid-template-columns:1fr 1fr;align-items:center}
+  .closing-text{padding:40px}
+  .dock{padding-left:max(24px,calc((100vw - 900px)/2));padding-right:max(24px,calc((100vw - 900px)/2))}
+  .interview-page .gk-hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:40px;padding:40px var(--pad)}
+  .interview-page .gk-photo{grid-column:1;grid-row:1/span 2;align-self:start;border-radius:var(--radius);overflow:hidden}
+  .interview-page .hero-copy{grid-column:2;grid-row:1;padding:0}
+  .interview-page .hero-body{grid-column:2;grid-row:2;padding:0}
+  .interview-page .gk-hero h1{font-size:34px}
+  .interview-page .gk-book .field,.interview-page .gk-book #submit,.interview-page .schedule-recovery,.interview-page .gk-book #status{max-width:640px}
+  .interview-page .gk-video .player,.interview-page .gk-video .btn-secondary{max-width:640px}
+}

@@ -116,6 +116,47 @@
   .done p { margin: 0; color: var(--sub); font-size: 14px; }
   .done .pre { margin-bottom: 8px; }
   [hidden] { display: none !important; }
+  /* 2026-11-13：公式ロゴの青と写真を中心に、余白と操作の強さを揃える。 */
+  html { color-scheme: light; background: #eeece6; }
+  body { letter-spacing: 0; line-height: 1.7; }
+  h1, h2 { letter-spacing: -.02em; }
+  .wrap { max-width: 1120px; background: var(--paper); }
+  .hero { padding-top: 32px; padding-bottom: 32px; }
+  .photo { aspect-ratio: auto; }
+  .photo img { height: auto; object-fit: contain; }
+  .cta, .join-bar .cta { min-height: 56px; border-radius: 12px; box-shadow: none; background: var(--blue); font-size: 18px; letter-spacing: 0; }
+  .cta:active { transform: translateY(1px); box-shadow: none; }
+  .cta:focus-visible, .days button:focus-visible, .times button:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
+  #go-book { min-height: 52px; border-color: var(--line); font-size: 17px; }
+  #go-book .cta-arrow { border: 0; }
+  .cta-arrow { border: 0; }
+  .join-bar { box-shadow: none; border-color: var(--line); }
+  .join-inner { max-width: 600px; }
+  .join-bar .cta:disabled { background: #b7c4cf; }
+  .join-note, .note { font-size: 13px; line-height: 1.7; }
+  .asks li { padding-top: 16px; padding-bottom: 16px; font-weight: 500; }
+  .asks li::before { top: 26px; width: 5px; height: 5px; }
+  .steps { margin-top: 16px; }
+  .steps li { gap: 16px; padding: 12px 0; }
+  .steps li::before { background: var(--ink); }
+  .book { padding-top: 40px; padding-bottom: 40px; }
+  .days button { min-height: 44px; font-size: 14px; border-radius: 10px; }
+  .times button { min-height: 48px; border-radius: 10px; }
+  .picked { background: #eef3f7; }
+  @media (min-width: 760px) {
+    .wrap { border-inline: 1px solid var(--line); }
+    #form-area { display: grid; grid-template-columns: 1fr 1fr; }
+    .top, .book, .foot { grid-column: 1 / -1; }
+    .top { height: 72px; padding-inline: 40px; }
+    .hero { padding: 48px 40px; }
+    h1 { font-size: 36px; line-height: 1.45; }
+    h2 { font-size: 26px; }
+    .photo { margin: 48px 40px 48px 0; align-self: center; border-radius: 12px; }
+    .sec { padding: 40px; }
+    .book { padding: 48px 40px; }
+    .days, .times, .picked, .slot-loading { max-width: 680px; }
+    .times { grid-template-columns: repeat(4, 1fr); }
+  }
 </style>
 </head>
 <body>
@@ -135,7 +176,7 @@
       <p class="lead"><span class="ph" id="name-line">RVSS質問会</span><span class="ph">では、</span><span class="ph">現役メンバーに</span><span class="ph">Zoomで20分、</span><span class="ph">何でも質問できます。</span></p>
       <button class="cta" type="button" id="go-book"><span>日時を選ぶ</span><span class="cta-arrow" aria-hidden="true">↓</span></button>
     </section>
-    <figure class="photo"><img src="../assets/kouryu-members.jpg" alt="RVSSのメンバーの集合写真" width="960" height="720"></figure>
+    <figure class="photo"><img src="../assets/rvss-members-group-20261113.jpg" alt="RVSSのメンバーの集合写真" width="1477" height="1108" loading="lazy"></figure>
 
     <!-- 聞けることの例＝自動文面 teirei_warm（10/18 守屋 OK）と ondemand_m3（10/13 守屋 OK）の箇条から -->
     <section class="sec" aria-labelledby="asks-title">
