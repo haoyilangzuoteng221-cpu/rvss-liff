@@ -157,6 +157,16 @@
     .days, .times, .picked, .slot-loading { max-width: 680px; }
     .times { grid-template-columns: repeat(4, 1fr); }
   }
+
+  /* 2026-11-13：画面下の主ボタンに押せる面と押下の反応を付ける。 */
+  :root { --cta-edge: #174d75; --cta-raised-shadow: 0 4px 0 var(--cta-edge), 0 6px 8px #0000000d; --cta-pressed-shadow: 0 2px 0 var(--cta-edge), 0 3px 4px #0000000a; }
+  #submit { background: var(--blue); box-shadow: var(--cta-raised-shadow); transition: transform .08s, box-shadow .08s, background .08s; }
+  @media (hover: hover) { #submit:hover { background: #1d5a88; } }
+  #submit:active { background: #1d5a88; transform: translateY(2px); box-shadow: var(--cta-pressed-shadow); }
+  #submit:focus-visible { outline: 3px solid var(--ink); outline-offset: 5px; }
+  #submit:disabled { background: #b7c4cf; color: #485860; box-shadow: none; transform: none; cursor: default; }
+  .join-note { margin-top: 10px; }
+  @media (prefers-reduced-motion: reduce) { #submit { transition: none; } }
 </style>
 </head>
 <body>

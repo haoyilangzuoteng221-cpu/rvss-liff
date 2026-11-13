@@ -529,3 +529,12 @@ h1,h2,h3{letter-spacing:-.02em}
   .interview-page .gk-book .field,.interview-page .gk-book #submit,.interview-page .schedule-recovery,.interview-page .gk-book #status{max-width:640px}
   .interview-page .gk-video .player,.interview-page .gk-video .btn-secondary{max-width:640px}
 }
+
+/* 2026-11-13：動画LPの主行動だけに浅い立体感。面談ページの共有CSSには波及させない。 */
+.watch-page{--cta-edge:#174d75;--cta-raised-shadow:0 4px 0 var(--cta-edge),0 6px 8px #0000000d;--cta-pressed-shadow:0 2px 0 var(--cta-edge),0 3px 4px #0000000a}
+.watch-page :is(.btn-primary,.dock-main){background:var(--action);box-shadow:var(--cta-raised-shadow);transition:transform .08s,box-shadow .08s,background .08s}
+@media(hover:hover){.watch-page :is(.btn-primary,.dock-main):hover{background:var(--action-press)}}
+.watch-page :is(.btn-primary,.dock-main):is(:active,.tapped){transform:translateY(2px);box-shadow:var(--cta-pressed-shadow);background:var(--action-press);opacity:1}
+.watch-page :is(.btn-primary,.dock-main):focus-visible{outline:3px solid var(--ink);outline-offset:5px}
+.watch-page :is(.btn-primary,.dock-main):is(:disabled,[aria-disabled="true"]){background:#b7c4cf;color:#485860;box-shadow:none;transform:none;opacity:1;cursor:default}
+@media(prefers-reduced-motion:reduce){.watch-page :is(.btn-primary,.dock-main){transition:none}}
