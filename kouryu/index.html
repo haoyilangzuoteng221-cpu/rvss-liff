@@ -60,7 +60,7 @@
   .join-bar .cta { margin: 0; justify-content: center; text-align: center; box-shadow: 0 2px 0 #154f80; }
   .join-note { margin: 6px 0 0; font-size: 13px; line-height: 1.5; color: var(--sub); text-align: center; }
   .join-bar .status { margin: 0 0 10px; }
-  .wrap { padding-bottom: 130px; }
+  .wrap { padding-bottom: var(--join-bar-space, 130px); }
   .cta-arrow { flex: 0 0 34px; height: 34px; display: grid; place-items: center; border: 1px solid #ffffff73; border-radius: 50%; font-weight: 400; }
   /* 日時の枠が出るまでの「読み込み中」 */
   .slot-loading { display: flex; align-items: center; gap: 12px; padding: 16px; border-radius: 12px; background: #eef3f8;
@@ -220,8 +220,8 @@
         <span class="spinner" aria-hidden="true"></span>
         <span>日程を読み込んでいます。<br>少々お待ちください。</span>
       </div>
-      <div id="days" class="days"></div>
-      <div id="times" class="times"></div>
+      <div id="days" class="days" role="group" aria-label="質問会の日付"></div>
+      <div id="times" class="times" role="group" aria-label="質問会の時刻"></div>
       <p id="picked" class="picked" hidden></p>
       <p id="noslot" class="note" hidden>いまお選びいただける時間がありません。時間をおいて開き直してください。</p>
       <!-- 氏名を自動で取るので、その旨を申込の場所に書く。日程変更は自動文面 zadan_confirm の案内どおり -->
@@ -317,9 +317,12 @@
      ★枠は守屋のカレンダーの空きから GAS が計算する（開始12時間前まで・1枠に何人でも）。 */
   function load() { return window.__kouryuFetch(); }
 
-  function render() {
+  function render(focusTarget) {
     var daysEl = document.getElementById('days');
     var timesEl = document.getElementById('times');
+    var active = document.activeElement;
+    if (!focusTarget && active && active.parentNode === daysEl) focusTarget = { kind: 'day', value: active.dataset.date };
+    if (!focusTarget && active && active.parentNode === timesEl) focusTarget = { kind: 'time', value: active.dataset.slot };
     daysEl.innerHTML = ''; timesEl.innerHTML = '';
     // 選んでいた枠が最新の枠から消えていたら、選び直してもらう
     if (picked && !items.some(function (it) { return it.value === picked.value; })) {
@@ -340,13 +343,19 @@
       var b = document.createElement('button');
       b.type = 'button'; b.textContent = byDay[d][0].dateLabel;
       if (d === day) b.className = 'on';
-      b.addEventListener('click', function () { if (sending) return; day = d; render(); });
+      b.dataset.date = d; b.setAttribute('aria-pressed', String(d === day));
+      b.addEventListener('click', function () {
+        if (sending) return;
+        if (day !== d) { picked = null; document.getElementById('picked').hidden = true; document.getElementById('picked').textContent = ''; }
+        day = d; render({ kind: 'day', value: d });
+      });
       daysEl.appendChild(b);
     });
     byDay[day].forEach(function (it) {
       var b = document.createElement('button');
       b.type = 'button'; b.textContent = it.time;
       if (picked && picked.value === it.value) b.className = 'on';
+      b.dataset.slot = it.value; b.setAttribute('aria-pressed', String(!!picked && picked.value === it.value));
       b.addEventListener('click', function () {
         if (sending) return;
         picked = it;
@@ -355,10 +364,16 @@
         var p = document.getElementById('picked');
         p.textContent = '選択中：' + it.label;
         p.hidden = false;
-        render();
+        render({ kind: 'time', value: it.value });
       });
       timesEl.appendChild(b);
     });
+    timesEl.setAttribute('aria-label', byDay[day][0].dateLabel + 'の質問会の時刻');
+    if (focusTarget) {
+      var buttons = focusTarget.kind === 'day' ? daysEl.children : timesEl.children;
+      var target = Array.prototype.find.call(buttons, function (b) { return (focusTarget.kind === 'day' ? b.dataset.date : b.dataset.slot) === focusTarget.value; });
+      if (target) target.focus({ preventScroll: true });
+    }
   }
 
   // 冒頭の「日時を選ぶ」→ 申込の場所へ送る
@@ -374,6 +389,20 @@
       ? '申し込むと、公式LINEに確認のメッセージとZoomのURLが届きます。'
       : '日時を選んだあとに、申込を確定します。';
   }
+
+  // 固定バーの高さは、文字拡大・案内・送信状態で変わる。末尾の内容を隠さない余白を確保する。
+  (function () {
+    var bar = document.getElementById('join-bar');
+    function syncSpace() {
+      var height = bar.getBoundingClientRect().height;
+      document.documentElement.style.setProperty('--join-bar-space', height ? Math.ceil(height + 16) + 'px' : '0px');
+    }
+    syncSpace();
+    window.addEventListener('resize', syncSpace);
+    if (window.ResizeObserver) new ResizeObserver(syncSpace).observe(bar);
+    else if (window.MutationObserver) new MutationObserver(syncSpace).observe(bar, { attributes: true, childList: true, subtree: true });
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(syncSpace);
+  })();
 
   /* 氏名＝LINE の表示名。★実機の通しは ?src=test で開く＝頭に「テスト」を付け、GAS の kouryu_isTest_ で
      カレンダー・通知が [テスト] になり、候補者マスターへ入らず、後片付け（kouryu_cleanupTests_）の対象になる。 */

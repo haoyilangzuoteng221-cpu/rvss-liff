@@ -538,3 +538,8 @@ h1,h2,h3{letter-spacing:-.02em}
 .watch-page :is(.btn-primary,.dock-main):focus-visible{outline:3px solid var(--ink);outline-offset:5px}
 .watch-page :is(.btn-primary,.dock-main):is(:disabled,[aria-disabled="true"]){background:#b7c4cf;color:#485860;box-shadow:none;transform:none;opacity:1;cursor:default}
 @media(prefers-reduced-motion:reduce){.watch-page :is(.btn-primary,.dock-main){transition:none}}
+
+/* 文字を拡大しても、ラベルと矢印が互いの領域に重ならない。動画LPだけに限定。 */
+.watch-page :is(.btn-primary,.btn-secondary){display:flex;justify-content:space-between;gap:12px;padding-inline:16px}
+.watch-page :is(.btn-primary,.btn-secondary)>span:first-child{flex:1;min-width:0;text-align:center}
+.watch-page :is(.btn-primary,.btn-secondary) .arrow{position:static;transform:none;flex:0 0 auto;line-height:1}
