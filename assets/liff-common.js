@@ -23,19 +23,27 @@
   var AUTH_KINDS = /^(interview|mendan|watch|rookies|kouryu)$/;   // GAS の本人確認_20261024.js の RVSS_AUTH.KINDS と揃える
   var ALLOWED_SRC = /^[a-z0-9_\-]{1,40}$/i;
 
+  function normalizeSrc(raw) {
+    raw = String(raw || '').trim();
+    return ALLOWED_SRC.test(raw) ? raw : 'unknown';
+  }
+
   /** クエリから流入元を取る。無い・不正なら 'unknown'（SNSへ寄せない）。 */
   function readSrc() {
     var q = new URLSearchParams(global.location.search);
-    // LIFF は liff.state に元のクエリを畳んで渡してくることがある
-    var state = q.get('liff.state');
-    if (state) {
-      try {
-        var inner = new URLSearchParams(state.indexOf('?') >= 0 ? state.slice(state.indexOf('?')) : '');
-        if (inner.get('src')) q = inner;
-      } catch (e) { /* 読めなければ元のクエリのまま */ }
+    var raw = q.get('src');
+    // LIFF は元のquery/fragmentを liff.state に畳む。内側のsrcを優先し、fragmentは読み込まない。
+    // 入れ子を読む回数に上限を置く。同じ階層にsrcが複数あれば従来どおり先頭を使う。
+    for (var depth = 0; depth < 5; depth++) {
+      var state = q.get('liff.state');
+      if (!state) break;
+      var query = state.split('#')[0];
+      var start = query.indexOf('?');
+      if (start < 0) break;
+      q = new URLSearchParams(query.slice(start + 1));
+      if (q.has('src')) raw = q.get('src');
     }
-    var raw = (q.get('src') || '').trim();
-    return ALLOWED_SRC.test(raw) ? raw : 'unknown';
+    return normalizeSrc(raw);
   }
 
   /** 画面のどこかに一言出す（成功・失敗・待ちの共通表示）。 */
@@ -287,7 +295,9 @@
    *   opts.onReady   function(profile, src) — プロフィールが取れたら呼ばれる
    */
   function boot(opts) {
-    var src = opts.entrySrc || readSrc();
+    var src = opts.entrySrc ? normalizeSrc(opts.entrySrc) : readSrc();
+    // initがURLを書き換える前に、ページが指定した戻り先を確保する。
+    var loginRedirectUri = opts.loginRedirectUri;
     function observe(event, result) { try { if (opts.analytics) opts.analytics.record(event, { stage: 'auth', result: result }); } catch (_) {} }
     observe('auth_start', 'started');
     var liffId = (CFG.LIFF_IDS || {})[opts.liffKey] || '';
@@ -309,9 +319,8 @@
       .then(function () {
         if (!liff.isLoggedIn()) {
           observe('auth_redirect', 'login');
-          // 明示された戻り先があるページでは、ログイン後も流入元を保持する。
-          // 未指定のページは従来どおりLINE側のエンドポイントへ戻す。
-          if (opts.loginRedirectUri) liff.login({ redirectUri: opts.loginRedirectUri });
+          // 戻り先を指定しない既存ページは、従来どおりLINE側のエンドポイントへ戻す。
+          if (loginRedirectUri) liff.login({ redirectUri: loginRedirectUri });
           else liff.login();
           return null;
         }

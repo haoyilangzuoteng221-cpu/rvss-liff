@@ -70,6 +70,14 @@
   @keyframes spin { to { transform: rotate(360deg); } }
   @media (prefers-reduced-motion: reduce) { .spinner { animation-duration: 2.4s; } }
   .timing { margin: 10px 0 0; font: 11px/1.5 ui-monospace, Menlo, Consolas, monospace; color: #7d8a95; }
+  .login-check { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); }
+  .login-check p { margin: 0 0 8px; color: var(--sub); font-size: 14px; }
+  .login-check button { min-height: 44px; padding: 8px 16px; border: 1px solid var(--line); border-radius: 10px;
+                        background: #fff; color: var(--ink); font-size: 14px; cursor: pointer; }
+  .login-check button:hover { background: var(--paper); }
+  .login-check button:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+  .login-check button:active { background: var(--line); }
+  .login-check button:disabled { color: var(--sub); opacity: .5; cursor: default; }
   .photo { margin: 0; aspect-ratio: 4 / 3; overflow: hidden; }
   .photo img { display: block; width: 100%; height: 100%; object-fit: cover; }
 
@@ -168,6 +176,10 @@
       <!-- 氏名を自動で取るので、その旨を申込の場所に書く。日程変更は自動文面 zadan_confirm の案内どおり -->
       <p class="note"><span class="ph">お名前は、LINEの表示名で</span><span class="ph">受け付けます。</span><br><span class="ph">日程を変えたいときは、</span><span class="ph">公式LINEへご連絡ください。</span></p>
       <p id="timing" class="timing" hidden></p>
+      <div id="login-check" class="login-check" hidden>
+        <p>テスト用：LINEログインの再確認</p>
+        <button id="login-restart" type="button" disabled>ログインから確認し直す</button>
+      </div>
     </section>
 
     <footer class="foot"><img class="logo" src="../assets/rvss-logo-official.png" alt="REAL VALUE STUDENTS" width="480" height="246"></footer>
@@ -225,14 +237,14 @@
 <script src="https://rvss-dx-ten.vercel.app/integrations/rvss-action-visits.js"
         integrity="sha384-bF87t8MAX1DVifpxK9/TfKPG757JY76E6FULbuWdrgOYCKdz3I5kXpXhimiy4AQ9"
         crossorigin="anonymous"></script>
-<script src="../assets/liff-common.js?v=20261112.1"></script>
+<script src="../assets/liff-common.js?v=20261113.2"></script>
 <script>
 (function () {
   'use strict';
   var CFG = window.RVSS_CONFIG;
   var T = window.__kouryuT || {};
   T.sdk = performance.now();   // LINE の部品・計測・共通処理を読み終えた時刻
-  var profile = null, src = RVSS.readSrc(), sending = false;
+  var profile = null, src = RVSS.readSrc(), sending = false, loginRestarting = false;
   var items = [], picked = null, day = null;
   var bookingRequestId = '', bookingFingerprint = '';
   var resolveProfile, profileReady = new Promise(function (r) { resolveProfile = r; });
@@ -348,11 +360,36 @@
     el.hidden = false;
   }
 
+  // src=testの外部ブラウザだけで、公式のログアウト→再読込から共通bootを確認する。
+  function canRestartLogin() {
+    try {
+      return src === 'test' && !!profile && !!window.liff && typeof liff.logout === 'function'
+        && typeof liff.isInClient === 'function' && !liff.isInClient();
+    } catch (_) { return false; }
+  }
+  function updateLoginCheck() {
+    var available = canRestartLogin();
+    document.getElementById('login-check').hidden = !available;
+    document.getElementById('login-restart').disabled = !available || sending || loginRestarting;
+  }
+  document.getElementById('login-restart').addEventListener('click', function () {
+    if (!canRestartLogin() || sending || loginRestarting) return;
+    loginRestarting = true; updateLoginCheck();
+    try { liff.logout(); window.location.reload(); }
+    catch (_) {
+      loginRestarting = false; updateLoginCheck();
+      RVSS.setStatus('ログインの確認をやり直せませんでした。時間をおいてもう一度お試しください。', 'err');
+    }
+  });
+
   RVSS.boot({
     liffKey: 'kouryu',
+    entrySrc: src,
+    // srcだけを持ち越す。認証コード等を含む元URLはコピーしない。
+    loginRedirectUri: window.location.origin + window.location.pathname + '?src=' + encodeURIComponent(src),
     onReady: function (p, s) {
       profile = p; src = s;
-      T.ready = performance.now(); resolveProfile(p); showTiming();
+      T.ready = performance.now(); resolveProfile(p); showTiming(); updateLoginCheck();
       // 認証・プロフィール取得の直後に訪問を記録（情シスの訪問計測・画面表示や申込を待たせない）
       if (rvssVisitTracker) {
         rvssVisitTracker.record(window.liff)
@@ -370,7 +407,7 @@
     if (!picked) { goBook(); return RVSS.setStatus('ご希望の日時を選んでください。', 'err'); }
     RVSS.setStatus('', '');
 
-    sending = true;
+    sending = true; updateLoginCheck();
     var selected = Object.assign({}, picked);
     var btn = document.getElementById('submit');
     btn.disabled = true; btn.textContent = '送信しています…';
@@ -383,7 +420,7 @@
       items = list;
       var still = list.some(function (it) { return it.value === selected.value; });
       if (!still) {
-        sending = false; btn.disabled = false;
+        sending = false; updateLoginCheck(); btn.disabled = false;
         picked = null; document.getElementById('picked').hidden = true; render();
         return RVSS.setStatus('選んだ時間は締め切られたか、埋まりました。別の時間を選んでください。', 'err');
       }
@@ -414,7 +451,7 @@
         window.scrollTo(0, 0);
       });
     }).catch(function (error) {
-      sending = false;
+      sending = false; updateLoginCheck();
       btn.disabled = false; btn.textContent = 'もう一度送る';
       if (['invalid_slot','closed','booking_changed','request_conflict'].indexOf(error.message) >= 0) {
         bookingRequestId = ''; bookingFingerprint = ''; picked = null;

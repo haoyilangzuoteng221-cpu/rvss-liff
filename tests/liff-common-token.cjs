@@ -45,14 +45,16 @@ function setup(liff) {
   await test('送信する5画面は新しい liff-common.js を読む（端末に残った古い版で送らない）', async () => {
     for (const page of ['interview', 'mendan', 'watch', 'kouryu', 'rookies']) {
       const html = fs.readFileSync(path.join(root, page, 'index.html'), 'utf8');
-      assert.match(html, /liff-common\.js\?v=20261024\.1"/, page);
+      const version = page === 'kouryu' ? '20261113.2' : page === 'interview' ? '20261112.1' : '20261024.1';
+      assert.ok(html.includes('liff-common.js?v=' + version + '"'), page);
     }
   });
   await test('面接の完了画面は Zoom を GAS から受け取る前提の文を残さない', async () => {
     const html = fs.readFileSync(path.join(root, 'interview/index.html'), 'utf8');
     assert.ok(!html.includes('日時とZoomのURLが予定に入ります'));
     assert.ok(!html.includes('前日までにLINEでお送りします'));
-    assert.match(html, /ZoomのURLは、このあとLINEでお送りします。/);
+    assert.match(html, /参加用のZoomはこちらに届きます/);
+    assert.match(html, /公式LINEで案内を見る/);
   });
   console.log('PASS ' + n + ' 件');
 })().catch((e) => { console.error(e); process.exit(1); });
