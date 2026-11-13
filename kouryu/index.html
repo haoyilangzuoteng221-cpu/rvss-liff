@@ -350,6 +350,8 @@
       b.addEventListener('click', function () {
         if (sending) return;
         picked = it;
+        var status = document.getElementById('status');
+        if (status && status.textContent === 'ご希望の日時を選んでください。') RVSS.setStatus('', '');
         var p = document.getElementById('picked');
         p.textContent = '選択中：' + it.label;
         p.hidden = false;
